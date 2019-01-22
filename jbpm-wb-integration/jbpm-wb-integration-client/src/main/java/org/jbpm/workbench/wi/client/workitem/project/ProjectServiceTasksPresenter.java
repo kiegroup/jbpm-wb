@@ -24,6 +24,7 @@ import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jbpm.workbench.wi.workitems.model.ServiceTaskSummary;
 import org.jbpm.workbench.wi.workitems.service.ServiceTaskService;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
@@ -47,6 +48,8 @@ public class ProjectServiceTasksPresenter extends Section<ProjectScreenModel>  {
     private final Caller<ServiceTaskService> serviceTasksService;
     
     private ProjectScreenModel model;
+    
+    private SyncBeanManager iocManager;
 
     public interface View extends SectionView<ProjectServiceTasksPresenter> {
 
@@ -59,12 +62,14 @@ public class ProjectServiceTasksPresenter extends Section<ProjectScreenModel>  {
                                final MenuItem<ProjectScreenModel> menuItem,
                                final Event<SettingsSectionChange<ProjectScreenModel>> settingsSectionChangeEvent,
                                final Caller<ServiceTaskService> serviceTasksService,
-                               final ServiceTasksListPresenter serviceTasksItemPresenters) {
+                               final ServiceTasksListPresenter serviceTasksItemPresenters,
+                               final SyncBeanManager iocManager) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
         this.view = view;
         this.serviceTasksItemPresenters = serviceTasksItemPresenters;
         this.serviceTasksService = serviceTasksService;
+        this.iocManager = iocManager;
     }
 
     @Override
@@ -107,11 +112,18 @@ public class ProjectServiceTasksPresenter extends Section<ProjectScreenModel>  {
         }
     }
     
-    public void installServiceTask(String serviceTaskId, Command onDone) {     
-        serviceTasksService.call((Void) -> {
-            onDone.execute();
-            fireChangeEvent();
-        }).installServiceTask(serviceTaskId, getInstallTarget());
+    public void installServiceTask(String serviceTaskId, List<String> parameters, String referenceLink, Command onDone) {  
+        
+        if (parameters.isEmpty()) {
+            serviceTasksService.call((Void) -> {
+                onDone.execute();
+                fireChangeEvent();
+            }).installServiceTask(serviceTaskId, getInstallTarget(), null);
+        } else {
+            
+            ServiceTaskInstallFormPresenter installFormPresenter = iocManager.lookupBean(ServiceTaskInstallFormPresenter.class).newInstance();
+            installFormPresenter.showView(onDone, serviceTaskId, getInstallTarget(), parameters, referenceLink);
+        }
     }
     
     public void uninstallServiceTask(String serviceTaskId, Command onDone) {
@@ -122,6 +134,12 @@ public class ProjectServiceTasksPresenter extends Section<ProjectScreenModel>  {
     }
     
     public String getInstallTarget() {
-        return model.getPathToPOM().toURI();
+        String uri = model.getPathToPOM().toString().replaceAll("\\/pom.xml", "");
+        
+        if (uri.contains("@")) {
+            return uri.substring(uri.indexOf("@") + 1);
+        } else {
+            return uri.substring(uri.indexOf("://") + 3);
+        }
     }
 }

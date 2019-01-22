@@ -16,6 +16,8 @@
 
 package org.jbpm.workbench.wi.client.workitem.project;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -55,6 +57,8 @@ public class ProjectServiceTaskItemView implements ProjectServiceTaskItemPresent
     
     private String serviceTaskId;
     private Boolean installed;
+    private List<String> parameters;
+    private String referenceLink;
     
     private Constants constants = Constants.INSTANCE;
 
@@ -63,7 +67,7 @@ public class ProjectServiceTaskItemView implements ProjectServiceTaskItemPresent
         if (installed) {            
             presenter.uninstallServiceTask(serviceTaskId, () -> {makeInstallButton(); installed = false;});            
         } else {            
-            presenter.installServiceTask(serviceTaskId, () -> {makeUninstallButton(); installed = true;});            
+            presenter.installServiceTask(serviceTaskId, parameters, referenceLink, () -> {makeUninstallButton(); installed = true;});            
         }
     }
 
@@ -91,6 +95,16 @@ public class ProjectServiceTaskItemView implements ProjectServiceTaskItemPresent
     public void setServiceTaskId(String serviceTaskId) {
         this.serviceTaskId = serviceTaskId;
     }
+    
+    @Override
+    public void setServiceTaskParameters(List<String> parameters) {
+        this.parameters = parameters;        
+    }
+
+    @Override
+    public void setServiceTaskReferenceLink(String link) {
+        this.referenceLink = link;
+    }
 
     @Override
     public void setInstalled(Boolean installed) {
@@ -116,4 +130,5 @@ public class ProjectServiceTaskItemView implements ProjectServiceTaskItemPresent
         
         actionButton.textContent = constants.UninstallServiceTask();
     }
+
 }

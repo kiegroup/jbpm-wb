@@ -16,10 +16,15 @@
 
 package org.jbpm.workbench.wi.backend.server.workitem;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Properties;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -62,8 +67,11 @@ public class WorkbenchRepositoryEventListener implements RepositoryEventListener
     private static final Logger logger = LoggerFactory.getLogger(WorkbenchRepositoryEventListener.class);
     
     private static final String REPOSITORY_CONTENT_LOCATION = "/service-tasks/";
+    private static final String REPOSITORY_PREFIX = "default://master@";
     
     private String repositoryVersion;
+    
+   
 
     private Predicate<ArtifactRepository> filter = new Predicate<ArtifactRepository>() {
         
@@ -113,6 +121,11 @@ public class WorkbenchRepositoryEventListener implements RepositoryEventListener
             
         }
         
+    }    
+
+    @Override
+    public void onServiceTaskAdded(RepoData service) {
+       
     }
     
     @Override
@@ -122,16 +135,19 @@ public class WorkbenchRepositoryEventListener implements RepositoryEventListener
         if (repositoryStorage.loadConfiguration().getMavenInstall()) {
             String resourceLocation = REPOSITORY_CONTENT_LOCATION + service.getModule() + "/" + service.getModule() + "-" + repositoryVersion + ".jar";
             InputStream stream = servletContext.getResourceAsStream(resourceLocation);
-            String pomProperties = GuvnorM2Repository.loadPomPropertiesFromJar(stream);
-            if (pomProperties != null) {
-                final AFReleaseId releaseId = AFReleaseIdImpl.fromPropertiesString(pomProperties);
             
-                GAV gav = new GAV(releaseId.getGroupId(), releaseId.getArtifactId(), releaseId.getVersion());
-                if (!m2Repository.containsArtifact(gav, filter)) {
-                    
-                    stream = servletContext.getResourceAsStream(resourceLocation);
-                    m2Repository.deployArtifact(stream, gav, false, filter);
-                    logger.info("Service task {} has been installed in maven", service.getName());
+            if (stream != null) {
+                String pomProperties = GuvnorM2Repository.loadPomPropertiesFromJar(stream);
+                if (pomProperties != null) {
+                    final AFReleaseId releaseId = AFReleaseIdImpl.fromPropertiesString(pomProperties);
+                
+                    GAV gav = new GAV(releaseId.getGroupId(), releaseId.getArtifactId(), releaseId.getVersion());
+                    if (!m2Repository.containsArtifact(gav, filter) && !ServiceTaskUtils.DEFAULT_HANDLERS.contains(service.getModule())) {
+                        
+                        stream = servletContext.getResourceAsStream(resourceLocation);
+                        m2Repository.deployArtifact(stream, gav, false, filter);
+                        logger.info("Service task {} has been installed in maven", service.getName());
+                    }
                 }
             }
         }
@@ -144,17 +160,17 @@ public class WorkbenchRepositoryEventListener implements RepositoryEventListener
     }
 
     @Override
-    public void onServiceTaskInstalled(RepoData service, String target) {
+    public void onServiceTaskInstalled(RepoData service, String target, List<String> parameters) {
         
         try {
             
             boolean installPomDepds = repositoryStorage.loadConfiguration().getInstallPomDeps();
-            Path path = PathFactory.newPath("pom.xml", target);
+            Path path = PathFactory.newPath("pom.xml", REPOSITORY_PREFIX + target);
             
             Module module = moduleService.resolveModule(path);
             POM projectPOM = pomService.load(module.getPomXMLPath());
             
-            if (installPomDepds && projectPOM != null) {
+            if (installPomDepds && projectPOM != null && !ServiceTaskUtils.DEFAULT_HANDLERS.contains(service.getModule())) {
                 boolean useVersionRange = repositoryStorage.loadConfiguration().getVersionRange();
                 Dependencies projectDepends = projectPOM.getDependencies();
                 Dependencies validDependsFromWorkitem = getValidDependenciesForWorkitem(projectDepends,
@@ -172,32 +188,19 @@ public class WorkbenchRepositoryEventListener implements RepositoryEventListener
                                     false);
                 }
             }            
-            // install icon
-            String icon = service.getIcon();
-            if (icon != null && !icon.isEmpty()) {            
-                String iconLocation = REPOSITORY_CONTENT_LOCATION + service.getModule() + "/" + icon;
-                InputStream stream = servletContext.getResourceAsStream(iconLocation);
-                if (stream == null) {
-                    iconLocation = REPOSITORY_CONTENT_LOCATION + service.getModule() + "/icon.png";
-                    stream = servletContext.getResourceAsStream(iconLocation);
-                }
-                
-                String iconName = service.getName() + ".png";
-                Path iconPath = PathFactory.newPath(iconName, module.getRootPath().toURI() + "global/"  + iconName);
-                
-                store(Paths.convert(iconPath), IOUtils.toByteArray(stream));
+            if (service.getGav() == null) {
+                installFromLocal(service, module);
+            } else {
+                installFromJar(service, module);
             }
-            // install wid
-            String widLocation = REPOSITORY_CONTENT_LOCATION + service.getModule() + "/" + service.getName() + ".wid";
-            InputStream widStream = servletContext.getResourceAsStream(widLocation);
-            
-            
-            Path widPath = PathFactory.newPath(service.getName() + ".wid", module.getRootPath().toURI() + "src/main/resources/" + service.getName() + ".wid");            
-            
-            store(Paths.convert(widPath), IOUtils.toByteArray(widStream));
-            
+            String handler = service.getDefaultHandler();
+            if (parameters != null && !parameters.isEmpty()) {
+                String strParams = "(\"" + parameters.stream().collect(Collectors.joining("\", \"")) + "\")";
+                
+                handler = handler.replaceFirst("\\(.*?\\)", strParams);
+            }
             // install service task into deployment descriptor
-            serviceTaskResourceEvent.fire(new ServiceTaskResourceEvent(path, "mvel", service.getDefaultHandler(), service.getName(), "", ResourceChangeType.ADD));
+            serviceTaskResourceEvent.fire(new ServiceTaskResourceEvent(path, "mvel", handler, service.getName(), "", ResourceChangeType.ADD));
             
             logger.info("Service task {} has been installed", service.getName());
         } catch (Exception e) {
@@ -208,7 +211,7 @@ public class WorkbenchRepositoryEventListener implements RepositoryEventListener
 
     @Override
     public void onServiceTaskUninstalled(RepoData service, String target) {        
-        Path path = PathFactory.newPath("pom.xml", target);
+        Path path = PathFactory.newPath("pom.xml", REPOSITORY_PREFIX + target);
         
         Module module = moduleService.resolveModule(path);
         POM projectPOM = pomService.load(module.getPomXMLPath());
@@ -243,7 +246,7 @@ public class WorkbenchRepositoryEventListener implements RepositoryEventListener
             delete(Paths.convert(iconPath));
         }
         // remove wid
-        Path widPath = PathFactory.newPath(service.getName() + ".wid", module.getRootPath().toURI() + "src/main/resources/" + service.getName() + ".wid");
+        Path widPath = PathFactory.newPath(service.getName() + ".wid", module.getRootPath().toURI() + "global/" + service.getName() + ".wid");
         
         delete(Paths.convert(widPath));
         
@@ -255,6 +258,66 @@ public class WorkbenchRepositoryEventListener implements RepositoryEventListener
     /*
      * Helper methods
      */
+    
+    protected void installFromLocal(RepoData service, Module module) throws IOException {
+        // install icon
+        String icon = service.getIcon();
+        if (icon != null && !icon.isEmpty()) {            
+            String iconLocation = REPOSITORY_CONTENT_LOCATION + service.getModule() + "/" + icon;
+            InputStream stream = servletContext.getResourceAsStream(iconLocation);
+            if (stream == null) {
+                iconLocation = REPOSITORY_CONTENT_LOCATION + service.getModule() + "/icon.png";
+                stream = servletContext.getResourceAsStream(iconLocation);
+            }
+            
+            String iconName = service.getName() + ".png";
+            Path iconPath = PathFactory.newPath(iconName, module.getRootPath().toURI() + "global/"  + iconName);
+            
+            store(Paths.convert(iconPath), IOUtils.toByteArray(stream));
+        }
+        // install wid
+        String widLocation = REPOSITORY_CONTENT_LOCATION + service.getModule() + "/" + service.getName() + ".wid";
+        InputStream widStream = servletContext.getResourceAsStream(widLocation);
+        
+        
+        Path widPath = PathFactory.newPath(service.getName() + ".wid", module.getRootPath().toURI() + "global/" + service.getName() + ".wid");            
+        
+        store(Paths.convert(widPath), IOUtils.toByteArray(widStream));
+    }
+    
+    protected void installFromJar(RepoData service, Module module) throws IOException {
+        // install icon
+        File uploadedServiceArtifact = m2Repository.getArtifactFileFromRepository(new GAV(service.getGav()));
+        if (uploadedServiceArtifact == null || !uploadedServiceArtifact.exists()) {
+            throw new RuntimeException("No file found for artifact " + service.getGav());
+        }
+        
+        try (ZipFile zipFile = new ZipFile(uploadedServiceArtifact)) {
+        
+            String icon = service.getIcon();
+            if (icon != null && !icon.isEmpty()) {            
+                ZipEntry location = zipFile.getEntry(icon);
+                if (location == null) {
+                    location = zipFile.getEntry("icon.png");
+                }
+                
+                InputStream stream = zipFile.getInputStream(location);
+     
+                String iconName = service.getName() + ".png";
+                Path iconPath = PathFactory.newPath(iconName, module.getRootPath().toURI() + "global/"  + iconName);
+                
+                store(Paths.convert(iconPath), IOUtils.toByteArray(stream));
+            }
+            // install wid
+            ZipEntry widLocation = zipFile.getEntry(service.getName() + ".wid");
+            InputStream widStream = zipFile.getInputStream(widLocation);
+            
+            
+            Path widPath = PathFactory.newPath(service.getName() + ".wid", module.getRootPath().toURI() + "global/" + service.getName() + ".wid");            
+            
+            store(Paths.convert(widPath), IOUtils.toByteArray(widStream));
+        }
+    }
     
     private Dependencies getValidDependenciesForWorkitem(Dependencies projectDepends,
                                                                 RepoData workitem,
@@ -314,5 +377,6 @@ public class WorkbenchRepositoryEventListener implements RepositoryEventListener
         
         return version;
     }
+
 
 }
