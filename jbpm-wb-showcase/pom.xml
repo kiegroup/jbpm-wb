@@ -479,6 +479,12 @@
       <scope>runtime</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-wb-home-screen</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- jBPM Designer -->
     <dependency>
       <groupId>org.jbpm</groupId>
@@ -790,6 +796,11 @@
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-message-console-client</artifactId>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.appformer</groupId>
+      <artifactId>appformer-js</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
 
     <!-- Kie Workbench -->
@@ -1720,6 +1731,7 @@
             <compileSourcesArtifact>org.uberfire:uberfire-simple-docks-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-ssh-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-ssh-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:appformer-js-bridge</compileSourcesArtifact>
 
             <compileSourcesArtifact>org.kie.soup:kie-soup-commons</compileSourcesArtifact>
 
@@ -1962,6 +1974,62 @@
                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
               </systemPropertyVariables>
               <redirectTestOutputToFile>false</redirectTestOutputToFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>properties-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <id>set-ts-exporter-output-dir</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>set-system-properties</goal>
+            </goals>
+            <configuration>
+              <properties>
+                <property>
+                  <name>ts-exporter-output-dir</name>
+                  <value>${project.build.directory}</value>
+                </property>
+                <property>
+                  <name>ts-exporter-project</name>
+                  <value>${project}</value>
+                </property>
+              </properties>
+            </configuration>
+          </execution>
+          <execution>
+            <id>set-ts-exporter-all</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>set-system-properties</goal>
+            </goals>
+            <configuration>
+              <properties>
+                <property>
+                  <name>ts-exporter</name>
+                  <value>export</value>
+                </property>
+              </properties>
+            </configuration>
+          </execution>
+          <execution>
+            <id>set-ts-exporter-none</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>set-system-properties</goal>
+            </goals>
+            <configuration>
+              <properties>
+                <property>
+                  <name>ts-exporter</name>
+                  <value>default</value>
+                </property>
+              </properties>
             </configuration>
           </execution>
         </executions>

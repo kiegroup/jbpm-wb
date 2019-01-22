@@ -66,7 +66,16 @@
     <module>jbpm-wb-common</module>
     <module>jbpm-wb-case-mgmt</module>
     <module>jbpm-wb-showcase</module>
+    <module>jbpm-wb-home-screen</module>
   </modules>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.appformer</groupId>
+      <artifactId>ts-exporter</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
 
   <dependencyManagement>
     <dependencies>
@@ -111,7 +120,7 @@
         <version>${version.org.kie}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>      
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -247,6 +256,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.7.0</version>
       </plugin>
     </plugins>
 

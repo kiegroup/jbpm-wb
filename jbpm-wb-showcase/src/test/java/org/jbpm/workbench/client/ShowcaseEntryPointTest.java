@@ -85,7 +85,8 @@ public class ShowcaseEntryPointTest {
                                                         adminPageHelper,
                                                         menusHelper,
                                                         menuBar,
-                                                        defaultWorkbenchErrorCallback));
+                                                        defaultWorkbenchErrorCallback,
+                                                        null));
         mockMenuHelper();
         mockConstants();
         IocTestingUtils.mockIocManager(iocManager);

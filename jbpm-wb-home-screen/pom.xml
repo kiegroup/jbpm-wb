@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>jbpm-wb</artifactId>
+    <groupId>org.jbpm</groupId>
+    <version>7.17.0-SNAPSHOT</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>jbpm-wb-home-screen</artifactId>
+  <packaging>jar</packaging>
+
+  <name>jBPM Workbench - Home Screen Model</name>
+  <description>jBPM Workbench - Home Screen Model</description>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <excludes>
+          <exclude>**/node_modules/**</exclude>
+          <exclude>**/dist/**</exclude>
+        </excludes>
+      </resource>
+    </resources>
+  </build>
+
+
+</project>

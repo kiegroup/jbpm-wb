@@ -17,6 +17,8 @@ package org.jbpm.workbench.client;
 
 import java.util.Arrays;
 import java.util.List;
+
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
@@ -38,6 +40,7 @@ import org.kie.workbench.common.workbench.client.menu.DefaultWorkbenchFeaturesMe
 import org.uberfire.client.mvp.ActivityBeansCache;
 import org.uberfire.client.views.pfly.menu.MainBrand;
 import org.uberfire.client.workbench.widgets.menu.megamenu.WorkbenchMegaMenuPresenter;
+import org.uberfire.jsbridge.client.AppFormerJsBridge;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
@@ -62,6 +65,8 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
 
     protected DefaultAdminPageHelper adminPageHelper;
 
+    protected AppFormerJsBridge appFormerJsBridge;
+
     @Inject
     public ShowcaseEntryPoint(final Caller<AppConfigService> appConfigService,
                               final ActivityBeansCache activityBeansCache,
@@ -70,7 +75,8 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
                               final DefaultAdminPageHelper adminPageHelper,
                               final DefaultWorkbenchFeaturesMenusHelper menusHelper,
                               final WorkbenchMegaMenuPresenter menuBar,
-                              final DefaultWorkbenchErrorCallback defaultWorkbenchErrorCallback) {
+                              final DefaultWorkbenchErrorCallback defaultWorkbenchErrorCallback,
+                              final AppFormerJsBridge appFormerJsBridge) {
         super(appConfigService,
               activityBeansCache,
               defaultWorkbenchErrorCallback);
@@ -79,6 +85,12 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
         this.menusHelper = menusHelper;
         this.menuBar = menuBar;
         this.adminPageHelper = adminPageHelper;
+        this.appFormerJsBridge = appFormerJsBridge;
+    }
+
+    @PostConstruct
+    protected void setup() {
+        this.appFormerJsBridge.init("jbpm-wb-showcase/org.jbpm.workbench.jBPMShowcase");
     }
 
     @Override
