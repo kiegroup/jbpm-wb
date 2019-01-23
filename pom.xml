@@ -68,14 +68,6 @@
     <module>jbpm-wb-showcase</module>
   </modules>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.appformer</groupId>
-      <artifactId>ts-exporter</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-    </dependency>
-  </dependencies>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -273,6 +265,16 @@
           <name>full</name>
         </property>
       </activation>
+    </profile>
+    <profile>
+      <id>ts-exporter-build</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.appformer</groupId>
+          <artifactId>ts-exporter</artifactId>
+          <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+      </dependencies>
     </profile>
   </profiles>
 </project>

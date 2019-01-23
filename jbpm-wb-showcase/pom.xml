@@ -791,11 +791,6 @@
       <artifactId>uberfire-message-console-client</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.appformer</groupId>
-      <artifactId>appformer-js</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
-    </dependency>
 
     <!-- Kie Workbench -->
     <dependency>
@@ -1967,66 +1962,79 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>properties-maven-plugin</artifactId>
-        <version>1.0.0</version>
-        <executions>
-          <execution>
-            <id>set-ts-exporter-output-dir</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>set-system-properties</goal>
-            </goals>
-            <configuration>
-              <properties>
-                <property>
-                  <name>ts-exporter-output-dir</name>
-                  <value>${project.build.directory}</value>
-                </property>
-                <property>
-                  <name>ts-exporter-project</name>
-                  <value>${project}</value>
-                </property>
-              </properties>
-            </configuration>
-          </execution>
-          <execution>
-            <id>set-ts-exporter-all</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>set-system-properties</goal>
-            </goals>
-            <configuration>
-              <properties>
-                <property>
-                  <name>ts-exporter</name>
-                  <value>export</value>
-                </property>
-              </properties>
-            </configuration>
-          </execution>
-          <execution>
-            <id>set-ts-exporter-none</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>set-system-properties</goal>
-            </goals>
-            <configuration>
-              <properties>
-                <property>
-                  <name>ts-exporter</name>
-                  <value>default</value>
-                </property>
-              </properties>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 
   <profiles>
+    <profile>
+      <id>not-ts-exporter-build</id>
+      <activation>
+        <property>
+          <name>!ts-exporter-build</name>
+        </property>
+      </activation>
+      <properties>
+        <version.org.webjars.npm.appformer-js-workbench-screens>0.2.0-ALPHA</version.org.webjars.npm.appformer-js-workbench-screens>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>unpack-appformer-js-workbench-screens</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>unpack</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>org.webjars.npm</groupId>
+                      <artifactId>appformer-js-workbench-screens</artifactId>
+                      <version>${version.org.webjars.npm.appformer-js-workbench-screens}</version>
+                      <type>jar</type>
+                      <overWrite>true</overWrite>
+                      <outputDirectory>${project.build.outputDirectory}/appformer-js-workbench-screens</outputDirectory>
+                    </artifactItem>
+                  </artifactItems>
+                  <overWriteReleases>false</overWriteReleases>
+                  <overWriteSnapshots>true</overWriteSnapshots>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-appformer-js-workbench-screens-resources</id>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.outputDirectory}/org/uberfire/jsbridge/public</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>${project.build.outputDirectory}/appformer-js-workbench-screens/META-INF/resources/webjars/appformer-js-workbench-screens/${version.org.webjars.npm.appformer-js-workbench-screens}/dist</directory>
+                      <includes>
+                        <include>home-perspective-bundle.js</include>
+                        <include>jbpm-wb-home-screen-bundle.js</include>
+                        <include>spaces-screen-bundle.js</include>
+                      </includes>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
     <!-- Full profile builds all GWT permutations -->
     <profile>
       <id>fullProfile</id>
