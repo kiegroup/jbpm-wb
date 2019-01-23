@@ -1,6 +1,6 @@
 import * as AppFormer from "appformer-js";
 import * as HomeApi from "kie-wb-common-home-api";
-import {Profile} from "@kiegroup-ts-generated/kie-wb-common-profile-api";
+import { Profile } from "@kiegroup-ts-generated/kie-wb-common-profile-api";
 
 export class JbpmWbHomeScreenProvider implements HomeApi.HomeScreenProvider {
     public get(profile: Profile): HomeApi.HomeScreen {
