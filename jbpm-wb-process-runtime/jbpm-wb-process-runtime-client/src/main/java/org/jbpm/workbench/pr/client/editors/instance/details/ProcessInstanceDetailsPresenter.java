@@ -274,6 +274,10 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
         return processDiagramPresenter.getView();
     }
 
+    public void onProcessDiagramTabShow(){
+        processDiagramPresenter.onShow();
+    }
+
     public interface ProcessInstanceDetailsView extends UberView<ProcessInstanceDetailsPresenter> {
 
         void displayAllTabs();

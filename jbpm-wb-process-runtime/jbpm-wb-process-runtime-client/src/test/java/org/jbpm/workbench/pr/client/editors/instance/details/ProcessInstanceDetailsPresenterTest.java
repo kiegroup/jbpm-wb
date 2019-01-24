@@ -320,4 +320,11 @@ public class ProcessInstanceDetailsPresenterTest {
         verify(detailsPresenter, times(2)).setProcessInstance(summary);
         verify(processDiagramPresenter, times(2)).setProcessInstance(summary);
     }
+
+    @Test
+    public void onProcessDiagramTabShowTest(){
+        presenter.onProcessDiagramTabShow();
+
+        verify(processDiagramPresenter).onShow();
+    }
 }

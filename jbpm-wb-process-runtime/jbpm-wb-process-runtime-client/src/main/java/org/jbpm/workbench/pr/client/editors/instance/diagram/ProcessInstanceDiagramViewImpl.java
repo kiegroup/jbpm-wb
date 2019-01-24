@@ -16,7 +16,11 @@
 
 package org.jbpm.workbench.pr.client.editors.instance.diagram;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -32,6 +36,7 @@ import org.jbpm.workbench.pr.model.NodeInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessNodeSummary;
 import org.jbpm.workbench.pr.model.TimerInstanceSummary;
 import org.uberfire.client.callbacks.Callback;
+import org.uberfire.client.views.pfly.widgets.D3;
 import org.uberfire.client.views.pfly.widgets.Select;
 
 @Dependent
@@ -62,7 +67,19 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
     @DataField("node-actions-panel")
     private HTMLDivElement nodeActionsPanel;
 
+    @Inject
+    private NodeCounterView nodeCounterView;
+
     private Callback<String> onProcessNodeSelectedCallback;
+
+    private boolean renderBadges = true;
+
+    private Map<String, Long> badges = new HashMap<>();
+
+    @PostConstruct
+    public void init(){
+        nodeCounterView.setCallback(() -> showHideBadges());
+    }
 
     @Override
     public void setOnProcessNodeSelectedCallback(Callback<String> callback) {
@@ -137,6 +154,71 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
     @Override
     public void displayImage(final String svgContent) {
         diagram.displayImage(svgContent);
+        diagram.getElement().appendChild(nodeCounterView.getElement());
+    }
+
+    @Override
+    public void setNodeBadges(final Map<String, Long> badges) {
+        this.badges = badges;
+        renderBadges = true;
+    }
+
+    @Override
+    public void onShow() {
+        renderBadges();
+    }
+
+    protected void showHideBadges(){
+        final D3 d3 = D3.Builder.get();
+        final D3 nodes = d3.selectAll("#processDiagramDiv svg [jbpm-node-badge]");
+        nodes.attr("visibility", nodeCounterView.showBadges() ? "visible" : "hidden");
+    }
+
+    protected void renderBadges() {
+        if(renderBadges == false){
+            return;
+        }
+
+        final D3 d3 = D3.Builder.get();
+
+        final D3 svg = d3.select("#processDiagramDiv svg");
+        final D3.DOMRect svgRect = svg.node().getBoundingClientRect();
+        if(svgRect.getWidth() == 0 && svgRect.getHeight() == 0){
+            //SVG not visible
+            return;
+        }
+
+        badges.forEach((nodeId, count) -> {
+            final D3 node = d3.select("#processDiagramDiv svg [bpmn2nodeid=" + nodeId + "]");
+            D3.DOMRect bb = node.node().getBoundingClientRect();
+            final D3 group = node.append("g")
+                    .attr("transform", "translate( " + (bb.getWidth() / 2 - 12.5) + ", " + (bb.getHeight() + 2) + ")")
+                    .attr("jbpm-node-badge", nodeId);
+
+            group.append("rect")
+                    .attr("x", "0")
+                    .attr("y", "0")
+                    .attr("width", "25")
+                    .attr("height", "20")
+                    .attr("rx", "5")
+                    .attr("ry", "5")
+                    .attr("fill", "grey")
+                    .attr("opacity", "0.5");
+            group.append("text")
+                    .attr("font-size", "10pt")
+                    .attr("font-weight", "normal")
+                    .attr("font-family", "Open Sans")
+                    .attr("font-style", "normal")
+                    .attr("text-anchor", "middle")
+                    .attr("fill", "white")
+                    .attr("x", "12")
+                    .attr("y", "15")
+                    .text(String.valueOf(count));
+        });
+
+        showHideBadges();
+
+        renderBadges = false;
     }
 
     @Override
