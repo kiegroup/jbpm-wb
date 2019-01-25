@@ -38,8 +38,6 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class CaseOverviewPresenterTest extends AbstractCaseInstancePresenterTest {
 
-    private final String serverTemplateId = "serverTemplateId";
-
     @Mock
     CaseOverviewPresenter.CaseOverviewView view;
 
@@ -92,67 +90,52 @@ public class CaseOverviewPresenterTest extends AbstractCaseInstancePresenterTest
         verify(view).setCaseTitle("");
         verify(view).setCaseOwner("");
         verifyNoMoreInteractions(view);
-        verify(caseManagementService,
-               never()).getCaseInstance(anyString(),
-                                        anyString(),
-                                        anyString());
+        verify(caseManagementService, never()).getCaseInstance(anyString(), anyString());
     }
 
     @Test
     public void testRefreshCase() {
-        final CaseInstanceSummary cis = setupCaseInstance(serverTemplateId);
+        final CaseInstanceSummary cis = setupCaseInstance();
 
         presenter.refreshCase();
 
         final ArgumentCaptor<CaseRefreshEvent> captor = ArgumentCaptor.forClass(CaseRefreshEvent.class);
         verify(caseRefreshEvent).fire(captor.capture());
-        assertEquals(cis.getCaseId(),
-                     captor.getValue().getCaseId());
+        assertEquals(cis.getCaseId(), captor.getValue().getCaseId());
     }
 
     @Test
     public void testOnCaseRefreshEvent() {
-        final CaseInstanceSummary cis = setupCaseInstance(serverTemplateId);
+        final CaseInstanceSummary cis = setupCaseInstance();
 
         presenter.onCaseRefreshEvent(new CaseRefreshEvent(cis.getCaseId()));
 
-        verify(view,
-               times(2)).setCaseId("");
-        verify(view,
-               times(2)).setCaseTitle("");
-        verify(caseManagementService,
-               times(2)).getCaseInstance(serverTemplateId,
-                                         cis.getContainerId(),
-                                         cis.getCaseId());
+        verify(view, times(2)).setCaseId("");
+        verify(view, times(2)).setCaseTitle("");
+        verify(caseManagementService, times(2)).getCaseInstance(cis.getContainerId(), cis.getCaseId());
     }
 
     @Test
     public void testCancelCaseInstance() {
-        final CaseInstanceSummary cis = setupCaseInstance(serverTemplateId);
+        final CaseInstanceSummary cis = setupCaseInstance();
 
         presenter.cancelCaseInstance();
 
-        verify(caseManagementService).cancelCaseInstance(serverTemplateId,
-                                                         cis.getContainerId(),
-                                                         cis.getCaseId());
+        verify(caseManagementService).cancelCaseInstance(cis.getContainerId(), cis.getCaseId());
         final ArgumentCaptor<CaseCancelEvent> captor = ArgumentCaptor.forClass(CaseCancelEvent.class);
         verify(caseCancelEvent).fire(captor.capture());
-        assertEquals(cis.getCaseId(),
-                     captor.getValue().getCaseId());
+        assertEquals(cis.getCaseId(), captor.getValue().getCaseId());
     }
 
     @Test
     public void testCloseCaseInstance() {
-        final CaseInstanceSummary cis = setupCaseInstance(serverTemplateId);
+        final CaseInstanceSummary cis = setupCaseInstance();
 
         presenter.closeCaseInstance();
 
-        verify(caseManagementService).closeCaseInstance(cis.getContainerId(),
-                                                        cis.getCaseId(),
-                                                        null);
+        verify(caseManagementService).closeCaseInstance(cis.getContainerId(), cis.getCaseId(), null);
         final ArgumentCaptor<CaseClosedEvent> captor = ArgumentCaptor.forClass(CaseClosedEvent.class);
         verify(caseDestroyEvent).fire(captor.capture());
-        assertEquals(cis.getCaseId(),
-                     captor.getValue().getCaseId());
+        assertEquals(cis.getCaseId(), captor.getValue().getCaseId());
     }
 }

@@ -49,7 +49,6 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
     private final String author = "author";
     private final String text = "text";
     private final Date addedAt = new Date();
-    private final String serverTemplateId = "serverTemplateId";
 
     @Mock
     CaseCommentsPresenter.CaseCommentsView caseCommentsView;
@@ -70,16 +69,13 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
         final CaseInstanceSummary cis = newCaseInstanceSummary();
         final CaseCommentSummary caseComment = CaseCommentSummary.builder().id(commentId).author(author).text(text).addedAt(addedAt).build();
 
-        when(caseManagementService.getComments(serverTemplateId, 
-                                               cis.getContainerId(), 
+        when(caseManagementService.getComments(cis.getContainerId(),
                                                cis.getCaseId(), 
-                                               0, 
-                                               presenter.getPageSize())).thenReturn(
-                Collections.singletonList(caseComment));
+                                               0,
+                                               presenter.getPageSize())).thenReturn(Collections.singletonList(caseComment));
         when(identity.getIdentifier()).thenReturn(author);
 
-        setupCaseInstance(cis,
-                          serverTemplateId);
+        setupCaseInstance(cis);
 
         verify(caseCommentsView).setCaseCommentList(Collections.singletonList(caseComment));
         verifyClearCaseInstance(1);
@@ -90,12 +86,10 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
         final CaseInstanceSummary cis = newCaseInstanceSummary();
         when(identity.getIdentifier()).thenReturn(author);
 
-        setupCaseInstance(cis,
-                          serverTemplateId);
+        setupCaseInstance(cis);
         presenter.addCaseComment(text);
 
-        verify(caseManagementService).addComment(eq(serverTemplateId),
-                                                 eq(cis.getContainerId()),
+        verify(caseManagementService).addComment(eq(cis.getContainerId()),
                                                  eq(cis.getCaseId()),
                                                  eq(author),
                                                  eq(text));
@@ -108,26 +102,20 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
         final CaseInstanceSummary cis = newCaseInstanceSummary();
         when(identity.getIdentifier()).thenReturn(author);
         final CaseCommentSummary caseComment = CaseCommentSummary.builder().id(commentId).author(author).text(text).addedAt(addedAt).build();
-        when(caseManagementService.getComments(serverTemplateId, 
-                                               cis.getContainerId(), 
+        when(caseManagementService.getComments(cis.getContainerId(),
                                                cis.getCaseId(), 
-                                               0, 
-                                               presenter.getPageSize())).thenReturn(
-                Collections.singletonList(caseComment));
+                                               0,
+                                               presenter.getPageSize())).thenReturn(Collections.singletonList(caseComment));
 
-        setupCaseInstance(cis,
-                          serverTemplateId);
-        presenter.updateCaseComment(caseComment,
-                                    newCommentText);
+        setupCaseInstance(cis);
+        presenter.updateCaseComment(caseComment, newCommentText);
 
-        verify(caseManagementService).updateComment(eq(serverTemplateId),
-                                                    eq(cis.getContainerId()),
+        verify(caseManagementService).updateComment(eq(cis.getContainerId()),
                                                     eq(cis.getCaseId()),
                                                     eq(commentId),
                                                     eq(author),
                                                     eq(newCommentText));
-        verify(caseCommentsView,
-               times(2)).setCaseCommentList(Collections.singletonList(caseComment));
+        verify(caseCommentsView, times(2)).setCaseCommentList(Collections.singletonList(caseComment));
         verifyClearCaseInstance(2);
     }
 
@@ -136,23 +124,18 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
         final CaseInstanceSummary cis = newCaseInstanceSummary();
         final CaseCommentSummary caseComment = CaseCommentSummary.builder().id(commentId).author(author).text(text).addedAt(addedAt).build();
 
-        when(caseManagementService.getComments(serverTemplateId, 
-                                               cis.getContainerId(), 
+        when(caseManagementService.getComments(cis.getContainerId(),
                                                cis.getCaseId(), 
-                                               0, 
-                                               presenter.getPageSize())).thenReturn(
-                Collections.singletonList(caseComment));
+                                               0,
+                                               presenter.getPageSize())).thenReturn(Collections.singletonList(caseComment));
 
-        setupCaseInstance(cis,
-                          serverTemplateId);
+        setupCaseInstance(cis);
 
         presenter.deleteCaseComment(caseComment);
-        verify(caseManagementService).removeComment(eq(serverTemplateId),
-                                                    eq(cis.getContainerId()),
+        verify(caseManagementService).removeComment(eq(cis.getContainerId()),
                                                     eq(cis.getCaseId()),
                                                     eq(commentId));
-        verify(caseCommentsView,
-               times(2)).setCaseCommentList(Collections.singletonList(caseComment));
+        verify(caseCommentsView, times(2)).setCaseCommentList(Collections.singletonList(caseComment));
         verifyClearCaseInstance(2);
     }
 
@@ -181,15 +164,12 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
     }
 
     private void verifyClearCaseInstance(int times) {
-        verify(caseCommentsView,
-               times(times)).clearCommentInputForm();
+        verify(caseCommentsView, times(times)).clearCommentInputForm();
     }
 
     private void verifyGetCaseInstanceCalled(String[] placeRequestParams,
                                              int timesCalled) {
         HashMap<String, String> params = new HashMap<>();
-        params.put(AbstractCaseInstancePresenter.PARAMETER_SERVER_TEMPLATE_ID,
-                   placeRequestParams[0]);
         params.put(AbstractCaseInstancePresenter.PARAMETER_CONTAINER_ID,
                    placeRequestParams[1]);
         params.put(AbstractCaseInstancePresenter.PARAMETER_CASE_ID,
@@ -200,10 +180,7 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
 
         presenter.onStartup(placeRequest);
 
-        verify(caseManagementService,
-               times(timesCalled)).getCaseInstance(anyString(),
-                                                   anyString(),
-                                                   anyString());
+        verify(caseManagementService, times(timesCalled)).getCaseInstance(anyString(), anyString());
     }
 
     @Test
@@ -217,30 +194,21 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
         final CaseCommentSummary caseComment1 = CaseCommentSummary.builder().id(comment1_id).author(author).text(text).addedAt(first).build();
         final CaseCommentSummary caseComment2 = CaseCommentSummary.builder().id(comment2_id).author(author).text(text).addedAt(second).build();
 
-        when(caseManagementService.getComments(serverTemplateId, 
-                                               cis.getContainerId(), 
+        when(caseManagementService.getComments(cis.getContainerId(),
                                                cis.getCaseId(), 
-                                               0, 
-                                               presenter.getPageSize())).thenReturn(
-                Arrays.asList(caseComment1,
-                              caseComment2));
+                                               0,
+                                               presenter.getPageSize())).thenReturn(Arrays.asList(caseComment1, caseComment2));
 
-        setupCaseInstance(cis,
-                          serverTemplateId);
+        setupCaseInstance(cis);
         final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
         verify(caseCommentsView).setCaseCommentList(captor.capture());
-        assertEquals(comment2_id,
-                     ((CaseCommentSummary) captor.getValue().get(0)).getId());
-        assertEquals(comment1_id,
-                     ((CaseCommentSummary) captor.getValue().get(1)).getId());
+        assertEquals(comment2_id, ((CaseCommentSummary) captor.getValue().get(0)).getId());
+        assertEquals(comment1_id, ((CaseCommentSummary) captor.getValue().get(1)).getId());
 
         presenter.sortComments(true);
-        verify(caseCommentsView,
-               times(2)).setCaseCommentList(captor.capture());
-        assertEquals(comment1_id,
-                     ((CaseCommentSummary) captor.getValue().get(0)).getId());
-        assertEquals(comment2_id,
-                     ((CaseCommentSummary) captor.getValue().get(1)).getId());
+        verify(caseCommentsView, times(2)).setCaseCommentList(captor.capture());
+        assertEquals(comment1_id, ((CaseCommentSummary) captor.getValue().get(0)).getId());
+        assertEquals(comment2_id, ((CaseCommentSummary) captor.getValue().get(1)).getId());
     }
     
     @Test
@@ -253,15 +221,14 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
             final CaseCommentSummary comment = CaseCommentSummary.builder().id("comment" + i).author(author).text(text).addedAt(addedAt).build();
             caseCommentSummary.add(comment);
         }
-        
-        when(caseManagementService.getComments(serverTemplateId, cis.getContainerId(), cis.getCaseId(), 0, presenter.getPageSize())).thenReturn(
-                caseCommentSummary.subList(0, 20));
 
-        setupCaseInstance(cis, serverTemplateId);
+        when(caseManagementService.getComments(cis.getContainerId(), cis.getCaseId(), 0, presenter.getPageSize())).thenReturn(caseCommentSummary.subList(0, 20));
+
+        setupCaseInstance(cis);
         
         presenter.loadMoreCaseComments();
         
         assertEquals(1, presenter.getCurrentPage());
-        verify(caseManagementService).getComments(serverTemplateId, cis.getContainerId(), cis.getCaseId(), presenter.getCurrentPage(), presenter.getPageSize());
+        verify(caseManagementService).getComments(cis.getContainerId(), cis.getCaseId(), presenter.getCurrentPage(), presenter.getPageSize());
     }
 }

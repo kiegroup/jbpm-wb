@@ -33,14 +33,13 @@ import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenter.PARAMETER_CASE_ID;
 import static org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenter.PARAMETER_CONTAINER_ID;
-import static org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenter.PARAMETER_SERVER_TEMPLATE_ID;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
 
 public abstract class AbstractCaseInstancePresenterTest {
 
-    final protected static String serverTemplateId = "serverTemplateId",
-                                  containerId = "containerId",
+    final protected static String containerId = "containerId",
                                   caseDefId = "caseDefinitionId",
                                   caseId = "caseId";
 
@@ -81,25 +80,17 @@ public abstract class AbstractCaseInstancePresenterTest {
         doAnswer(im -> im.getArguments()[0]).when(translationService).format(anyString());
     }
 
-    protected CaseInstanceSummary setupCaseInstance(final String serverTemplateId) {
+    protected CaseInstanceSummary setupCaseInstance() {
         final CaseInstanceSummary cis = newCaseInstanceSummary();
-        setupCaseInstance(cis,
-                          serverTemplateId);
+        setupCaseInstance(cis);
         return cis;
     }
 
-    protected void setupCaseInstance(final CaseInstanceSummary cis,
-                                     final String serverTemplateId) {
+    protected void setupCaseInstance(final CaseInstanceSummary cis) {
         final PlaceRequest placeRequest = new DefaultPlaceRequest();
-        placeRequest.addParameter(PARAMETER_SERVER_TEMPLATE_ID,
-                                  serverTemplateId);
-        placeRequest.addParameter(PARAMETER_CONTAINER_ID,
-                                  cis.getContainerId());
-        placeRequest.addParameter(PARAMETER_CASE_ID,
-                                  cis.getCaseId());
-        when(caseManagementService.getCaseInstance(serverTemplateId,
-                                                   cis.getContainerId(),
-                                                   cis.getCaseId())).thenReturn(cis);
+        placeRequest.addParameter(PARAMETER_CONTAINER_ID, cis.getContainerId());
+        placeRequest.addParameter(PARAMETER_CASE_ID, cis.getCaseId());
+        when(caseManagementService.getCaseInstance(cis.getContainerId(), cis.getCaseId())).thenReturn(cis);
 
         getPresenter().onStartup(placeRequest);
     }

@@ -67,7 +67,6 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class RemoteCaseManagementServiceImplTest {
 
-    private final String serverTemplateId = "serverTemplateId";
     private final String containerId = "containerId";
     private final String caseDefinitionId = "caseDefinitionId";
     private final String caseId = "CASE-1";
@@ -107,9 +106,7 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void testGetCaseDefinitions_emptyList() {
-        when(clientMock.getCaseDefinitions(anyInt(),
-                                           anyInt()))
-                .thenReturn(emptyList());
+        when(clientMock.getCaseDefinitions(anyInt(), anyInt())).thenReturn(emptyList());
 
         List<CaseDefinitionSummary> definitions = testedService.getCaseDefinitions();
         assertNotNull(definitions);
@@ -119,26 +116,17 @@ public class RemoteCaseManagementServiceImplTest {
     @Test
     public void getCaseDefinition_whenClientReturnsCaseDefinition() {
         final CaseDefinition definition = createTestDefinition();
-        when(clientMock.getCaseDefinition(anyString(),
-                                          anyString()))
-                .thenReturn(definition);
+        when(clientMock.getCaseDefinition(anyString(), anyString())).thenReturn(definition);
 
-        CaseDefinitionSummary actualDef = testedService.getCaseDefinition(serverTemplateId,
-                                                                          containerId,
-                                                                          caseDefinitionId);
-        assertCaseDefinition(definition,
-                             actualDef);
+        CaseDefinitionSummary actualDef = testedService.getCaseDefinition(containerId, caseDefinitionId);
+        assertCaseDefinition(definition, actualDef);
     }
 
     @Test
     public void getCaseDefinition_whenClientReturnsNull() {
-        when(clientMock.getCaseDefinition(anyString(),
-                                          anyString()))
-                .thenReturn(null);
+        when(clientMock.getCaseDefinition(anyString(), anyString())).thenReturn(null);
 
-        CaseDefinitionSummary shouldBeNull = testedService.getCaseDefinition(serverTemplateId,
-                                                                             containerId,
-                                                                             caseDefinitionId);
+        CaseDefinitionSummary shouldBeNull = testedService.getCaseDefinition(containerId, caseDefinitionId);
         assertNull(shouldBeNull);
     }
 
@@ -152,18 +140,14 @@ public class RemoteCaseManagementServiceImplTest {
 
         final List<CaseInstanceSummary> instances = testedService.getCaseInstances(request);
         assertNotNull(instances);
-        assertEquals(1,
-                     instances.size());
-        assertCaseInstance(instance,
-                           instances.get(0));
+        assertEquals(1, instances.size());
+        assertCaseInstance(instance, instances.get(0));
     }
 
     @Test
     public void getCaseInstances_emptyList() {
         final CaseInstanceSearchRequest request = new CaseInstanceSearchRequest();
-        when(clientMock.getCaseInstances(eq(singletonList(request.getStatus().getName())),
-                                         anyInt(),
-                                         anyInt())).thenReturn(emptyList());
+        when(clientMock.getCaseInstances(eq(singletonList(request.getStatus().getName())), anyInt(), anyInt())).thenReturn(emptyList());
 
         final List<CaseInstanceSummary> instances = testedService.getCaseInstances(request);
         assertNotNull(instances);
@@ -227,42 +211,30 @@ public class RemoteCaseManagementServiceImplTest {
         final String role = "test";
         final String user = "user1";
         final List<CaseRoleAssignmentSummary> roles = singletonList(CaseRoleAssignmentSummary.builder().name(role).users(singletonList(user)).build());
-        testedService.startCaseInstance(serverTemplateId,
-                                        containerId,
+        testedService.startCaseInstance(containerId,
                                         caseDefinitionId,
                                         owner,
                                         roles);
 
         final ArgumentCaptor<CaseFile> caseFileCaptor = ArgumentCaptor.forClass(CaseFile.class);
-        verify(clientMock).startCase(eq(containerId),
-                                     eq(caseDefinitionId),
-                                     caseFileCaptor.capture());
+        verify(clientMock).startCase(eq(containerId), eq(caseDefinitionId), caseFileCaptor.capture());
         final CaseFile caseFile = caseFileCaptor.getValue();
-        assertEquals(owner,
-                     caseFile.getUserAssignments().get(CASE_OWNER_ROLE));
-        assertEquals(user,
-                     caseFile.getUserAssignments().get(role));
+        assertEquals(owner, caseFile.getUserAssignments().get(CASE_OWNER_ROLE));
+        assertEquals(user, caseFile.getUserAssignments().get(role));
     }
 
     @Test
     public void testCancelCaseInstance() {
-        testedService.cancelCaseInstance(serverTemplateId,
-                                         containerId,
-                                         caseId);
+        testedService.cancelCaseInstance(containerId, caseId);
 
-        verify(clientMock).cancelCaseInstance(containerId,
-                                              caseId);
+        verify(clientMock).cancelCaseInstance(containerId, caseId);
     }
 
     @Test
     public void testCloseCaseInstance() {
-        testedService.closeCaseInstance(containerId,
-                                        caseId,
-                                        null);
+        testedService.closeCaseInstance(containerId, caseId, null);
 
-        verify(clientMock).closeCaseInstance(containerId,
-                                             caseId,
-                                             null);
+        verify(clientMock).closeCaseInstance(containerId, caseId, null);
     }
 
     @Test
@@ -276,11 +248,8 @@ public class RemoteCaseManagementServiceImplTest {
                                         true))
                 .thenReturn(ci);
 
-        final CaseInstanceSummary cis = testedService.getCaseInstance(serverTemplateId,
-                                                                      ci.getContainerId(),
-                                                                      ci.getCaseId());
-        assertCaseInstance(ci,
-                           cis);
+        final CaseInstanceSummary cis = testedService.getCaseInstance(ci.getContainerId(), ci.getCaseId());
+        assertCaseInstance(ci, cis);
     }
 
     @Test
@@ -293,9 +262,7 @@ public class RemoteCaseManagementServiceImplTest {
                                         true))
                 .thenReturn(null);
 
-        final CaseInstanceSummary cis = testedService.getCaseInstance(serverTemplateId,
-                                                                      containerId,
-                                                                      caseId);
+        final CaseInstanceSummary cis = testedService.getCaseInstance(containerId, caseId);
         assertNull(cis);
     }
 
@@ -307,16 +274,13 @@ public class RemoteCaseManagementServiceImplTest {
                                     0,
                                     10)).thenReturn(singletonList(caseComment));
 
-        final List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId,
-                                                                            containerId,
+        final List<CaseCommentSummary> comments = testedService.getComments(containerId,
                                                                             caseId,
                                                                             0,
                                                                             10);
         assertNotNull(comments);
-        assertEquals(1,
-                     comments.size());
-        assertCaseComment(caseComment,
-                          comments.get(0));
+        assertEquals(1, comments.size());
+        assertCaseComment(caseComment, comments.get(0));
     }
 
     @Test
@@ -341,45 +305,39 @@ public class RemoteCaseManagementServiceImplTest {
                                     0,
                                     20)).thenReturn(firstPage);
 
-        List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId,
-                                                                      containerId,
+        List<CaseCommentSummary> comments = testedService.getComments(containerId,
                                                                       caseId,
                                                                       0,
                                                                       pageSize);
 
         assertNotNull(comments);
-        assertEquals(20,
-                     comments.size());
+        assertEquals(20, comments.size());
 
         when(clientMock.getComments(containerId,
                                     caseId,
                                     1,
                                     20)).thenReturn(secondPage);
 
-        comments = testedService.getComments(serverTemplateId,
-                                             containerId,
+        comments = testedService.getComments(containerId,
                                              caseId,
                                              1,
                                              pageSize);
 
         assertNotNull(comments);
-        assertEquals(20,
-                     comments.size());
+        assertEquals(20, comments.size());
 
         when(clientMock.getComments(containerId,
                                     caseId,
                                     2,
                                     20)).thenReturn(thirdPage);
 
-        comments = testedService.getComments(serverTemplateId,
-                                             containerId,
+        comments = testedService.getComments(containerId,
                                              caseId,
                                              2,
                                              pageSize);
 
         assertNotNull(comments);
-        assertEquals(15,
-                     comments.size());
+        assertEquals(15, comments.size());
     }
 
     @Test
@@ -389,8 +347,7 @@ public class RemoteCaseManagementServiceImplTest {
                                     0,
                                     0)).thenReturn(emptyList());
 
-        final List<CaseCommentSummary> comments = testedService.getComments(serverTemplateId,
-                                                                            containerId,
+        final List<CaseCommentSummary> comments = testedService.getComments(containerId,
                                                                             caseId,
                                                                             0,
                                                                             10);
@@ -400,8 +357,7 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void testAddComment() {
-        testedService.addComment(serverTemplateId,
-                                 containerId,
+        testedService.addComment(containerId,
                                  caseId,
                                  author,
                                  text);
@@ -414,8 +370,7 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void testUpdateComment() {
-        testedService.updateComment(serverTemplateId,
-                                    containerId,
+        testedService.updateComment(containerId,
                                     caseId,
                                     commentId,
                                     author,
@@ -430,8 +385,7 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void testRemoveComment() {
-        testedService.removeComment(serverTemplateId,
-                                    containerId,
+        testedService.removeComment(containerId,
                                     caseId,
                                     commentId);
 
@@ -697,13 +651,9 @@ public class RemoteCaseManagementServiceImplTest {
         when(userTaskServicesClient.findTaskByWorkItemId(node3.getWorkItemId())).thenReturn(t1);
         when(userTaskServicesClient.findTaskByWorkItemId(node5.getWorkItemId())).thenReturn(t1);
 
-        Actions actions = testedService.getCaseActions(serverTemplateId,
-                                                       containerId,
-                                                       caseId,
-                                                       userId);
+        Actions actions = testedService.getCaseActions(containerId, caseId, userId);
 
-        assertEquals(5,
-                     actions.getAvailableActions().size());
+        assertEquals(5, actions.getAvailableActions().size());
         assertCaseActionAdHocFragment(cAHF1,
                                       actions.getAvailableActions().get(0));
         assertCaseActionAdHocFragment(cAHF2,
@@ -715,8 +665,7 @@ public class RemoteCaseManagementServiceImplTest {
         assertCaseActionAdHocFragmentWithStage(cAHF2_stage1,
                                                actions.getAvailableActions().get(4));
 
-        assertEquals(4,
-                     actions.getInProgressAction().size());
+        assertEquals(4, actions.getInProgressAction().size());
         assertCaseActionNodeInstance(node1,
                                      actions.getInProgressAction().get(0));
         assertCaseActionNodeInstance(node2,
@@ -726,8 +675,7 @@ public class RemoteCaseManagementServiceImplTest {
         assertCaseActionNodeInstance(node4,
                                      actions.getInProgressAction().get(3));
 
-        assertEquals(2,
-                     actions.getCompleteActions().size());
+        assertEquals(2, actions.getCompleteActions().size());
         assertCaseActionNodeInstance(node5,
                                      actions.getCompleteActions().get(0));
         assertCaseActionNodeInstance(node6,
@@ -744,14 +692,11 @@ public class RemoteCaseManagementServiceImplTest {
                                              eq(0),
                                              anyInt());
         verify(userTaskServicesClient).findTaskByWorkItemId(node1.getWorkItemId());
-        verify(userTaskServicesClient,
-               never()).findTaskByWorkItemId(node2.getWorkItemId());
+        verify(userTaskServicesClient, never()).findTaskByWorkItemId(node2.getWorkItemId());
         verify(userTaskServicesClient).findTaskByWorkItemId(node3.getWorkItemId());
-        verify(userTaskServicesClient,
-               never()).findTaskByWorkItemId(node4.getWorkItemId());
+        verify(userTaskServicesClient, never()).findTaskByWorkItemId(node4.getWorkItemId());
         verify(userTaskServicesClient).findTaskByWorkItemId(node5.getWorkItemId());
-        verify(userTaskServicesClient,
-               never()).findTaskByWorkItemId(node6.getWorkItemId());
+        verify(userTaskServicesClient, never()).findTaskByWorkItemId(node6.getWorkItemId());
     }
 
     @Test
@@ -777,26 +722,18 @@ public class RemoteCaseManagementServiceImplTest {
                                                                            node2));
         when(userTaskServicesClient.findTaskByWorkItemId(node1WorkItemId)).thenReturn(t1);
 
-        List<CaseActionSummary> actionsSummaries = testedService.getInProgressActions(containerId,
-                                                                                      caseId);
+        List<CaseActionSummary> actionsSummaries = testedService.getInProgressActions(containerId, caseId);
 
-        assertEquals(2,
-                     actionsSummaries.size());
-        assertEquals(CaseActionStatus.IN_PROGRESS,
-                     actionsSummaries.get(0).getActionStatus());
-        assertEquals(CaseActionStatus.IN_PROGRESS,
-                     actionsSummaries.get(1).getActionStatus());
-        assertEquals(taskActualOwner,
-                     actionsSummaries.get(0).getActualOwner());
+        assertEquals(2, actionsSummaries.size());
+        assertEquals(CaseActionStatus.IN_PROGRESS, actionsSummaries.get(0).getActionStatus());
+        assertEquals(CaseActionStatus.IN_PROGRESS, actionsSummaries.get(1).getActionStatus());
+        assertEquals(taskActualOwner, actionsSummaries.get(0).getActualOwner());
         assertTrue(isNullOrEmpty(actionsSummaries.get(1).getActualOwner()));
 
-        assertCaseActionNodeInstance(node1,
-                                     actionsSummaries.get(0));
-        assertCaseActionNodeInstance(node2,
-                                     actionsSummaries.get(1));
+        assertCaseActionNodeInstance(node1, actionsSummaries.get(0));
+        assertCaseActionNodeInstance(node2, actionsSummaries.get(1));
         verify(userTaskServicesClient).findTaskByWorkItemId(node1WorkItemId);
-        verify(userTaskServicesClient,
-               never()).findTaskByWorkItemId(node2WorkItemId);
+        verify(userTaskServicesClient, never()).findTaskByWorkItemId(node2WorkItemId);
     }
 
     @Test
@@ -837,28 +774,18 @@ public class RemoteCaseManagementServiceImplTest {
                                                               "adHocFragment-type-1");
         CaseAdHocFragment cAHF2 = createTestCaseAdHocFragment("adHocFragment-name-2",
                                                               "adHocFragment-type-2");
-        when(clientMock.getAdHocFragments(containerId,
-                                          caseId)).thenReturn(Arrays.asList(cAHF1,
-                                                                            cAHF2));
+        when(clientMock.getAdHocFragments(containerId, caseId)).thenReturn(Arrays.asList(cAHF1, cAHF2));
 
-        List<CaseActionSummary> ahdocActions = testedService.getAdHocActions(serverTemplateId,
-                                                                             containerId,
-                                                                             caseId);
+        List<CaseActionSummary> ahdocActions = testedService.getAdHocActions(containerId, caseId);
 
-        assertEquals(4,
-                     ahdocActions.size());
+        assertEquals(4, ahdocActions.size());
 
-        assertCaseActionAdHocFragment(cAHF1,
-                                      ahdocActions.get(0));
-        assertCaseActionAdHocFragment(cAHF2,
-                                      ahdocActions.get(1));
-        assertCaseActionAdHocFragmentWithStage(cAHF1_stage1,
-                                               ahdocActions.get(2));
-        assertCaseActionAdHocFragmentWithStage(cAHF2_stage1,
-                                               ahdocActions.get(3));
+        assertCaseActionAdHocFragment(cAHF1, ahdocActions.get(0));
+        assertCaseActionAdHocFragment(cAHF2, ahdocActions.get(1));
+        assertCaseActionAdHocFragmentWithStage(cAHF1_stage1, ahdocActions.get(2));
+        assertCaseActionAdHocFragmentWithStage(cAHF2_stage1, ahdocActions.get(3));
 
-        verify(clientMock).getAdHocFragments(containerId,
-                                             caseId);
+        verify(clientMock).getAdHocFragments(containerId, caseId);
     }
 
     @Test

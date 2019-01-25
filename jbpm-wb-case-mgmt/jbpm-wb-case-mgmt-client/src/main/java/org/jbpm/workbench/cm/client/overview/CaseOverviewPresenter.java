@@ -16,6 +16,7 @@
 package org.jbpm.workbench.cm.client.overview;
 
 import java.util.Map;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -100,9 +101,7 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
                     caseCancelEvent.fire(new CaseCancelEvent(caseId));
                     backToList();
                 }
-        ).cancelCaseInstance(serverTemplateId,
-                             containerId,
-                             caseId);
+        ).cancelCaseInstance(containerId, caseId);
     }
 
     protected void closeCaseInstance() {
@@ -111,9 +110,7 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
                     caseClosedEvent.fire(new CaseClosedEvent(caseId));
                     backToList();
                 }
-        ).closeCaseInstance(containerId,
-                            caseId,
-                            null);
+        ).closeCaseInstance(containerId, caseId, null);
     }
 
     protected void backToList() {
@@ -143,28 +140,20 @@ public class CaseOverviewPresenter extends AbstractCaseInstancePresenter<CaseOve
 
         void setCaseOwner(String caseOwner);
 
-        void addCaseDetails(String placeId,
-                            Map<String, String> properties);
+        void addCaseDetails(String placeId, Map<String, String> properties);
 
-        void addCaseStages(String placeId,
-                           Map<String, String> properties);
+        void addCaseStages(String placeId, Map<String, String> properties);
 
-        void addCaseActions(String placeId,
-                            Map<String, String> properties);
+        void addCaseActions(String placeId, Map<String, String> properties);
 
-        void addCaseComments(String placeId,
-                             Map<String, String> properties);
+        void addCaseComments(String placeId, Map<String, String> properties);
 
-        void addCaseFiles(String placeId,
-                          Map<String, String> properties);
+        void addCaseFiles(String placeId, Map<String, String> properties);
 
-        void addCaseRoles(String placeId,
-                          Map<String, String> properties);
+        void addCaseRoles(String placeId, Map<String, String> properties);
 
-        void addCaseMilestones(String placeId,
-                               Map<String, String> properties);
+        void addCaseMilestones(String placeId, Map<String, String> properties);
 
-        void addCaseActivities(String placeId,
-                               Map<String, String> properties);
+        void addCaseActivities(String placeId, Map<String, String> properties);
     }
 }

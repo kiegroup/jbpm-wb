@@ -63,8 +63,7 @@ public class CaseStagesPresenterTest extends AbstractCaseInstancePresenterTest {
                                                  any())).thenReturn(stages);
 
         final CaseInstanceSummary cis = newCaseInstanceSummary();
-        setupCaseInstance(cis,
-                          serverTemplateId);
+        setupCaseInstance(cis);
 
         verify(caseStagesView).removeAllStages();
         verify(caseStagesView).setCaseStagesList(stages);
@@ -89,7 +88,6 @@ public class CaseStagesPresenterTest extends AbstractCaseInstancePresenterTest {
         getPresenter().setStage(caseStageItemViewMock);
         getPresenter().setStage(caseStageItemViewMock);
 
-        verify(caseStageItemViewMock,
-               never()).showStageActive();
+        verify(caseStageItemViewMock, never()).showStageActive();
     }
 }

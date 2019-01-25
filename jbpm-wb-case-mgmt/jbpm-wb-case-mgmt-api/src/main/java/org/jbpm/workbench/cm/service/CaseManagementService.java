@@ -28,76 +28,61 @@ import org.jbpm.workbench.cm.util.CaseMilestoneSearchRequest;
 @Remote
 public interface CaseManagementService {
 
-    CaseDefinitionSummary getCaseDefinition(String serverTemplateId,
-                                            String containerId,
-                                            String caseDefinitionId);
+    CaseDefinitionSummary getCaseDefinition(String containerId, String caseDefinitionId);
 
     List<CaseDefinitionSummary> getCaseDefinitions();
 
-    String startCaseInstance(String serverTemplateId,
-                             String containerId,
+    String startCaseInstance(String containerId,
                              String caseDefinitionId,
                              String owner,
                              List<CaseRoleAssignmentSummary> roleAssignments);
 
     List<CaseInstanceSummary> getCaseInstances(CaseInstanceSearchRequest request);
 
-    CaseInstanceSummary getCaseInstance(String serverTemplateId,
-                                        String containerId,
-                                        String caseId);
+    CaseInstanceSummary getCaseInstance(String containerId, String caseId);
 
-    void cancelCaseInstance(String serverTemplateId,
-                            String containerId,
-                            String caseId);
+    void cancelCaseInstance(String containerId, String caseId);
 
     void closeCaseInstance(String containerId,
                            String caseId,
                            String comment);
 
-    List<CaseCommentSummary> getComments(String serverTemplateId,
-                                         String containerId,
+    List<CaseCommentSummary> getComments(String containerId,
                                          String caseId,
                                          Integer currentPage,
                                          Integer pageSize);
 
-    void addComment(String serverTemplateId,
-                    String containerId,
+    void addComment(String containerId,
                     String caseId,
                     String author,
                     String text);
 
-    void updateComment(String serverTemplateId,
-                       String containerId,
+    void updateComment(String containerId,
                        String caseId,
                        String commentId,
                        String author,
                        String text);
 
-    void removeComment(String serverTemplateId,
-                       String containerId,
+    void removeComment(String containerId,
                        String caseId,
                        String commentId);
 
-    void assignUserToRole(String serverTemplateId,
-                          String containerId,
+    void assignUserToRole(String containerId,
                           String caseId,
                           String roleName,
                           String user);
 
-    void assignGroupToRole(String serverTemplateId,
-                           String containerId,
+    void assignGroupToRole(String containerId,
                            String caseId,
                            String roleName,
                            String group);
 
-    void removeUserFromRole(String serverTemplateId,
-                            String containerId,
+    void removeUserFromRole(String containerId,
                             String caseId,
                             String roleName,
                             String user);
 
-    void removeGroupFromRole(String serverTemplateId,
-                             String containerId,
+    void removeGroupFromRole(String containerId,
                              String caseId,
                              String roleName,
                              String group);
@@ -106,11 +91,9 @@ public interface CaseManagementService {
                                                  String caseId,
                                                  CaseMilestoneSearchRequest request);
 
-    List<CaseStageSummary> getCaseStages(String containerId,
-                                         String caseId);
+    List<CaseStageSummary> getCaseStages(String containerId, String caseId);
 
-    Actions getCaseActions(String templateId,
-                           String container,
+    Actions getCaseActions(String container,
                            String caseId,
                            String userId);
 

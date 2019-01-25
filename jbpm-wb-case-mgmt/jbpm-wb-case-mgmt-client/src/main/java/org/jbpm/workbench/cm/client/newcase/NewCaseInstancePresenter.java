@@ -133,8 +133,7 @@ public class NewCaseInstancePresenter extends AbstractPresenter<NewCaseInstanceP
                         view.showError(singletonList(t.getMessage()));
                         return false;
                     }
-            ).startCaseInstance(null,
-                                caseDefinition.getContainerId(),
+            ).startCaseInstance(caseDefinition.getContainerId(),
                                 caseDefinition.getId(),
                                 owner,
                                 assignments);
