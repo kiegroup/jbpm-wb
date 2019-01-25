@@ -113,6 +113,22 @@ public class ZoomControlView implements IsElement {
         return buttons;
     }
 
+    public void disablePlusButton(boolean disabled) {
+        disableButton(scalePlus, disabled);
+    }
+
+    public void disableMinusButton(boolean disabled) {
+        disableButton(scaleMinus, disabled);
+    }
+
+    public void disableButton(HTMLAnchorElement anchorElement, boolean disabled) {
+        if (disabled) {
+            anchorElement.classList.add("disabled");
+        } else {
+            anchorElement.classList.remove("disabled");
+        }
+    }
+
     @EventHandler("scale-to-100")
     public void onScaleTo100(final @ForEvent("click") MouseEvent event) {
         if (scaleTo100Command != null) {
