@@ -72,6 +72,10 @@ public class ServiceTaskViewImpl extends AbstractView<ServiceTasksRepositoryList
     private Span additionalInfo;
     
     @Inject
+    @DataField("installedOn")
+    private Span installedOn;
+    
+    @Inject
     @DataField
     private ToggleSwitch enabled;
 
@@ -102,7 +106,8 @@ public class ServiceTaskViewImpl extends AbstractView<ServiceTasksRepositoryList
         String[] classes = model.getIcon().split(" ");
         for (String css : classes) {
             this.icon.getClassList().add(css);
-        }        
+        }
+        this.installedOn.setTextContent(String.valueOf(model.getInstalledOn().size()));
     }
 
     @Override

@@ -21,9 +21,11 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.guvnor.structure.repositories.RepositoryRemovedEvent;
 import org.jbpm.process.workitem.repository.service.RepoData;
 import org.jbpm.process.workitem.repository.storage.InMemoryRepositoryStorage;
 import org.jbpm.workbench.wi.workitems.model.ServiceTasksConfiguration;
@@ -103,8 +105,10 @@ public class RepositoryStorageVFSImpl extends InMemoryRepositoryStorage<ServiceT
             for (RepoData service : currentServices) {
                 enforceId(service);
                 if (!services.contains(service)) {
-                    // by default service is disabled
-                    service.setEnabled(false);
+                    // by default service is disabled unless is in default set
+                    if (!ServiceTaskUtils.DEFAULT_HANDLERS.contains(service.getModule())) {
+                        service.setEnabled(false);
+                    }
                     services.add(service);
                 }
             }
@@ -113,6 +117,12 @@ public class RepositoryStorageVFSImpl extends InMemoryRepositoryStorage<ServiceT
         return services;
     }
 
+    @Override
+    public void onAdded(RepoData service) {
+        enforceId(service);
+        store(storagePath, services);
+    }
+    
     @Override
     public void onEnabled(RepoData service) {
         store(storagePath, services);
@@ -144,6 +154,20 @@ public class RepositoryStorageVFSImpl extends InMemoryRepositoryStorage<ServiceT
         this.configuration = configuration;
     }
     
+    
+    public void onProjectDeleted(@Observes RepositoryRemovedEvent deletedEvent) {
+        
+        String target = ServiceTaskUtils.extractTargetInfo(deletedEvent.getRepository().getUri());        
+        logger.debug("{} has been removed, removing any references to it on service tasks", target);
+        
+        services.stream()
+                .filter(service -> service.getInstalledOn().contains(target))
+                .forEach(service -> {
+                    service.uninstall(target);
+                    logger.debug("Service {} uninstalled from deleted target {}", service.getName(), target);
+                });        
+        
+    }
     
     /*
      * Helper methods
