@@ -28,6 +28,7 @@ import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.SizeType;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.HTMLElement;
+import org.jboss.errai.common.client.dom.MouseEvent;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.components.ListComponent;
@@ -35,6 +36,7 @@ import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.util.AbstractView;
 import org.jbpm.workbench.wi.client.i18n.Constants;
@@ -138,6 +140,12 @@ public class ServiceTasksRepositoryListViewImpl extends AbstractView<ServiceTask
     @Override
     public HTMLElement getElement() {
         return viewContainer;
+    }
+    
+
+    @EventHandler("add-service-task")
+    public void onAddServiceTaskClick(final @ForEvent("click") MouseEvent event) {
+        presenter.openUploadDialog();
     }
     
     @EventHandler("maven-install")
