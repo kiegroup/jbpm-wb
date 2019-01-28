@@ -16,6 +16,8 @@
 
 package org.jbpm.workbench.wi.client.workitem.project;
 
+import java.util.List;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -39,6 +41,10 @@ public class ProjectServiceTaskItemPresenter extends ListItemPresenter<ServiceTa
         void setAdditionalInfo(String additionalInfo);
         
         void setServiceTaskId(String id);
+        
+        void setServiceTaskParameters(List<String> parameters);
+        
+        void setServiceTaskReferenceLink(String link);
         
         void setInstalled(Boolean installed);
     }
@@ -65,6 +71,8 @@ public class ProjectServiceTaskItemPresenter extends ListItemPresenter<ServiceTa
         view.setAdditionalInfo(serviceTask.getAdditionalInfo());
         
         view.setServiceTaskId(serviceTask.getId());
+        view.setServiceTaskParameters(serviceTask.getParameters());
+        view.setServiceTaskReferenceLink(serviceTask.getReferenceLink());
         view.setInstalled(serviceTask.getInstalledOn().contains(parentPresenter.getInstallTarget()));
 
         return this;
@@ -75,8 +83,8 @@ public class ProjectServiceTaskItemPresenter extends ListItemPresenter<ServiceTa
         return serviceTask;
     }
     
-    public void installServiceTask(String serviceTaskId, Command onDone) {
-        parentPresenter.installServiceTask(serviceTaskId, onDone);
+    public void installServiceTask(String serviceTaskId, List<String> parameters, String referenceLink, Command onDone) {
+        parentPresenter.installServiceTask(serviceTaskId, parameters, referenceLink, onDone);
     }
     
     public void uninstallServiceTask(String serviceTaskId, Command onDone) {

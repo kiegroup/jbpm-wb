@@ -172,4 +172,28 @@ public interface Constants extends Messages {
     String InstallServiceTask();
     
     String UninstallServiceTask();
+    
+    String ServiceTaskUpload();
+    
+    String Cancel();
+    
+    String Uploading();
+    
+    String SelectFileUpload();
+    
+    String UnsupportedFileType();
+    
+    String InvalidJarNotPom();
+    
+    String InvalidPom();
+    
+    String UploadFailed();
+    
+    String InternalUploadError();
+    
+    String AddTaskSuccess();
+    
+    String Installing();
+    
+    String InstallServiceTaskParams();
 }

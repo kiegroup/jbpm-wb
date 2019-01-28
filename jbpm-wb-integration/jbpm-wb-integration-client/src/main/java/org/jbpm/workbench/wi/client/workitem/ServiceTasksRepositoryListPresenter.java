@@ -23,6 +23,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jbpm.workbench.wi.client.i18n.Constants;
 import org.jbpm.workbench.wi.workitems.model.ServiceTaskSummary;
 import org.jbpm.workbench.wi.workitems.model.ServiceTasksConfiguration;
@@ -44,7 +45,10 @@ public class ServiceTasksRepositoryListPresenter {
     
     @Inject
     protected ServiceTasksRepositoryListView view;
-
+    
+    @Inject
+    protected SyncBeanManager iocManager;
+    
     @WorkbenchPartTitle
     public String getTitle() {
         return constants.ServiceTaskList();
@@ -80,6 +84,11 @@ public class ServiceTasksRepositoryListPresenter {
 
     public void disableService(String id) {
         serviceTaskService.call().disableServiceTask(id);
+    }
+    
+    public void openUploadDialog() {
+        ServiceTaskUploadFormPresenter uploadFormPresenter = iocManager.lookupBean(ServiceTaskUploadFormPresenter.class).newInstance();
+        uploadFormPresenter.showView(() -> refreshData());
     }
 
     @Inject

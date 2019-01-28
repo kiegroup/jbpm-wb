@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.wi.workitems.model;
 
+import java.util.List;
 import java.util.Set;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
@@ -31,14 +32,18 @@ public class ServiceTaskSummary {
     private String description;
     private String additionalInfo;
     private Boolean enabled;
-    
+
+    private String referenceLink;
+
     private Set<String> installedOn;
+
+    private List<String> parameters;
 
     public ServiceTaskSummary() {
 
     }
 
-    public ServiceTaskSummary(String id, String icon, String name, String description, String additionalInfo, Boolean enabled, Set<String> installedOn) {
+    public ServiceTaskSummary(String id, String icon, String name, String description, String additionalInfo, Boolean enabled, Set<String> installedOn, List<String> parameters, String referenceLink) {
         this.id = id;
         this.icon = icon;
         this.name = name;
@@ -46,6 +51,8 @@ public class ServiceTaskSummary {
         this.additionalInfo = additionalInfo;
         this.enabled = enabled;
         this.installedOn = installedOn;
+        this.parameters = parameters;
+        this.referenceLink = referenceLink;
     }
 
     public String getId() {
@@ -95,18 +102,33 @@ public class ServiceTaskSummary {
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
-    
+
     public Set<String> getInstalledOn() {
         return installedOn;
     }
-    
+
     public void setInstalledOn(Set<String> installedOn) {
         this.installedOn = installedOn;
+    }
+
+    public List<String> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(List<String> parameters) {
+        this.parameters = parameters;
+    }
+
+    public String getReferenceLink() {
+        return referenceLink;
+    }
+
+    public void setReferenceLink(String referenceLink) {
+        this.referenceLink = referenceLink;
     }
 
     @Override
     public String toString() {
         return "ServiceTaskSummary [icon=" + icon + ", name=" + name + ", description=" + description + ", enabled=" + enabled + "]";
     }
-
 }

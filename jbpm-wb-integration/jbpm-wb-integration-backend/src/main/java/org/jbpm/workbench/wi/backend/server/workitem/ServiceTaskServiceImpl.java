@@ -16,26 +16,48 @@
 
 package org.jbpm.workbench.wi.backend.server.workitem;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.guvnor.common.services.project.model.GAV;
+import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.jbpm.process.workitem.core.util.Wid;
 import org.jbpm.process.workitem.repository.RepositoryEventListener;
 import org.jbpm.process.workitem.repository.RepositoryStorage;
+import org.jbpm.process.workitem.repository.service.RepoAuthParameter;
+import org.jbpm.process.workitem.repository.service.RepoData;
+import org.jbpm.process.workitem.repository.service.RepoMavenDepend;
+import org.jbpm.process.workitem.repository.service.RepoParameter;
+import org.jbpm.process.workitem.repository.service.RepoResult;
 import org.jbpm.process.workitem.repository.service.RepoService;
 import org.jbpm.workbench.wi.workitems.model.ServiceTaskSummary;
 import org.jbpm.workbench.wi.workitems.model.ServiceTasksConfiguration;
 import org.jbpm.workbench.wi.workitems.service.ServiceTaskService;
+import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 @Service
 @ApplicationScoped
 public class ServiceTaskServiceImpl implements ServiceTaskService {
+    
+    private static final Logger logger = LoggerFactory.getLogger(ServiceTaskServiceImpl.class);
     
     private RepoService repoService;
     
@@ -45,6 +67,9 @@ public class ServiceTaskServiceImpl implements ServiceTaskService {
     
     @Inject
     private RepositoryEventListener eventListener;
+    
+    @Inject
+    private GuvnorM2Repository m2Repository;
 
     @PostConstruct
     public void initialLoad() {
@@ -55,7 +80,7 @@ public class ServiceTaskServiceImpl implements ServiceTaskService {
     @Override
     public List<ServiceTaskSummary> getServiceTasks() {
         return repoService.getServices().stream()
-                .map(repoData -> new ServiceTaskSummary(repoData.getId(), "fa fa-cogs", repoData.getName(), repoData.getDescription(), repoData.getActiontitle(), repoData.isEnabled(), repoData.getInstalledOn()))
+                .map(repoData -> new ServiceTaskSummary(repoData.getId(), "fa fa-cogs", repoData.getName(), repoData.getDescription(), repoData.getActiontitle(), repoData.isEnabled(), repoData.getInstalledOn(), extractAuthParameters(repoData), repoData.getAuthreferencesite()))
                 .sorted((service, service2) -> service.getName().compareTo(service2.getName()))
                 .collect(Collectors.toList());
         
@@ -65,7 +90,7 @@ public class ServiceTaskServiceImpl implements ServiceTaskService {
     public List<ServiceTaskSummary> getEnabledServiceTasks() {
         return repoService.getServices().stream()
                 .filter(service -> service.isEnabled())
-                .map(repoData -> new ServiceTaskSummary(repoData.getId(), "fa fa-cogs", repoData.getName(), repoData.getDescription(), repoData.getActiontitle(), repoData.isEnabled(), repoData.getInstalledOn()))
+                .map(repoData -> new ServiceTaskSummary(repoData.getId(), "fa fa-cogs", repoData.getName(), repoData.getDescription(), repoData.getActiontitle(), repoData.isEnabled(), repoData.getInstalledOn(), extractAuthParameters(repoData), repoData.getAuthreferencesite()))
                 .sorted((service, service2) -> service.getName().compareTo(service2.getName()))
                 .collect(Collectors.toList());
         
@@ -83,8 +108,8 @@ public class ServiceTaskServiceImpl implements ServiceTaskService {
     }
 
     @Override
-    public void installServiceTask(String id, String target) {
-        repoService.installService(id, target);
+    public void installServiceTask(String id, String target, List<String> parameters) {        
+        repoService.installService(id, target, parameters);
     }
 
     @Override
@@ -104,4 +129,106 @@ public class ServiceTaskServiceImpl implements ServiceTaskService {
         
     }
 
+    @Override
+    public List<String> addServiceTasks(String gav) {
+        List<String> installedServiceTasks = new ArrayList<>();
+        GAV actualGav = new GAV(gav);
+        File uploadedServiceArtifact = m2Repository.getArtifactFileFromRepository(actualGav);
+        if (uploadedServiceArtifact == null || !uploadedServiceArtifact.exists()) {
+            throw new RuntimeException("No file found for artifact " + gav);
+        }
+        
+        try {
+            URL[] urls = new URL[] {uploadedServiceArtifact.toURI().toURL()};
+            URLClassLoader classLoader = new URLClassLoader(urls, Wid.class.getClassLoader());
+            
+            ConfigurationBuilder builder = new ConfigurationBuilder();
+            builder.addUrls(urls);
+            builder.addClassLoader(classLoader);
+
+            Reflections reflections = new Reflections(builder);
+
+            Set<Class<?>> workItems = reflections.getTypesAnnotatedWith(Wid.class);
+            
+            for (Class<?> workItem : workItems) {
+                
+                if (workItem.isAnnotationPresent(Wid.class)) {
+                    Wid widInfo = workItem.getAnnotation(Wid.class);
+                    
+                    RepoData service = new RepoData();
+                    service.setGav(gav);
+                    service.setActiontitle(widInfo.serviceInfo().action().title());
+                    service.setAuthparams(Stream.of(widInfo.serviceInfo().authinfo().paramsdescription()).filter(name -> !name.isEmpty()).map(name -> {
+                                            RepoAuthParameter p = new RepoAuthParameter(); 
+                                            p.setName(name); 
+                                            return p;})
+                                          .collect(Collectors.toList()));
+                    service.setAuthreferencesite(widInfo.serviceInfo().authinfo().referencesite());
+                    service.setCategory(widInfo.category());
+                    service.setDescription(widInfo.serviceInfo().description());
+                    service.setDisplayName(widInfo.displayName());
+                    service.setDefaultHandler(widInfo.defaultHandler());
+                    service.setDocumentation(widInfo.documentation());
+                    service.setEnabled(false);
+                    service.setIcon(widInfo.icon());
+                    service.setIsaction(null);
+                    service.setIstrigger(null);
+                    service.setKeywords(Arrays.asList(widInfo.serviceInfo().keywords().split(" ")));
+                    service.setMavenDependencies(Stream.of(widInfo.mavenDepends()).map(dep -> {
+                                                        RepoMavenDepend dependency = new RepoMavenDepend();
+                                                        dependency.setArtifactId(dep.artifact());
+                                                        dependency.setGroupId(dep.group());
+                                                        dependency.setVersion(dep.version());
+                                                        
+                                                        return dependency;
+                                                    })
+                                                 .collect(Collectors.toList()));
+                    service.setModule(actualGav.getArtifactId());                
+                    service.setName(widInfo.name());
+                    service.setParameters(Stream.of(widInfo.parameters()).map(p -> {
+                                            RepoParameter param = new RepoParameter();
+                                            param.setName(p.name());
+                                            param.setType(p.runtimeType());
+                                            
+                                            return param;
+                                        })
+                                     .collect(Collectors.toList()));
+                    service.setRequiresauth(String.valueOf(widInfo.serviceInfo().authinfo().required()));
+                    service.setResults(Stream.of(widInfo.parameters()).map(r -> {
+                                        RepoResult result = new RepoResult();
+                                        result.setName(r.name());
+                                        result.setType(r.runtimeType());
+                                        return result;
+                                    })
+                                   .collect(Collectors.toList()));
+                    service.setTriggertitle(widInfo.serviceInfo().trigger().title());
+                    
+                    installedServiceTasks.add(service.getName());
+                    logger.debug("Adding service task with name {} of type {}", service.getName(), workItem);
+                    repoService.addService(service);
+                } else {
+                    logger.warn("Wid annotation was not found on type {}", workItem);
+                }
+            }
+            
+            return installedServiceTasks;
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } 
+    }
+    
+    
+    /*
+     * Helper methods
+     */
+    
+    protected List<String> extractAuthParameters(RepoData service) {
+        List<String> authParams = new ArrayList<>();
+        
+        if (service.getAuthparams() != null) {
+            service.getAuthparams().forEach(param -> authParams.add(param.getName()));
+        }
+        
+        return authParams;
+    }
 }

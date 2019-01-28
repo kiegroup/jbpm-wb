@@ -33,11 +33,13 @@ public interface ServiceTaskService {
     
     void disableServiceTask(String id);
     
-    void installServiceTask(String id, String target);
+    void installServiceTask(String id, String target, List<String> parameters);
     
     void uninstallServiceTask(String id, String target);
     
     ServiceTasksConfiguration getConfiguration();
 
     void saveConfiguration(ServiceTasksConfiguration configuration);
+
+    List<String> addServiceTasks(String location);
 }
