@@ -81,14 +81,11 @@ public class CaseInstanceListPresenterTest {
 
         presenter.cancelCaseInstance(cis);
 
-        verify(caseManagementService).cancelCaseInstance(null,
-                                                         cis.getContainerId(),
-                                                         cis.getCaseId());
+        verify(caseManagementService).cancelCaseInstance(cis.getContainerId(), cis.getCaseId());
         verify(caseManagementService).getCaseInstances(any(CaseInstanceSearchRequest.class));
         final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
         verify(view).setCaseInstanceList(captor.capture());
-        assertEquals(caseInstanceSummaryList.size(),
-                     captor.getValue().size());
+        assertEquals(caseInstanceSummaryList.size(), captor.getValue().size());
     }
 
     @Test
@@ -137,14 +134,7 @@ public class CaseInstanceListPresenterTest {
 
         final DefaultPlaceRequest dpr = captor.getValue();
         assertNotNull(dpr);
-        assertEquals("",
-                     dpr.getParameter(CaseOverviewPresenter.PARAMETER_SERVER_TEMPLATE_ID,
-                                      null));
-        assertEquals(cis.getContainerId(),
-                     dpr.getParameter(CaseOverviewPresenter.PARAMETER_CONTAINER_ID,
-                                      null));
-        assertEquals(cis.getCaseId(),
-                     dpr.getParameter(CaseOverviewPresenter.PARAMETER_CASE_ID,
-                                      null));
+        assertEquals(cis.getContainerId(), dpr.getParameter(CaseOverviewPresenter.PARAMETER_CONTAINER_ID, null));
+        assertEquals(cis.getCaseId(), dpr.getParameter(CaseOverviewPresenter.PARAMETER_CASE_ID, null));
     }
 }

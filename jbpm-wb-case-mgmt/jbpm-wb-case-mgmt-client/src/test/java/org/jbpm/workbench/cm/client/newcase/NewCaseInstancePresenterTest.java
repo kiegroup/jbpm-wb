@@ -125,8 +125,7 @@ public class NewCaseInstancePresenterTest {
                                      owner,
                                      emptyList());
 
-        verify(caseManagementService).startCaseInstance(null,
-                                                        cds.getContainerId(),
+        verify(caseManagementService).startCaseInstance(cds.getContainerId(),
                                                         cds.getId(),
                                                         owner,
                                                         emptyList());

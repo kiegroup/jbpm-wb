@@ -81,8 +81,6 @@ public class CaseInstanceListPresenter extends AbstractPresenter<CaseInstanceLis
 
     protected void selectCaseInstance(final CaseInstanceSummary cis) {
         final Map<String, String> parameters = new HashMap<>();
-        parameters.put(CaseOverviewPresenter.PARAMETER_SERVER_TEMPLATE_ID,
-                       "");
         parameters.put(CaseOverviewPresenter.PARAMETER_CONTAINER_ID,
                        cis.getContainerId());
         parameters.put(CaseOverviewPresenter.PARAMETER_CASE_ID,
@@ -95,8 +93,7 @@ public class CaseInstanceListPresenter extends AbstractPresenter<CaseInstanceLis
     protected void cancelCaseInstance(final CaseInstanceSummary caseInstanceSummary) {
         caseService.call(
                 e -> refreshData()
-        ).cancelCaseInstance(null,
-                             caseInstanceSummary.getContainerId(),
+        ).cancelCaseInstance(caseInstanceSummary.getContainerId(),
                              caseInstanceSummary.getCaseId());
     }
 

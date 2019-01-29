@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -73,9 +74,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public CaseDefinitionSummary getCaseDefinition(final String serverTemplateId,
-                                                   final String containerId,
-                                                   final String caseDefinitionId) {
+    public CaseDefinitionSummary getCaseDefinition(final String containerId, final String caseDefinitionId) {
         return ofNullable(client.getCaseDefinition(containerId,
                                                    caseDefinitionId)).map(new CaseDefinitionMapper()).orElse(null);
     }
@@ -103,8 +102,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public String startCaseInstance(final String serverTemplateId,
-                                    final String containerId,
+    public String startCaseInstance(final String containerId,
                                     final String caseDefinitionId,
                                     final String owner,
                                     final List<CaseRoleAssignmentSummary> roleAssignments) {
@@ -123,17 +121,13 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public void cancelCaseInstance(final String serverTemplateId,
-                                   final String containerId,
-                                   final String caseId) {
+    public void cancelCaseInstance(final String containerId, final String caseId) {
         client.cancelCaseInstance(containerId,
                                   caseId);
     }
 
     @Override
-    public void closeCaseInstance(final String containerId,
-                                  final String caseId,
-                                  final String comment) {
+    public void closeCaseInstance(final String containerId, final String caseId, final String comment) {
         client.closeCaseInstance(containerId,
                                  caseId,
                                  comment);
@@ -141,9 +135,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public CaseInstanceSummary getCaseInstance(final String serverTemplateId,
-                                               final String containerId,
-                                               final String caseId) {
+    public CaseInstanceSummary getCaseInstance(final String containerId, final String caseId) {
         return ofNullable(client.getCaseInstance(containerId,
                                                  caseId,
                                                  false,
@@ -155,8 +147,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public void assignUserToRole(final String serverTemplateId,
-                                 final String containerId,
+    public void assignUserToRole(final String containerId,
                                  final String caseId,
                                  final String roleName,
                                  final String user) {
@@ -167,8 +158,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public void assignGroupToRole(final String serverTemplateId,
-                                  final String containerId,
+    public void assignGroupToRole(final String containerId,
                                   final String caseId,
                                   final String roleName,
                                   final String group) {
@@ -179,8 +169,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public void removeUserFromRole(final String serverTemplateId,
-                                   final String containerId,
+    public void removeUserFromRole(final String containerId,
                                    final String caseId,
                                    final String roleName,
                                    final String user) {
@@ -191,8 +180,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public void removeGroupFromRole(final String serverTemplateId,
-                                    final String containerId,
+    public void removeGroupFromRole(final String containerId,
                                     final String caseId,
                                     final String roleName,
                                     final String group) {
@@ -203,8 +191,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public List<CaseCommentSummary> getComments(final String serverTemplateId,
-                                                final String containerId,
+    public List<CaseCommentSummary> getComments(final String containerId,
                                                 final String caseId,
                                                 final Integer page,
                                                 final Integer pageSize) {
@@ -216,8 +203,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public void addComment(final String serverTemplateId,
-                           final String containerId,
+    public void addComment(final String containerId,
                            final String caseId,
                            final String author,
                            final String text) {
@@ -228,8 +214,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public void updateComment(final String serverTemplateId,
-                              final String containerId,
+    public void updateComment(final String containerId,
                               final String caseId,
                               final String commentId,
                               final String author,
@@ -242,8 +227,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public void removeComment(final String serverTemplateId,
-                              final String containerId,
+    public void removeComment(final String containerId,
                               final String caseId,
                               final String commentId) {
         client.removeComment(containerId,
@@ -270,8 +254,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public List<CaseStageSummary> getCaseStages(final String containerId,
-                                                final String caseId) {
+    public List<CaseStageSummary> getCaseStages(final String containerId, final String caseId) {
         final List<CaseStage> stages = client.getStages(containerId,
                                                         caseId,
                                                         false,
@@ -282,18 +265,11 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
     }
 
     @Override
-    public Actions getCaseActions(String serverTemplateId,
-                                  String container,
-                                  String caseId,
-                                  String userId) {
+    public Actions getCaseActions(String container, String caseId, String userId) {
         final Actions actions = new Actions();
-        final List<CaseActionSummary> adHocActions = getAdHocActions(serverTemplateId,
-                                                                     container,
-                                                                     caseId);
-        final List<CaseActionSummary> inProgressActions = getInProgressActions(container,
-                                                                               caseId);
-        final List<CaseActionSummary> completedActions = getCompletedActions(container,
-                                                                             caseId);
+        final List<CaseActionSummary> adHocActions = getAdHocActions(container, caseId);
+        final List<CaseActionSummary> inProgressActions = getInProgressActions(container, caseId);
+        final List<CaseActionSummary> completedActions = getCompletedActions(container, caseId);
         actions.setInProgressAction(inProgressActions);
         actions.setCompleteActions(completedActions);
         actions.setAvailableActions(
@@ -338,16 +314,14 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                 .collect(toList());
     }
 
-    public List<NodeInstance> getCaseCompletedNodes(String containerId,
-                                                    String caseId) {
+    public List<NodeInstance> getCaseCompletedNodes(String containerId, String caseId) {
         return client.getCompletedNodes(containerId,
                                         caseId,
                                         0,
                                         PAGE_SIZE_UNLIMITED);
     }
 
-    public List<CaseActionSummary> getCompletedActions(String containerId,
-                                                       String caseId) {
+    public List<CaseActionSummary> getCompletedActions(String containerId, String caseId) {
         List<NodeInstance> activeNodes = getCaseCompletedNodes(containerId,
                                                                caseId);
         return activeNodes.stream()
@@ -359,8 +333,7 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                 .collect(toList());
     }
 
-    public List<CaseActionSummary> getAdHocFragments(String containerId,
-                                                     String caseId) {
+    public List<CaseActionSummary> getAdHocFragments(String containerId, String caseId) {
         return client.getAdHocFragments(containerId,
                                         caseId)
                 .stream()
@@ -368,14 +341,9 @@ public class RemoteCaseManagementServiceImpl implements CaseManagementService {
                 .collect(toList());
     }
 
-    public List<CaseActionSummary> getAdHocActions(String serverTemplateId,
-                                                   String containerId,
-                                                   String caseId) {
-        List<CaseActionSummary> adHocActions = getAdHocFragments(containerId,
-                                                                 caseId);
-        CaseInstanceSummary caseInstanceSummary = getCaseInstance(serverTemplateId,
-                                                                  containerId,
-                                                                  caseId);
+    public List<CaseActionSummary> getAdHocActions(String containerId, String caseId) {
+        List<CaseActionSummary> adHocActions = getAdHocFragments(containerId, caseId);
+        CaseInstanceSummary caseInstanceSummary = getCaseInstance(containerId, caseId);
         caseInstanceSummary.getStages().stream()
                 .filter(s -> s.getStatus().equals(CaseStageStatus.ACTIVE.getStatus()))
                 .forEach(ah -> {

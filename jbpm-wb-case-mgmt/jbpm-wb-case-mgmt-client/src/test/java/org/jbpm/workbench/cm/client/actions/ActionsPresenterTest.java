@@ -98,7 +98,6 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
                                                     createCaseStageSummary(ACTIVE.getStatus()))));
         when(caseManagementService.getCaseActions(anyString(),
                                                   anyString(),
-                                                  anyString(),
                                                   anyString())).thenReturn(actions);
 
         when(actions.getAvailableActions()).thenReturn(caseActionSummaryList);
@@ -112,8 +111,7 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
                                                                                                                         .id("processId")
                                                                                                                         .name("SubProcess_1")
                                                                                                                         .build()));
-        setupCaseInstance(cis,
-                          serverTemplateId);
+        setupCaseInstance(cis);
 
         verifyCaseInstanceCleared();
         verifyCaseInstanceLoaded();
@@ -152,10 +150,7 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
 
     private void verifyActionsLoaded() {
         verify(presenter).refreshData(true);
-        verify(caseManagementService).getCaseActions(serverTemplateId,
-                                                     containerId,
-                                                     caseId,
-                                                     identity.getIdentifier());
+        verify(caseManagementService).getCaseActions(containerId, caseId, identity.getIdentifier());
 
         final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
         verify(caseAllActionsView).setAvailableActionsList(captor.capture());
@@ -422,8 +417,7 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
     public void testTriggerAdHocFragment() {
         String adhocFragmentName = "adhocFrag-name";
 
-        setupCaseInstance(cis,
-                          serverTemplateId);
+        setupCaseInstance(cis);
         presenter.triggerAdHocAction(adhocFragmentName);
 
         verify(caseManagementService).triggerAdHocAction(eq(containerId),

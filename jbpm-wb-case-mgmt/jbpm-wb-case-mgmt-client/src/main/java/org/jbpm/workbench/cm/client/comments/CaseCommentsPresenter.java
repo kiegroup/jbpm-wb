@@ -18,6 +18,7 @@ package org.jbpm.workbench.cm.client.comments;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -32,7 +33,7 @@ import org.uberfire.mvp.Command;
 
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
-import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
+import static org.jbpm.workbench.cm.client.resources.i18n.Constants.CASE_COMMENTS;
 
 @Dependent
 @WorkbenchScreen(identifier = CaseCommentsPresenter.SCREEN_ID)
@@ -89,8 +90,7 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
                                     comparing(CaseCommentSummary::getAddedAt).reversed()))
                             .collect(toList()));
                 }
-        ).getComments(serverTemplateId, 
-                      containerId, 
+        ).getComments(containerId,
                       caseId, 
                       currentPage, 
                       PAGE_SIZE);
@@ -117,8 +117,7 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
                 (Void) -> {
                     view.resetPagination();
                 }
-        ).addComment(serverTemplateId,
-                     containerId,
+        ).addComment(containerId,
                      caseId,
                      identity.getIdentifier(),
                      caseCommentText);
@@ -128,8 +127,7 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
                                      String caseCommentNewText) {
         caseService.call(
                 (Void) -> refreshComments()
-        ).updateComment(serverTemplateId,
-                        containerId,
+        ).updateComment(containerId,
                         caseId,
                         caseCommentSummary.getId(),
                         identity.getIdentifier(),
@@ -139,10 +137,7 @@ public class CaseCommentsPresenter extends AbstractCaseInstancePresenter<CaseCom
     protected void deleteCaseComment(final CaseCommentSummary caseCommentSummary) {
         caseService.call(
                 (Void) -> refreshComments()
-        ).removeComment(serverTemplateId,
-                        containerId,
-                        caseId,
-                        caseCommentSummary.getId());
+        ).removeComment(containerId, caseId, caseCommentSummary.getId());
     }
 
     public interface CaseCommentsView extends UberElement<CaseCommentsPresenter> {

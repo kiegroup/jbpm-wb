@@ -16,8 +16,8 @@
 
 package org.jbpm.workbench.cm.client.details;
 
-import org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenterTest;
 import org.jbpm.workbench.cm.client.events.CaseRefreshEvent;
+import org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenterTest;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,41 +55,29 @@ public class CaseDetailsPresenterTest extends AbstractCaseInstancePresenterTest 
 
         verify(view).setValue(new CaseInstanceSummary());
         verifyNoMoreInteractions(view);
-        verify(caseManagementService,
-               never()).getCaseInstance(anyString(),
-                                        anyString(),
-                                        anyString());
+        verify(caseManagementService, never()).getCaseInstance(anyString(), anyString());
     }
 
     @Test
     public void testOnStartup() {
-        final String serverTemplateId = "serverTemplateId";
-        final CaseInstanceSummary cis = setupCaseInstance(serverTemplateId);
+        final CaseInstanceSummary cis = setupCaseInstance();
 
         verify(view).setValue(new CaseInstanceSummary());
         verify(view).setValue(cis);
         verifyNoMoreInteractions(view);
-        verify(caseManagementService).getCaseInstance(serverTemplateId,
-                                                      cis.getContainerId(),
-                                                      cis.getCaseId());
+        verify(caseManagementService).getCaseInstance(cis.getContainerId(), cis.getCaseId());
     }
 
     @Test
     public void testOnCaseRefreshEvent() {
-        final String serverTemplateId = "serverTemplateId";
-        final CaseInstanceSummary cis = setupCaseInstance(serverTemplateId);
+        final CaseInstanceSummary cis = setupCaseInstance();
 
         presenter.onCaseRefreshEvent(new CaseRefreshEvent(cis.getCaseId()));
 
-        verify(view,
-               times(2)).setValue(new CaseInstanceSummary());
-        verify(view,
-               times(2)).setValue(cis);
+        verify(view, times(2)).setValue(new CaseInstanceSummary());
+        verify(view, times(2)).setValue(cis);
 
         verifyNoMoreInteractions(view);
-        verify(caseManagementService,
-               times(2)).getCaseInstance(serverTemplateId,
-                                         cis.getContainerId(),
-                                         cis.getCaseId());
+        verify(caseManagementService, times(2)).getCaseInstance(cis.getContainerId(), cis.getCaseId());
     }
 }
