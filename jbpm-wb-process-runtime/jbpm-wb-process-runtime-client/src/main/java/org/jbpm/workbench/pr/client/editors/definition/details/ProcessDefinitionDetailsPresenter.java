@@ -160,6 +160,7 @@ public class ProcessDefinitionDetailsPresenter implements RefreshMenuBuilder.Sup
     }
 
     public IsWidget getProcessDiagramView() {
+        processDiagramPresenter.expandDiagramContainer();
         return processDiagramPresenter.getView();
     }
 
