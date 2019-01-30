@@ -28,19 +28,16 @@ import org.uberfire.client.mvp.UberElement;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 
-import static com.google.common.base.Strings.*;
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 public abstract class AbstractCaseInstancePresenter<V extends UberElement> extends AbstractPresenter<V> {
 
     public static final String PARAMETER_CASE_ID = "caseId";
-    public static final String PARAMETER_SERVER_TEMPLATE_ID = "serverTemplateId";
     public static final String PARAMETER_CONTAINER_ID = "containerId";
 
     protected PlaceRequest place;
 
     protected String caseId;
-
-    protected String serverTemplateId;
 
     protected String containerId;
 
@@ -54,8 +51,6 @@ public abstract class AbstractCaseInstancePresenter<V extends UberElement> exten
         this.place = place;
         this.caseId = place.getParameter(PARAMETER_CASE_ID,
                                          null);
-        this.serverTemplateId = place.getParameter(PARAMETER_SERVER_TEMPLATE_ID,
-                                                   null);
         this.containerId = place.getParameter(PARAMETER_CONTAINER_ID,
                                               null);
         findCaseInstance();
@@ -68,9 +63,7 @@ public abstract class AbstractCaseInstancePresenter<V extends UberElement> exten
     public void findCaseInstance() {
         clearCaseInstance();
         if (isCaseInstanceValid()) {
-            caseService.call((CaseInstanceSummary cis) -> loadCaseInstance(cis)).getCaseInstance(serverTemplateId,
-                                                                                                 containerId,
-                                                                                                 caseId);
+            caseService.call((CaseInstanceSummary cis) -> loadCaseInstance(cis)).getCaseInstance(containerId, caseId);
         }
     }
 

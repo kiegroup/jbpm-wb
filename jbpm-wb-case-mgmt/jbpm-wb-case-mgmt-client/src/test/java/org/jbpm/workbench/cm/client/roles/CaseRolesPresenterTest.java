@@ -49,8 +49,6 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
     private static final String CASE_ROLE = "Role";
     private static final String CASE_DEFINITION_ID = "org.jbpm.case";
 
-    final String serverTemplateId = "serverTemplateId";
-
     final CaseInstanceSummary caseInstance = newCaseInstanceSummary();
 
     @Mock
@@ -86,13 +84,11 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
         List<CaseRoleAssignmentSummary> caseRoleAssignmentSummaryList = new ArrayList<>();
         caseRoleAssignmentSummaryList.add(CaseRoleAssignmentSummary.builder().name(CASE_ROLE).build());
         presenter.setCaseRolesAssignments(caseRoleAssignmentSummaryList);
-        assertEquals(1,
-                     presenter.getCaseRolesAssignments().size());
+        assertEquals(1, presenter.getCaseRolesAssignments().size());
 
         presenter.clearCaseInstance();
 
-        assertEquals(0,
-                     presenter.getCaseRolesAssignments().size());
+        assertEquals(0, presenter.getCaseRolesAssignments().size());
         verify(view).removeAllRoles();
         verify(view).setBadge(0);
 
@@ -102,8 +98,7 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
     public void testLoadCaseInstance_nonExistentCaseInstance() {
         presenter.loadCaseInstance(null);
 
-        assertEquals(0,
-                     presenter.getCaseRolesAssignments().size());
+        assertEquals(0, presenter.getCaseRolesAssignments().size());
         verifyZeroInteractions(view);
         verifyZeroInteractions(caseManagementService);
     }
@@ -112,8 +107,7 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
     public void testLoadCaseInstance_caseInstanceWithoutAssignments() {
         presenter.loadCaseInstance(caseInstance);
 
-        assertEquals(0,
-                     presenter.getCaseRolesAssignments().size());
+        assertEquals(0, presenter.getCaseRolesAssignments().size());
         verifyZeroInteractions(view);
         verifyZeroInteractions(caseManagementService);
     }
@@ -128,8 +122,7 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
                                                                                .build()));
         presenter.loadCaseInstance(caseInstance);
 
-        assertEquals(0,
-                     presenter.getCaseRolesAssignments().size());
+        assertEquals(0, presenter.getCaseRolesAssignments().size());
         verifyZeroInteractions(view);
         verifyZeroInteractions(caseManagementService);
     }
@@ -141,13 +134,10 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
                                                                                .groups(singletonList(GROUP))
                                                                                .users(singletonList(USER))
                                                                                .build()));
-        when(caseManagementService.getCaseDefinition(anyString(),
-                                                     anyString(),
-                                                     anyString())).thenReturn(null);
+        when(caseManagementService.getCaseDefinition(anyString(), anyString())).thenReturn(null);
         presenter.loadCaseInstance(caseInstance);
 
-        assertEquals(0,
-                     presenter.getCaseRolesAssignments().size());
+        assertEquals(0, presenter.getCaseRolesAssignments().size());
         verifyZeroInteractions(view);
 
     }
@@ -163,13 +153,10 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
         setCaseDefinitionID(CASE_DEFINITION_ID,
                             caseDefinition,
                             caseInstance);
-        when(caseManagementService.getCaseDefinition(serverTemplateId,
-                                                     caseInstance.getContainerId(),
-                                                     caseInstance.getCaseDefinitionId())).thenReturn(caseDefinition);
+        when(caseManagementService.getCaseDefinition(caseInstance.getContainerId(), caseInstance.getCaseDefinitionId())).thenReturn(caseDefinition);
         when(view.getFilterValue()).thenReturn("All");
 
-        setupCaseInstance(caseInstance,
-                          serverTemplateId);
+        setupCaseInstance(caseInstance);
 
         verify(view).removeAllRoles();
         verify(view).setBadge(0);
@@ -182,16 +169,11 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
         ArgumentCaptor<List> displayedRoleAssignments = ArgumentCaptor.forClass(List.class);
         verify(view).displayCaseRolesList(displayedRoleAssignments.capture());
 
-        assertEquals(caseInstance.getRoleAssignments().size(),
-                     allRoleAssignments.getValue().size());
-        assertEquals(allRoleAssignments.getValue().size(),
-                     displayedRoleAssignments.getValue().size());
-        assertEquals(CASE_ROLE,
-                     ((CaseRoleAssignmentSummary) displayedRoleAssignments.getValue().get(0)).getName());
-        assertEquals(USER,
-                     ((CaseRoleAssignmentSummary) displayedRoleAssignments.getValue().get(0)).getUsers().get(0));
-        assertEquals(GROUP,
-                     ((CaseRoleAssignmentSummary) displayedRoleAssignments.getValue().get(0)).getGroups().get(0));
+        assertEquals(caseInstance.getRoleAssignments().size(), allRoleAssignments.getValue().size());
+        assertEquals(allRoleAssignments.getValue().size(), displayedRoleAssignments.getValue().size());
+        assertEquals(CASE_ROLE, ((CaseRoleAssignmentSummary) displayedRoleAssignments.getValue().get(0)).getName());
+        assertEquals(USER, ((CaseRoleAssignmentSummary) displayedRoleAssignments.getValue().get(0)).getUsers().get(0));
+        assertEquals(GROUP, ((CaseRoleAssignmentSummary) displayedRoleAssignments.getValue().get(0)).getGroups().get(0));
     }
 
     private void setCaseDefinitionID(String caseDefinitionID,
@@ -570,9 +552,7 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
                                               "test_group")).build();
         when(view.getFilterValue()).thenReturn("All");
 
-        presenter.storeRoleAssignments(cras,
-                                       new ArrayList<>(Arrays.asList(USER)),
-                                       new ArrayList<>(Arrays.asList(GROUP)));
+        presenter.storeRoleAssignments(cras, new ArrayList<>(Arrays.asList(USER)), new ArrayList<>(Arrays.asList(GROUP)));
 
         verifyStoreRoleAssignmentsCalls(0,
                                         0,
@@ -581,10 +561,8 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
         verify(caseManagementService).removeUserFromRole(anyString(),
                                                          anyString(),
                                                          anyString(),
-                                                         anyString(),
                                                          eq("test_user"));
         verify(caseManagementService).removeGroupFromRole(anyString(),
-                                                          anyString(),
                                                           anyString(),
                                                           anyString(),
                                                           eq("test_group"));
@@ -610,20 +588,16 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
         verify(caseManagementService).assignUserToRole(anyString(),
                                                        anyString(),
                                                        anyString(),
-                                                       anyString(),
                                                        eq(USER));
         verify(caseManagementService).assignGroupToRole(anyString(),
-                                                        anyString(),
                                                         anyString(),
                                                         anyString(),
                                                         eq(GROUP));
         verify(caseManagementService).removeUserFromRole(anyString(),
                                                          anyString(),
                                                          anyString(),
-                                                         anyString(),
                                                          eq("test_user"));
         verify(caseManagementService).removeGroupFromRole(anyString(),
-                                                          anyString(),
                                                           anyString(),
                                                           anyString(),
                                                           eq("test_group"));
@@ -633,30 +607,22 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
                                                  int timesAddGroup,
                                                  int timesRemoveUser,
                                                  int timesRemoveGroup) {
-        verify(caseManagementService,
-               times(timesAddUser)).assignUserToRole(anyString(),
-                                                     anyString(),
-                                                     anyString(),
-                                                     anyString(),
-                                                     anyString());
-        verify(caseManagementService,
-               times(timesAddGroup)).assignGroupToRole(anyString(),
-                                                       anyString(),
-                                                       anyString(),
-                                                       anyString(),
-                                                       anyString());
-        verify(caseManagementService,
-               times(timesRemoveUser)).removeUserFromRole(anyString(),
-                                                          anyString(),
-                                                          anyString(),
-                                                          anyString(),
-                                                          anyString());
-        verify(caseManagementService,
-               times(timesRemoveGroup)).removeGroupFromRole(anyString(),
-                                                            anyString(),
-                                                            anyString(),
-                                                            anyString(),
-                                                            anyString());
+        verify(caseManagementService, times(timesAddUser)).assignUserToRole(anyString(),
+                                                                            anyString(),
+                                                                            anyString(),
+                                                                            anyString());
+        verify(caseManagementService, times(timesAddGroup)).assignGroupToRole(anyString(),
+                                                                              anyString(),
+                                                                              anyString(),
+                                                                              anyString());
+        verify(caseManagementService, times(timesRemoveUser)).removeUserFromRole(anyString(),
+                                                                                 anyString(),
+                                                                                 anyString(),
+                                                                                 anyString());
+        verify(caseManagementService, times(timesRemoveGroup)).removeGroupFromRole(anyString(),
+                                                                                   anyString(),
+                                                                                   anyString(),
+                                                                                   anyString());
     }
 
     @Test
@@ -669,11 +635,9 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
                                                                                       .build();
         when(view.getFilterValue()).thenReturn("All");
 
-        presenter.removeUserFromRole(USER,
-                                     roleAssignments);
+        presenter.removeUserFromRole(USER, roleAssignments);
 
         verify(caseManagementService).removeUserFromRole(anyString(),
-                                                         anyString(),
                                                          anyString(),
                                                          eq(CASE_ROLE),
                                                          eq(USER));
@@ -691,11 +655,9 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
                                                                                    .build();
         when(view.getFilterValue()).thenReturn("All");
 
-        presenter.removeGroupFromRole(GROUP,
-                                      roleAssignments);
+        presenter.removeGroupFromRole(GROUP, roleAssignments);
 
         verify(caseManagementService).removeGroupFromRole(anyString(),
-                                                          anyString(),
                                                           anyString(),
                                                           eq(CASE_ROLE),
                                                           eq(GROUP));

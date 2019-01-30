@@ -18,8 +18,10 @@ package org.jbpm.workbench.pr.client.editors.definition.details;
 
 import javax.enterprise.event.Event;
 
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
+import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramPresenter;
 import org.jbpm.workbench.pr.events.ProcessDefSelectionEvent;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +48,9 @@ public class ProcessDefinitionDetailsPresenterTest {
     @Mock
     PrimaryActionMenuBuilder primaryActionMenuBuilder;
 
+    @Mock
+    private ProcessDiagramPresenter processDiagramPresenter;
+
     @InjectMocks
     ProcessDefinitionDetailsPresenter presenter;
 
@@ -69,4 +74,14 @@ public class ProcessDefinitionDetailsPresenterTest {
         assertEquals("deploymentId - processDefName",
                      captor.getValue().getTitle());
     }
+
+    @Test
+    public void testProcessDiagramView() {
+        IsWidget diagramWidget = mock(IsWidget.class);
+        when(processDiagramPresenter.getView()).thenReturn(diagramWidget);
+        presenter.getProcessDiagramView();
+        verify(processDiagramPresenter).expandDiagramContainer();
+        verify(processDiagramPresenter).getView();
+    }
+
 }

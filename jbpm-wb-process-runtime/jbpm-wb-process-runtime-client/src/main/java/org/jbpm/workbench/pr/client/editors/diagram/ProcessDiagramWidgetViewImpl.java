@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.pr.client.editors.diagram;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -40,6 +41,10 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
     private HTMLDivElement processDiagramDiv;
 
     @Inject
+    @DataField("diagramContainerDiv")
+    private HTMLDivElement diagramContainerDiv;
+
+    @Inject
     @DataField("message")
     @Named("span")
     private HTMLElement heading;
@@ -53,6 +58,17 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
 
     private Callback<String> nodeSelectionCallback;
 
+    private D3 d3;
+
+    public void setD3Component(D3 d3) {
+        this.d3 = d3;
+    }
+
+    @PostConstruct
+    public void init() {
+        d3 = D3.Builder.get();
+    }
+
     @Override
     public void setOnDiagramNodeSelectionCallback(final Callback<String> callback) {
         this.nodeSelectionCallback = callback;
@@ -63,16 +79,32 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
 
         processDiagramDiv.innerHTML = svgContent;
 
-        final D3 d3 = D3.Builder.get();
         final D3 svg = d3.select("#processDiagramDiv svg");
+
+        double svgWidth = Double.parseDouble(svg.attr("width").toString());
+        double svgHeight = Double.parseDouble(svg.attr("height").toString());
+        final D3.Zoom zoom = d3.zoom();
+
+        double[] scaleExtent = new double[2];
+        scaleExtent[0] = 0.1;
+        scaleExtent[1] = 3;
+        zoom.scaleExtent(scaleExtent);
+
         D3.CallbackFunction callback = () -> {
-            D3.ZoomEvent event = D3.Builder.get().getEvent();
+            D3.ZoomEvent event = d3.getEvent();
+            double k = event.getTransform().getK();
+            event.getTransform().setX(((svgWidth * k) - svgWidth) / 2);
+            event.getTransform().setY(((svgHeight * k) - svgHeight) / 2);
+            refreshExtent(zoom, 0, 0, svgWidth * k, svgHeight * k);
             svg.attr("transform",
                      event.getTransform());
-            double zoom = Math.round(100 + (event.getTransform().getK() - 1) * 100);
-            zoomControlView.setZoomText(zoom + "%");
+            zoomControlView.disablePlusButton(k >= 3);
+            zoomControlView.disableMinusButton(k <= 0.1);
+
+            double zoomTxt = Math.round(100 + (event.getTransform().getK() - 1) * 100);
+            zoomControlView.setZoomText(zoomTxt + "%");
         };
-        final D3.Zoom zoom = d3.zoom();
+
         svg.call(zoom.on("zoom",
                          callback));
 
@@ -97,12 +129,12 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
         });
 
         zoomControlView.setScaleMinusCommand(() -> {
-            zoom.scaleBy(svg.transition().duration(500),
+            zoom.scaleBy(svg.transition().duration(200),
                          0.95);
         });
 
         zoomControlView.setScalePlusCommand(() -> {
-            zoom.scaleBy(svg.transition().duration(500),
+            zoom.scaleBy(svg.transition().duration(200),
                          1.05);
         });
 
@@ -132,6 +164,15 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
         });
     }
 
+    private void refreshExtent(D3.Zoom zoom, double minX, double minY, double maxX, double maxY) {
+        double[][] translateExtent = new double[2][2];
+        translateExtent[0][0] = minX;
+        translateExtent[0][1] = minY;
+        translateExtent[1][0] = maxX;
+        translateExtent[1][1] = maxY;
+
+        zoom.translateExtent(translateExtent);
+    }
     @Override
     public void displayMessage(final String message) {
         alert.classList.remove("hidden");
@@ -155,5 +196,11 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
     @Override
     public void hideBusyIndicator() {
         BusyPopup.close();
+    }
+
+    @Override
+    public void expandDiagramContanier() {
+        diagramContainerDiv.classList.remove("col-md-10");
+        diagramContainerDiv.classList.add("col-md-12");
     }
 }

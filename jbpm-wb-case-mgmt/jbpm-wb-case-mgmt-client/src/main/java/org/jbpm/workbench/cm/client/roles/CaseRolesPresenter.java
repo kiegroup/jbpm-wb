@@ -18,6 +18,7 @@ package org.jbpm.workbench.cm.client.roles;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -32,10 +33,10 @@ import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.client.mvp.UberElement;
 import org.uberfire.mvp.Command;
 
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
 import static org.jbpm.workbench.cm.client.util.CaseRolesAssignmentFilterBy.valueOf;
-import static java.util.Collections.singletonList;
 
 @Dependent
 @WorkbenchScreen(identifier = CaseRolesPresenter.SCREEN_ID)
@@ -90,9 +91,7 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter<CaseRolesP
                     view.setBadge(getCaseRolesAssignments().size());
                     filterCaseRoles();
                 }
-        ).getCaseDefinition(serverTemplateId,
-                            containerId,
-                            cis.getCaseDefinitionId());
+        ).getCaseDefinition(containerId, cis.getCaseDefinitionId());
     }
 
     public void filterCaseRoles() {
@@ -265,16 +264,14 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter<CaseRolesP
         List<String> usersToRemove = new ArrayList<>(prevUserAssignments);
         usersToRemove.removeAll(newUserAssignments);
         usersToRemove.forEach(
-                user -> caseService.call().removeUserFromRole(serverTemplateId,
-                                                              containerId,
+                user -> caseService.call().removeUserFromRole(containerId,
                                                               caseId,
                                                               roleName,
                                                               user));
 
         newUserAssignments.removeAll(prevUserAssignments);
         newUserAssignments.forEach(
-                user -> caseService.call().assignUserToRole(serverTemplateId,
-                                                            containerId,
+                user -> caseService.call().assignUserToRole(containerId,
                                                             caseId,
                                                             roleName,
                                                             user));
@@ -282,16 +279,14 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter<CaseRolesP
         List<String> groupsToRemove = new ArrayList<>(prevGroupsAssignments);
         groupsToRemove.removeAll(newGroupsAssignments);
         groupsToRemove.forEach(
-                group -> caseService.call().removeGroupFromRole(serverTemplateId,
-                                                                containerId,
+                group -> caseService.call().removeGroupFromRole(containerId,
                                                                 caseId,
                                                                 roleName,
                                                                 group));
 
         newGroupsAssignments.removeAll(prevGroupsAssignments);
         newGroupsAssignments.forEach(
-                group -> caseService.call().assignGroupToRole(serverTemplateId,
-                                                              containerId,
+                group -> caseService.call().assignGroupToRole(containerId,
                                                               caseId,
                                                               roleName,
                                                               group));
@@ -306,8 +301,7 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter<CaseRolesP
                     caseRoleAssignmentSummary.setUsers(users);
                     filterCaseRoles();
                 }
-        ).removeUserFromRole(serverTemplateId,
-                             containerId,
+        ).removeUserFromRole(containerId,
                              caseId,
                              caseRoleAssignmentSummary.getName(),
                              userName);
@@ -322,8 +316,7 @@ public class CaseRolesPresenter extends AbstractCaseInstancePresenter<CaseRolesP
                     caseRoleAssignmentSummary.setGroups(groups);
                     filterCaseRoles();
                 }
-        ).removeGroupFromRole(serverTemplateId,
-                              containerId,
+        ).removeGroupFromRole(containerId,
                               caseId,
                               caseRoleAssignmentSummary.getName(),
                               groupName);

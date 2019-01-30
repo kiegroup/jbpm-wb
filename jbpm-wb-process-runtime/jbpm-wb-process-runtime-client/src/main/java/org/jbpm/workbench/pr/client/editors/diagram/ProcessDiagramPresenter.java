@@ -63,6 +63,10 @@ public class ProcessDiagramPresenter {
         view.hideBusyIndicator();
     }
 
+    public void expandDiagramContainer() {
+        view.expandDiagramContanier();
+    }
+
     @WorkbenchPartTitle
     public String getName() {
         return constants.Diagram();

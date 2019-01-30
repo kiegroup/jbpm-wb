@@ -34,7 +34,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.mocks.CallerMock;
 
-import static java.util.Collections.*;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -82,9 +82,7 @@ public class CaseMilestonesPresenterTest extends AbstractCaseInstancePresenterTe
         cis = CaseInstanceSummary.builder().containerId(containerId).caseId(caseId).caseDefinitionId(caseDefId).build();
         final CaseDefinitionSummary cds = CaseDefinitionSummary.builder().id(caseDefId).build();
 
-        when(caseManagementService.getCaseDefinition(serverTemplateId,
-                                                     cis.getContainerId(),
-                                                     cis.getCaseDefinitionId())).thenReturn(cds);
+        when(caseManagementService.getCaseDefinition(cis.getContainerId(), cis.getCaseDefinitionId())).thenReturn(cds);
 
         List<CaseMilestoneSummary> milestones = singletonList(createCaseMilestone());
         when(caseManagementService.getCaseMilestones(anyString(),
@@ -110,8 +108,7 @@ public class CaseMilestonesPresenterTest extends AbstractCaseInstancePresenterTe
                                                      anyString(),
                                                      any(CaseMilestoneSearchRequest.class))).thenReturn(milestones);
 
-        setupCaseInstance(cis,
-                          serverTemplateId);
+        setupCaseInstance(cis);
 
         verifyClearCaseInstance();
         verify(caseMilestoneListView).setCaseMilestoneList(milestones);
@@ -119,8 +116,7 @@ public class CaseMilestonesPresenterTest extends AbstractCaseInstancePresenterTe
 
     @Test
     public void testRefreshData() {
-        setupCaseInstance(cis,
-                          serverTemplateId);
+        setupCaseInstance(cis);
         presenter.searchCaseMilestones();
 
         verify(caseManagementService,
@@ -128,9 +124,7 @@ public class CaseMilestonesPresenterTest extends AbstractCaseInstancePresenterTe
                                            cis.getCaseId(),
                                            caseMilestoneListView.getCaseMilestoneSearchRequest());
         final ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
-        verify(caseMilestoneListView,
-               times(2)).setCaseMilestoneList(captor.capture());
-        assertEquals(caseMilestonesSummaryList.size(),
-                     captor.getValue().size());
+        verify(caseMilestoneListView, times(2)).setCaseMilestoneList(captor.capture());
+        assertEquals(caseMilestonesSummaryList.size(), captor.getValue().size());
     }
 }

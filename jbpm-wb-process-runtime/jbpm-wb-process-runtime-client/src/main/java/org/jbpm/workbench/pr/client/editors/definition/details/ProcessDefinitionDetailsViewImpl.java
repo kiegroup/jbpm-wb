@@ -74,6 +74,7 @@ public class ProcessDefinitionDetailsViewImpl extends Composite implements Proce
 
         {
             diagramPane = GWT.create(TabPane.class);
+            diagramPane.setPaddingTop(20);
             diagramPane.add(presenter.getProcessDiagramView());
 
             diagramTab = GWT.create(TabListItem.class);

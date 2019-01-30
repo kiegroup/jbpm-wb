@@ -36,6 +36,7 @@ import org.mockito.Mock;
 import org.uberfire.client.views.pfly.widgets.FormGroup;
 import org.uberfire.client.views.pfly.widgets.InlineNotification;
 import org.uberfire.client.views.pfly.widgets.Modal;
+import org.uberfire.client.views.pfly.widgets.SanitizedNumberInput;
 import org.uberfire.ext.widgets.table.client.DataGrid;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
@@ -54,6 +55,9 @@ public class NewJobViewImplTest {
 
     @Mock
     private ListItem advancedTab;
+
+    @Mock
+    private SanitizedNumberInput jobRetriesInput;
 
     @Mock
     private Div advancedPane;
@@ -95,9 +99,6 @@ public class NewJobViewImplTest {
     private Span jobTypeHelp;
 
     @Mock
-    private NumberInput jobRetriesInput;
-
-    @Mock
     private FormGroup jobRetriesGroup;
 
     @Mock
@@ -115,6 +116,9 @@ public class NewJobViewImplTest {
     @Mock
     private DOMTokenList inlineNotificationClassList;
 
+    @Mock
+    private NumberInput numberInput;
+
     @InjectMocks
     private NewJobViewImpl view;
 
@@ -126,6 +130,7 @@ public class NewJobViewImplTest {
         when(advancedPane.getClassList()).thenReturn(advancedPaneClassList);
         when(inlineNotification.getElement()).thenReturn(inlineNotificationElement);
         when(inlineNotificationElement.getClassList()).thenReturn(inlineNotificationClassList);
+        when(jobRetriesInput.getElement()).thenReturn(numberInput);
     }
 
     @Test

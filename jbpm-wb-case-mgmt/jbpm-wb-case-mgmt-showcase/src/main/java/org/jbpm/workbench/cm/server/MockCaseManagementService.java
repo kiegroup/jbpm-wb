@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Specializes;
 
@@ -76,29 +77,20 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
 
     @PostConstruct
     public void init() {
-        caseDefinitionList = readJsonValues(CaseDefinitionSummary.class,
-                                            CASE_DEFINITIONS_JSON);
-        caseMilestoneList = readJsonValues(CaseMilestoneSummary.class,
-                                           CASE_MILESTONES_JSON);
-        caseCommentList = readJsonValues(CaseCommentSummary.class,
-                                         CASE_COMMENTS_JSON);
-        caseStageList = readJsonValues(CaseStageSummary.class,
-                                       CASE_STAGES_JSON);
-        caseActionList = readJsonValues(CaseActionSummary.class,
-                                        CASE_ACTIONS_JSON);
-        processDefinitionList = readJsonValues(ProcessDefinitionSummary.class,
-                                               PROCESS_DEFINITION_JSON);
-        LOGGER.info("Loaded {} case definitions",
-                    caseDefinitionList.size());
+        caseDefinitionList = readJsonValues(CaseDefinitionSummary.class, CASE_DEFINITIONS_JSON);
+        caseMilestoneList = readJsonValues(CaseMilestoneSummary.class, CASE_MILESTONES_JSON);
+        caseCommentList = readJsonValues(CaseCommentSummary.class, CASE_COMMENTS_JSON);
+        caseStageList = readJsonValues(CaseStageSummary.class, CASE_STAGES_JSON);
+        caseActionList = readJsonValues(CaseActionSummary.class, CASE_ACTIONS_JSON);
+        processDefinitionList = readJsonValues(ProcessDefinitionSummary.class, PROCESS_DEFINITION_JSON);
+        LOGGER.info("Loaded {} case definitions", caseDefinitionList.size());
     }
 
-    private <T> List<T> readJsonValues(final Class<T> type,
-                                       final String fileName) {
+    private <T> List<T> readJsonValues(final Class<T> type, final String fileName) {
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName)) {
             final CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class,
                                                                                                   type);
-            return mapper.readValue(inputStream,
-                                    collectionType);
+            return mapper.readValue(inputStream, collectionType);
         } catch (Exception e) {
             LOGGER.error("Failed to load json data file", 
                          e);
@@ -107,9 +99,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     }
 
     @Override
-    public CaseDefinitionSummary getCaseDefinition(final String serverTemplateId,
-                                                   final String containerId,
-                                                   final String caseDefinitionId) {
+    public CaseDefinitionSummary getCaseDefinition(final String containerId, final String caseDefinitionId) {
         return caseDefinitionList.stream().filter(c -> c.getId().equals(caseDefinitionId)).findFirst().get();
     }
 
@@ -119,8 +109,7 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     }
 
     @Override
-    public String startCaseInstance(final String serverTemplateId,
-                                    final String containerId,
+    public String startCaseInstance(final String containerId,
                                     final String caseDefinitionId,
                                     final String owner,
                                     final List<CaseRoleAssignmentSummary> roleAssignments) {
@@ -165,31 +154,24 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     }
 
     @Override
-    public CaseInstanceSummary getCaseInstance(final String serverTemplateId,
-                                               final String containerId,
-                                               final String caseId) {
+    public CaseInstanceSummary getCaseInstance(final String containerId, final String caseId) {
         return caseInstanceList.stream().filter(c -> c.getCaseId().equals(caseId)).findFirst().get();
     }
 
     @Override
-    public void cancelCaseInstance(final String serverTemplateId,
-                                   final String containerId,
-                                   final String caseId) {
-        executeOnCaseInstance(caseId,
-                              c -> c.setStatus(CaseStatus.CANCELLED));
+    public void cancelCaseInstance(final String containerId, final String caseId) {
+        executeOnCaseInstance(caseId, c -> c.setStatus(CaseStatus.CANCELLED));
     }
 
     @Override
     public void closeCaseInstance(final String containerId,
                                   final String caseId,
                                   final String comment) {
-        executeOnCaseInstance(caseId,
-                              c -> c.setStatus(CaseStatus.CLOSED));
+        executeOnCaseInstance(caseId, c -> c.setStatus(CaseStatus.CLOSED));
     }
 
     @Override
-    public List<CaseCommentSummary> getComments(final String serverTemplateId, 
-                                                final String containerId, 
+    public List<CaseCommentSummary> getComments(final String containerId,
                                                 final String caseId, 
                                                 final Integer page, 
                                                 final Integer pageSize) {
@@ -212,25 +194,21 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     }
 
     @Override
-    public void addComment(final String serverTemplateId,
-                           final String containerId,
+    public void addComment(final String containerId,
                            final String caseId,
                            final String author,
                            final String text) {
-        final List<CaseCommentSummary> commentSummaryList = caseCommentMap.getOrDefault(caseId,
-                                                                                        new ArrayList<>());
+        final List<CaseCommentSummary> commentSummaryList = caseCommentMap.getOrDefault(caseId, new ArrayList<>());
 
         final String newId = String.valueOf(commentIdGenerator++);
 
         final CaseCommentSummary caseCommentSummary = CaseCommentSummary.builder().id(newId).author(author).text(text).addedAt(new Date()).build();
         commentSummaryList.add(caseCommentSummary);
-        caseCommentMap.putIfAbsent(caseId,
-                                   commentSummaryList);
+        caseCommentMap.putIfAbsent(caseId, commentSummaryList);
     }
 
     @Override
-    public void updateComment(final String serverTemplateId,
-                              final String containerId,
+    public void updateComment(final String containerId,
                               final String caseId,
                               final String commentId,
                               final String author,
@@ -239,55 +217,42 @@ public class MockCaseManagementService extends RemoteCaseManagementServiceImpl {
     }
 
     @Override
-    public void removeComment(final String serverTemplateId,
-                              final String containerId,
+    public void removeComment(final String containerId,
                               final String caseId,
                               final String commentId) {
         ofNullable(caseCommentMap.get(caseId)).ifPresent(l -> l.stream().filter(c -> c.getId().equals(commentId)).findFirst().ifPresent(c -> l.remove(c)));
     }
 
     @Override
-    public void assignUserToRole(final String serverTemplateId,
-                                 final String containerId,
+    public void assignUserToRole(final String containerId,
                                  final String caseId,
                                  final String roleName,
                                  final String user) {
-        executeOnCaseRole(caseId,
-                          roleName,
-                          r -> r.getUsers().add(user));
+        executeOnCaseRole(caseId, roleName, r -> r.getUsers().add(user));
     }
 
     @Override
-    public void assignGroupToRole(final String serverTemplateId,
-                                  final String containerId,
+    public void assignGroupToRole(final String containerId,
                                   final String caseId,
                                   final String roleName,
                                   final String group) {
-        executeOnCaseRole(caseId,
-                          roleName,
-                          r -> r.getGroups().add(group));
+        executeOnCaseRole(caseId, roleName, r -> r.getGroups().add(group));
     }
 
     @Override
-    public void removeUserFromRole(final String serverTemplateId,
-                                   final String containerId,
+    public void removeUserFromRole(final String containerId,
                                    final String caseId,
                                    final String roleName,
                                    final String user) {
-        executeOnCaseRole(caseId,
-                          roleName,
-                          r -> r.getUsers().remove(user));
+        executeOnCaseRole(caseId, roleName, r -> r.getUsers().remove(user));
     }
 
     @Override
-    public void removeGroupFromRole(final String serverTemplateId,
-                                    final String containerId,
+    public void removeGroupFromRole(final String containerId,
                                     final String caseId,
                                     final String roleName,
                                     final String group) {
-        executeOnCaseRole(caseId,
-                          roleName,
-                          r -> r.getGroups().remove(group));
+        executeOnCaseRole(caseId, roleName, r -> r.getGroups().remove(group));
     }
 
     private void executeOnCaseInstance(final String caseId,

@@ -62,10 +62,6 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
     @DataField("node-actions-panel")
     private HTMLDivElement nodeActionsPanel;
 
-    @Inject
-    @DataField("process-diagram-panel")
-    private HTMLDivElement processDiagramPanel;
-
     private Callback<String> onProcessNodeSelectedCallback;
 
     @Override
@@ -135,8 +131,7 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
     public void hideNodeActions() {
         nodeActionsPanel.classList.remove("col-md-2");
         nodeActionsPanel.classList.add("hidden");
-        processDiagramPanel.classList.remove("col-md-10");
-        processDiagramPanel.classList.add("col-md-12");
+        diagram.expandDiagramContanier();
     }
 
     @Override

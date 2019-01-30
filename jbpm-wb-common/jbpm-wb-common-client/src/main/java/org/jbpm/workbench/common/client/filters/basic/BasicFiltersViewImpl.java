@@ -48,6 +48,7 @@ import org.uberfire.client.views.pfly.widgets.DateRangePickerOptions;
 import org.uberfire.client.views.pfly.widgets.JQueryProducer;
 import org.uberfire.client.views.pfly.widgets.Moment;
 import org.uberfire.client.views.pfly.widgets.Popover;
+import org.uberfire.client.views.pfly.widgets.SanitizedNumberInput;
 import org.uberfire.client.views.pfly.widgets.Select;
 
 import static org.jboss.errai.common.client.dom.DOMUtil.*;
@@ -111,6 +112,9 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
     @Inject
     private ManagedInstance<DateRangePicker> dateRangePickerProvider;
 
+    @Inject
+    private ManagedInstance<SanitizedNumberInput> sanitizedNumberInput;
+
     private Map<String, List<Input>> selectInputs = new HashMap<>();
 
     @PostConstruct
@@ -150,7 +154,7 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
 
         createFilterOption(label);
 
-        createInput(label,
+        createTextInput(label,
                     placeholder,
                     refineSelect.getOptions().getLength() > 1,
                     input -> input.setType("text"),
@@ -165,33 +169,16 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
 
         createFilterOption(label);
 
-        createInput(label,
-                    placeholder,
-                    refineSelect.getOptions().getLength() > 1,
+        createNumberInput(label,
+                          placeholder,
+                          refineSelect.getOptions().getLength() > 1,
                     input -> {
                         input.setType("number");
                         input.setAttribute("min",
                                            "0");
-                        input.addEventListener("keypress",
-                                               getNumericInputListener(),
-                                               false);
                     },
                     v -> Integer.valueOf(v),
-                    callback);
-    }
-
-    protected EventListener<KeyboardEvent> getNumericInputListener() {
-        return (KeyboardEvent e) -> {
-            int keyCode = e.getKeyCode();
-            if (keyCode <= 0) { //getKeyCode() returns 0 for numbers on Firefox 53
-                keyCode = e.getWhich();
-            }
-            if (!((keyCode >= KeyCodes.KEY_NUM_ZERO && keyCode <= KeyCodes.KEY_NUM_NINE) ||
-                    (keyCode >= KeyCodes.KEY_ZERO && keyCode <= KeyCodes.KEY_NINE) ||
-                    (keyCode == KeyCodes.KEY_BACKSPACE || keyCode == KeyCodes.KEY_LEFT || keyCode == KeyCodes.KEY_RIGHT))) {
-                e.preventDefault();
-            }
-        };
+                          callback);
     }
 
     @Override
@@ -518,13 +505,32 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
         filterList.appendChild(heading);
     }
 
+    private <T extends Object> void createNumberInput(final String label,
+                                                      final String placeholder,
+                                                      final Boolean hidden,
+                                                      final Consumer<Input> customizeCallback,
+                                                      final Function<String, T> valueMapper,
+                                                      final Consumer<ActiveFilterItem<T>> callback) {
+        final SanitizedNumberInput numberInput = sanitizedNumberInput.get();
+        numberInput.init();
+        Input input = numberInput.getElement();
+
+        createInput(label,
+                    input,
+                    placeholder,
+                    hidden,
+                    customizeCallback,
+                    valueMapper,
+                    callback);
+    }
+
     private <T extends Object> void createInput(final String label,
+                                                final Input input,
                                                 final String placeholder,
                                                 final Boolean hidden,
                                                 final Consumer<Input> customizeCallback,
                                                 final Function<String, T> valueMapper,
                                                 final Consumer<ActiveFilterItem<T>> callback) {
-        final Input input = (Input) getDocument().createElement("input");
         customizeCallback.accept(input);
         input.setAttribute("placeholder",
                            placeholder);
@@ -550,6 +556,23 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
         });
         filtersInput.insertBefore(input,
                                   filtersInput.getFirstChild());
+    }
+
+    private <T extends Object> void createTextInput(final String label,
+                                                    final String placeholder,
+                                                    final Boolean hidden,
+                                                    final Consumer<Input> customizeCallback,
+                                                    final Function<String, T> valueMapper,
+                                                    final Consumer<ActiveFilterItem<T>> callback) {
+        final Input input = (Input) getDocument().createElement("input");
+
+        createInput(label,
+                    input,
+                    placeholder,
+                    hidden,
+                    customizeCallback,
+                    valueMapper,
+                    callback);
     }
 
     private void createFilterOption(final String label) {

@@ -21,11 +21,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jboss.errai.security.shared.api.identity.User;
-
 import org.jbpm.workbench.cm.client.util.AbstractCaseInstancePresenter;
 import org.jbpm.workbench.cm.model.CaseActionSummary;
 import org.jbpm.workbench.cm.model.CaseInstanceSummary;
@@ -204,10 +204,7 @@ public class CaseActionsPresenter extends AbstractCaseInstancePresenter<CaseActi
             }
             view.setInProgressActionsList(actions.getInProgressAction());
             view.setCompletedActionsList(actions.getCompleteActions());
-        }).getCaseActions(serverTemplateId,
-                          containerId,
-                          caseId,
-                          identity.getIdentifier());
+        }).getCaseActions(containerId, caseId, identity.getIdentifier());
     }
 
     void setAction(final CaseActionItemView caseActionItem) {
