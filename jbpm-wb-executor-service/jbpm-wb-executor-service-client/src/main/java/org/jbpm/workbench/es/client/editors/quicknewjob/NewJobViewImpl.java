@@ -26,7 +26,6 @@ import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -38,12 +37,9 @@ import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.Event;
-import org.jboss.errai.common.client.dom.EventListener;
 import org.jboss.errai.common.client.dom.HTMLElement;
-import org.jboss.errai.common.client.dom.KeyboardEvent;
 import org.jboss.errai.common.client.dom.MouseEvent;
 
-import org.jboss.errai.common.client.dom.NumberInput;
 import org.jboss.errai.common.client.dom.RadioInput;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.common.client.dom.TextInput;
@@ -64,6 +60,7 @@ import org.uberfire.client.views.pfly.widgets.FormGroup;
 import org.uberfire.client.views.pfly.widgets.FormLabel;
 import org.uberfire.client.views.pfly.widgets.InlineNotification;
 import org.uberfire.client.views.pfly.widgets.Modal;
+import org.uberfire.client.views.pfly.widgets.SanitizedNumberInput;
 import org.uberfire.client.views.pfly.widgets.ValidationState;
 import org.uberfire.ext.widgets.common.client.tables.ResizableHeader;
 import org.uberfire.ext.widgets.table.client.DataGrid;
@@ -146,7 +143,7 @@ public class NewJobViewImpl implements NewJobPresenter.NewJobView,
 
     @Inject
     @DataField("job-retries-input")
-    private NumberInput jobRetriesInput;
+    private SanitizedNumberInput jobRetriesInput;
 
     @Inject
     @DataField("job-retries-group")
@@ -189,13 +186,10 @@ public class NewJobViewImpl implements NewJobPresenter.NewJobView,
         jobTypeLabel.addRequiredIndicator();
         jobRetriesLabel.addRequiredIndicator();
 
-        jobRetriesInput.setType("number");
-        jobRetriesInput.setAttribute("min",
+        jobRetriesInput.init();
+        jobRetriesInput.getElement().setAttribute("min",
                                      "0");
-        jobRetriesInput.setDefaultValue("0");
-        jobRetriesInput.addEventListener("keypress",
-                                         getNumericInputListener(),
-                                         false);
+        jobRetriesInput.getElement().setDefaultValue("0");
 
         myParametersGrid.setHeight("200px");
         myParametersGrid.setEmptyTableWidget(new Label(constants.No_Parameters_added_yet()));
@@ -209,20 +203,6 @@ public class NewJobViewImpl implements NewJobPresenter.NewJobView,
         advancedContent.add(myParametersGrid);
         advancedContent.add(button);
         inlineNotification.setType(InlineNotification.InlineNotificationType.DANGER);
-    }
-
-    protected EventListener<KeyboardEvent> getNumericInputListener() {
-        return (KeyboardEvent e) -> {
-            int keyCode = e.getKeyCode();
-            if (keyCode <= 0) { //getKeyCode() returns 0 for numbers on Firefox 53
-                keyCode = e.getWhich();
-            }
-            if (!((keyCode >= KeyCodes.KEY_NUM_ZERO && keyCode <= KeyCodes.KEY_NUM_NINE) ||
-                    (keyCode >= KeyCodes.KEY_ZERO && keyCode <= KeyCodes.KEY_NINE) ||
-                    (keyCode == KeyCodes.KEY_BACKSPACE || keyCode == KeyCodes.KEY_LEFT || keyCode == KeyCodes.KEY_RIGHT))) {
-                e.preventDefault();
-            }
-        };
     }
 
     public void show() {
@@ -280,7 +260,7 @@ public class NewJobViewImpl implements NewJobPresenter.NewJobView,
         dateFiltersInput.setHidden(true);
         jobNameInput.setValue("");
         jobTypeInput.setValue("");
-        jobRetriesInput.setValue("0");
+        jobRetriesInput.getElement().setValue("0");
 
         dataProvider.getList().clear();
         cleanErrorMessages();
@@ -456,7 +436,7 @@ public class NewJobViewImpl implements NewJobPresenter.NewJobView,
         presenter.createJob(jobNameInput.getValue(),
                             selectedDate,
                             jobTypeInput.getValue(),
-                            jobRetriesInput.getValue(),
+                            jobRetriesInput.getElement().getValue(),
                             dataProvider.getList());
     }
 

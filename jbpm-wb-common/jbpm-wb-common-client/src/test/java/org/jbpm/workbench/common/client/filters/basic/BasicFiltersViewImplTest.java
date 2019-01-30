@@ -20,10 +20,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.function.Consumer;
 
-import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.dom.Input;
-import org.jboss.errai.common.client.dom.KeyboardEvent;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.util.DateRange;
@@ -80,38 +78,6 @@ public class BasicFiltersViewImplTest {
                      ((DateRange) captor.getValue().getValue()).getStartDate());
         assertEquals(endDate,
                      ((DateRange) captor.getValue().getValue()).getEndDate());
-    }
-
-    @Test
-    public void testNumericInput() {
-        testValidKeyCode(KeyCodes.KEY_BACKSPACE);
-        testValidKeyCode(KeyCodes.KEY_NINE);
-        testValidKeyCode(KeyCodes.KEY_NUM_EIGHT);
-        testValidKeyCode(KeyCodes.KEY_NUM_ZERO);
-
-        testInvalidKeyCode(KeyCodes.KEY_NUM_MINUS);
-        testInvalidKeyCode(KeyCodes.KEY_NUM_PLUS);
-        testInvalidKeyCode(KeyCodes.KEY_SPACE);
-        testInvalidKeyCode(KeyCodes.KEY_INSERT);
-    }
-
-    protected void testInvalidKeyCode(int keyCode) {
-        testKeyCode(keyCode,
-                    1);
-    }
-
-    protected void testKeyCode(int keyCode,
-                               int wantedNumberOfInvocations) {
-        final KeyboardEvent event = mock(KeyboardEvent.class);
-        when(event.getKeyCode()).thenReturn(keyCode);
-        view.getNumericInputListener().call(event);
-        verify(event,
-               times(wantedNumberOfInvocations)).preventDefault();
-    }
-
-    protected void testValidKeyCode(int keyCode) {
-        testKeyCode(keyCode,
-                    0);
     }
 
     @Test
