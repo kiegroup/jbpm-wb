@@ -18,6 +18,7 @@ package org.jbpm.workbench.pr.client.editors.instance.diagram;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
@@ -41,6 +42,7 @@ import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.workbench.events.NotificationEvent;
 
+import static com.google.common.collect.Maps.immutableEntry;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -123,10 +125,10 @@ public class ProcessInstanceDiagramPresenterTest {
                                                                               "_3"));
 
         List<NodeInstanceSummary> nodeInstances = Arrays.asList(
-                NodeInstanceSummary.builder().withId(1l).withName("name-1").withType("HumanTask").withCompleted(false).build(),
-                NodeInstanceSummary.builder().withId(2l).withName(" ").withType("Split").withCompleted(false).build(),
-                NodeInstanceSummary.builder().withId(3l).withName("name-3").withType("HumanTask").withCompleted(true).build(),
-                NodeInstanceSummary.builder().withId(4l).withName(" ").withType("End").withCompleted(true).build()
+                NodeInstanceSummary.builder().withId(1l).withName("name-1").withNodeUniqueName("_1").withType("HumanTask").withCompleted(false).build(),
+                NodeInstanceSummary.builder().withId(2l).withName(" ").withNodeUniqueName("_2").withType("Split").withCompleted(false).build(),
+                NodeInstanceSummary.builder().withId(3l).withName("name-3").withNodeUniqueName("_3").withType("HumanTask").withCompleted(true).build(),
+                NodeInstanceSummary.builder().withId(4l).withName(" ").withNodeUniqueName("_4").withType("End").withCompleted(true).build()
         );
 
         List<TimerInstanceSummary> timerInstances = Arrays.asList(
@@ -217,6 +219,11 @@ public class ProcessInstanceDiagramPresenterTest {
         assertThat(viewTimerInstances.get(1).getName()).isEqualTo("t2");
         assertThat(viewTimerInstances.get(1).getDescription()).startsWith("NextExecution");
         assertThat(viewTimerInstances.get(1).getCallbacks()).hasSize(1);
+
+        ArgumentCaptor<Map> badgesInstancesCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(view).setNodeBadges(badgesInstancesCaptor.capture());
+        final Map<String, Long> badges = badgesInstancesCaptor.getValue();
+        assertThat(badges).containsExactly(immutableEntry("_1", 1l), immutableEntry("_2", 1l), immutableEntry("_3", 1l), immutableEntry("_4", 1l));
     }
 
     @Test
@@ -273,6 +280,8 @@ public class ProcessInstanceDiagramPresenterTest {
         verify(view).setValue(timerNode);
         verify(view).setNodeInstances(singletonList(timerNodeInstance));
         verify(view).setTimerInstances(singletonList(timerInstance));
+        verify(view).setNodeBadges(any());
+        verify(view).onShow();
     }
 
     @Test
@@ -314,13 +323,13 @@ public class ProcessInstanceDiagramPresenterTest {
     public void testOnNodeInstanceCancelled() {
         ProcessInstanceSummary processInstance = ProcessInstanceSummary.builder().withServerTemplateId("serverTemplateId").withDeploymentId("containerId").withProcessInstanceId(1l).withState(ProcessInstance.STATE_ACTIVE).build();
 
-        NodeInstanceSummary humanTask = NodeInstanceSummary.builder().withId(1l).withName("name-1").withType("HumanTask").withCompleted(false).build();
+        NodeInstanceSummary humanTask = NodeInstanceSummary.builder().withId(1l).withName("name-1").withNodeUniqueName("_1").withType("HumanTask").withCompleted(false).build();
 
         List<NodeInstanceSummary> nodeInstances = Arrays.asList(
                 humanTask,
-                NodeInstanceSummary.builder().withId(2l).withName(" ").withType("Split").withCompleted(false).build(),
-                NodeInstanceSummary.builder().withId(3l).withName("name-3").withType("HumanTask").withCompleted(true).build(),
-                NodeInstanceSummary.builder().withId(4l).withName(" ").withType("End").withCompleted(true).build()
+                NodeInstanceSummary.builder().withId(2l).withName(" ").withNodeUniqueName("_2").withType("Split").withCompleted(false).build(),
+                NodeInstanceSummary.builder().withId(3l).withName("name-3").withNodeUniqueName("_3").withType("HumanTask").withCompleted(true).build(),
+                NodeInstanceSummary.builder().withId(4l).withName(" ").withNodeUniqueName("_4").withType("End").withCompleted(true).build()
         );
 
         ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
@@ -343,13 +352,13 @@ public class ProcessInstanceDiagramPresenterTest {
     public void testOnNodeInstanceReTriggered() {
         ProcessInstanceSummary processInstance = ProcessInstanceSummary.builder().withServerTemplateId("serverTemplateId").withDeploymentId("containerId").withProcessInstanceId(1l).withState(ProcessInstance.STATE_ACTIVE).build();
 
-        NodeInstanceSummary humanTask = NodeInstanceSummary.builder().withId(1l).withName("name-1").withType("HumanTask").withCompleted(false).build();
+        NodeInstanceSummary humanTask = NodeInstanceSummary.builder().withId(1l).withName("name-1").withNodeUniqueName("_1").withType("HumanTask").withCompleted(false).build();
 
         List<NodeInstanceSummary> nodeInstances = Arrays.asList(
                 humanTask,
-                NodeInstanceSummary.builder().withId(2l).withName(" ").withType("Split").withCompleted(false).build(),
-                NodeInstanceSummary.builder().withId(3l).withName("name-3").withType("HumanTask").withCompleted(true).build(),
-                NodeInstanceSummary.builder().withId(4l).withName(" ").withType("End").withCompleted(true).build()
+                NodeInstanceSummary.builder().withId(2l).withName(" ").withNodeUniqueName("_2").withType("Split").withCompleted(false).build(),
+                NodeInstanceSummary.builder().withId(3l).withName("name-3").withNodeUniqueName("_3").withType("HumanTask").withCompleted(true).build(),
+                NodeInstanceSummary.builder().withId(4l).withName(" ").withNodeUniqueName("_4").withType("End").withCompleted(true).build()
         );
 
         ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();

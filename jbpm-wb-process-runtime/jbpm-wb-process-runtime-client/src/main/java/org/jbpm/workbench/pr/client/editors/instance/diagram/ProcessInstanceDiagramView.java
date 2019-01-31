@@ -17,6 +17,7 @@
 package org.jbpm.workbench.pr.client.editors.instance.diagram;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -46,4 +47,7 @@ public interface ProcessInstanceDiagramView extends HasBusyIndicator,
 
     void hideNodeActions();
 
+    void setNodeBadges(Map<String, Long> badges);
+
+    void onShow();
 }

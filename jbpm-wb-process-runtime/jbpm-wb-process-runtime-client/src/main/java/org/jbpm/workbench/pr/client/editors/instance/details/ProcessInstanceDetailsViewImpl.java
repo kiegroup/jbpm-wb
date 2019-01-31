@@ -136,6 +136,7 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements Process
             diagramPane = GWT.create(TabPane.class);
             diagramPane.add(presenter.getProcessDiagramView());
             diagramTab = GWT.create(TabListItem.class);
+            diagramTab.addShownHandler(e -> presenter.onProcessDiagramTabShow());
             diagramTab.setText(constants.Diagram());
             diagramTab.setDataTargetWidget(diagramPane);
             diagramTab.addStyleName("uf-dropdown-tab-list-item");
