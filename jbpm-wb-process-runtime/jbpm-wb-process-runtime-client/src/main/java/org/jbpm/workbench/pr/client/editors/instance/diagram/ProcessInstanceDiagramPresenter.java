@@ -17,7 +17,9 @@
 package org.jbpm.workbench.pr.client.editors.instance.diagram;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -124,6 +126,9 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
                 }
             });
 
+            final Map<String, Long> badges = nodeInstances.stream().collect(Collectors.groupingBy(NodeInstanceSummary::getNodeUniqueName, Collectors.counting()));
+            view.setNodeBadges(badges);
+
             view.setNodeInstances(nodeInstances);
 
             timerInstances = summary.getTimerInstances().stream().sorted(comparing(TimerInstanceSummary::getName, String.CASE_INSENSITIVE_ORDER).thenComparingLong(TimerInstanceSummary::getId)).collect(toList());
@@ -145,6 +150,9 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
             if (forLog || processInstance.getState() != ProcessInstance.STATE_ACTIVE) {
                 view.hideNodeActions();
             }
+
+            view.onShow();
+
         }).getProcessInstanceDiagramSummary(processInstance.getProcessInstanceKey());
     }
 
@@ -234,6 +242,10 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
             refreshDetails();
         }).rescheduleTimerInstance(processInstance.getProcessInstanceKey(),
                                    summary);
+    }
+
+    public void onShow(){
+        view.onShow();
     }
 
     @WorkbenchPartTitle
