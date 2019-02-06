@@ -34,9 +34,19 @@ public class ManagePreferences implements BasePreference<ManagePreferences> {
             formType = PropertyFormType.NATURAL_NUMBER, validators = ItemPerPageValidator.class)
     private Integer itemsPerPage;
 
+    @Property(bundleKey = "ManagePreferences.ProcessVariables", helpBundleKey = "ManagePreferences.ProcessVariables.Help",
+            formType = PropertyFormType.BOOLEAN)
+    private Boolean loadProcessVariablesByDefault;
+
+    @Property(bundleKey = "ManagePreferences.TaskVariables", helpBundleKey = "ManagePreferences.ItemsPerPage.Help",
+            formType = PropertyFormType.BOOLEAN)
+    private Boolean loadTaskVariablesByDefault;
+
     @Override
     public ManagePreferences defaultValue(final ManagePreferences defaultValue) {
         defaultValue.itemsPerPage = DEFAULT_PAGINATION_OPTION;
+        defaultValue.loadProcessVariablesByDefault = false;
+        defaultValue.loadTaskVariablesByDefault = false;
         return defaultValue;
     }
 
@@ -46,5 +56,21 @@ public class ManagePreferences implements BasePreference<ManagePreferences> {
 
     public void setItemsPerPage(Integer itemsPerPage) {
         this.itemsPerPage = itemsPerPage;
+    }
+
+    public Boolean getLoadProcessVariablesByDefault() {
+        return loadProcessVariablesByDefault;
+    }
+
+    public void setLoadProcessVariablesByDefault(Boolean loadProcessVariablesByDefault) {
+        this.loadProcessVariablesByDefault = loadProcessVariablesByDefault;
+    }
+
+    public Boolean getLoadTaskVariablesByDefault() {
+        return loadTaskVariablesByDefault;
+    }
+
+    public void setLoadTaskVariablesByDefault(Boolean loadTaskVariablesByDefault) {
+        this.loadTaskVariablesByDefault = loadTaskVariablesByDefault;
     }
 }

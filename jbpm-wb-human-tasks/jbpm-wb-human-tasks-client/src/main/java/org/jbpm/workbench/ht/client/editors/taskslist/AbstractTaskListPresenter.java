@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -116,9 +117,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                             lastPageExactCount = true;
                         }
 
-                        List<DataSetOp> ops = tableSettings.getDataSetLookup().getOperationList();
-                        String filterValue = isFilteredByTaskName(ops); //Add here the check to add the domain data columns taskName?
-                        if (filterValue != null) {
+                        if (preferences.getLoadTaskVariablesByDefault() || isFilteredByTaskName(tableSettings.getDataSetLookup().getOperationList()) != null) {
                             getDomainSpecifDataForTasks(startRange,
                                                         myTasksFromDataSet,
                                                         lastPageExactCount);

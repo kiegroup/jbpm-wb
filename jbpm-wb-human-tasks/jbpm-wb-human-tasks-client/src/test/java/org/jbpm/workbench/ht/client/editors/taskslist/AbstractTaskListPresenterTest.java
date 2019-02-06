@@ -16,12 +16,9 @@
 
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
+
 import javax.enterprise.event.Event;
 
 import com.google.gwt.view.client.Range;
@@ -40,6 +37,7 @@ import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterAddEvent;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterRemoveEvent;
 import org.jbpm.workbench.common.client.list.ListTable;
+import org.jbpm.workbench.common.preferences.ManagePreferences;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
@@ -65,7 +63,9 @@ import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
-import static java.util.Collections.*;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
 import static org.jbpm.workbench.ht.client.util.TaskUtils.TaskType;
@@ -134,6 +134,9 @@ public abstract class AbstractTaskListPresenterTest {
 
     @Mock
     protected ManagedInstance<ErrorHandlerBuilder> errorHandlerBuilder;
+
+    @Mock
+    protected ManagePreferences preferences;
 
     @Spy
     protected ErrorHandlerBuilder errorHandler;
@@ -283,80 +286,66 @@ public abstract class AbstractTaskListPresenterTest {
     @Test
     public void getDomainSpecificDataForTasksTest() {
         final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(equalsTo(COLUMN_NAME,
-                                        "taskName"));
+        filter.addFilterColumn(equalsTo(COLUMN_NAME, "taskName"));
         filterSettings.getDataSetLookup().addOperation(filter);
 
+        testDomainSpecificData();
+    }
+
+    @Test
+    public void getDomainSpecifDataForTaskUsingPreferenceTest() {
+        when(preferences.getLoadTaskVariablesByDefault()).thenReturn(true);
+
+        testDomainSpecificData();
+    }
+
+    protected void testDomainSpecificData() {
         when(dataSetMock.getRowCount()).thenReturn(1);//1 task
         //Task summary creation
-        when(dataSetMock.getValueAt(0,
-                                    COLUMN_TASK_ID)).thenReturn(Long.valueOf(1));
+        when(dataSetMock.getValueAt(0, COLUMN_TASK_ID)).thenReturn(Long.valueOf(1));
 
         when(dataSetTaskVarMock.getRowCount()).thenReturn(2); //two domain variables associated
-        when(dataSetTaskVarMock.getValueAt(0,
-                                           COLUMN_TASK_ID
-        )).thenReturn(Long.valueOf(1));
+        when(dataSetTaskVarMock.getValueAt(0, COLUMN_TASK_ID)).thenReturn(Long.valueOf(1));
 
         String taskVariable1 = "var1";
-        when(dataSetTaskVarMock.getValueAt(0,
-                                           COLUMN_TASK_VARIABLE_NAME)).thenReturn(taskVariable1);
-        when(dataSetTaskVarMock.getValueAt(0,
-                                           COLUMN_TASK_VARIABLE_VALUE)).thenReturn("value1");
+        when(dataSetTaskVarMock.getValueAt(0, COLUMN_TASK_VARIABLE_NAME)).thenReturn(taskVariable1);
+        when(dataSetTaskVarMock.getValueAt(0, COLUMN_TASK_VARIABLE_VALUE)).thenReturn("value1");
 
-        when(dataSetTaskVarMock.getValueAt(1,
-                                           COLUMN_TASK_ID)).thenReturn(Long.valueOf(1));
+        when(dataSetTaskVarMock.getValueAt(1, COLUMN_TASK_ID)).thenReturn(Long.valueOf(1));
         String taskVariable2 = "var2";
-        when(dataSetTaskVarMock.getValueAt(1,
-                                           COLUMN_TASK_VARIABLE_NAME)).thenReturn(taskVariable2);
-        when(dataSetTaskVarMock.getValueAt(1,
-                                           COLUMN_TASK_VARIABLE_VALUE)).thenReturn("value2");
+        when(dataSetTaskVarMock.getValueAt(1, COLUMN_TASK_VARIABLE_NAME)).thenReturn(taskVariable2);
+        when(dataSetTaskVarMock.getValueAt(1, COLUMN_TASK_VARIABLE_VALUE)).thenReturn("value2");
 
         Set<String> expectedColumns = new HashSet<String>();
         expectedColumns.add(taskVariable1);
         expectedColumns.add(taskVariable2);
 
-        getPresenter().getData(new Range(0,
-                                         5));
+        getPresenter().getData(new Range(0, 5));
 
         ArgumentCaptor<Set> argument = ArgumentCaptor.forClass(Set.class);
-        verify(viewMock).addDomainSpecifColumns(any(ListTable.class),
-                                                argument.capture());
+        verify(viewMock).addDomainSpecifColumns(any(ListTable.class), argument.capture());
 
-        assertEquals(expectedColumns,
-                     argument.getValue());
+        assertEquals(expectedColumns, argument.getValue());
 
-        verify(dataSetQueryHelper).lookupDataSet(anyInt(),
-                                                 any(DataSetReadyCallback.class));
-        verify(dataSetQueryHelperDomainSpecific).lookupDataSet(anyInt(),
-                                                               any(DataSetReadyCallback.class));
+        verify(dataSetQueryHelper).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+        verify(dataSetQueryHelperDomainSpecific).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
 
         when(dataSetTaskVarMock.getRowCount()).thenReturn(1); //one domain variables associated
-        when(dataSetTaskVarMock.getValueAt(0,
-                                           COLUMN_TASK_ID)).thenReturn(Long.valueOf(1));
+        when(dataSetTaskVarMock.getValueAt(0, COLUMN_TASK_ID)).thenReturn(Long.valueOf(1));
         taskVariable1 = "varTest1";
-        when(dataSetTaskVarMock.getValueAt(0,
-                                           COLUMN_TASK_VARIABLE_NAME)).thenReturn(taskVariable1);
-        when(dataSetTaskVarMock.getValueAt(0,
-                                           COLUMN_TASK_VARIABLE_VALUE)).thenReturn("value1");
+        when(dataSetTaskVarMock.getValueAt(0, COLUMN_TASK_VARIABLE_NAME)).thenReturn(taskVariable1);
+        when(dataSetTaskVarMock.getValueAt(0, COLUMN_TASK_VARIABLE_VALUE)).thenReturn("value1");
 
         expectedColumns = Collections.singleton(taskVariable1);
 
-        getPresenter().getData(new Range(0,
-                                         5));
+        getPresenter().getData(new Range(0, 5));
 
         argument = ArgumentCaptor.forClass(Set.class);
-        verify(viewMock,
-               times(2)).addDomainSpecifColumns(any(ListTable.class),
-                                                argument.capture());
+        verify(viewMock, times(2)).addDomainSpecifColumns(any(ListTable.class), argument.capture());
 
-        assertEquals(expectedColumns,
-                     argument.getValue());
-        verify(dataSetQueryHelper,
-               times(2)).lookupDataSet(anyInt(),
-                                       any(DataSetReadyCallback.class));
-        verify(dataSetQueryHelperDomainSpecific,
-               times(2)).lookupDataSet(anyInt(),
-                                       any(DataSetReadyCallback.class));
+        assertEquals(expectedColumns, argument.getValue());
+        verify(dataSetQueryHelper, times(2)).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+        verify(dataSetQueryHelperDomainSpecific, times(2)).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
     }
 
     @Test

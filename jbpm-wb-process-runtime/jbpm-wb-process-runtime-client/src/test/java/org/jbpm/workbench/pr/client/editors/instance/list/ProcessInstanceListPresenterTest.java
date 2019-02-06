@@ -40,6 +40,7 @@ import org.jbpm.workbench.common.client.filters.basic.BasicFilterRemoveEvent;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
+import org.jbpm.workbench.common.preferences.ManagePreferences;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsJSONMarshaller;
 import org.jbpm.workbench.df.client.filter.FilterSettingsManager;
@@ -54,10 +55,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.api.runtime.process.ProcessInstance;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.client.mvp.PerspectiveActivity;
@@ -77,13 +75,12 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
-import static org.jbpm.workbench.common.client.PerspectiveIds.*;
+import static org.jbpm.workbench.common.client.PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN;
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 import static org.junit.Assert.*;
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.EXECUTION_ERRORS;
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.JOBS;
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.TASKS;
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.TASKS_ADMIN;
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -160,6 +157,9 @@ public class ProcessInstanceListPresenterTest {
 
     @Spy
     private ErrorHandlerBuilder errorHandler;
+
+    @Mock
+    private ManagePreferences preferences;
 
     @InjectMocks
     private ProcessInstanceListPresenter presenter;
@@ -271,20 +271,17 @@ public class ProcessInstanceListPresenterTest {
     public void isFilteredByProcessIdTest() {
         final String processId = "testProc";
         final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(equalsTo(COLUMN_PROCESS_ID,
-                                        processId));
+        filter.addFilterColumn(equalsTo(COLUMN_PROCESS_ID, processId));
 
         final String filterProcessId = presenter.isFilteredByProcessId(Collections.<DataSetOp>singletonList(filter));
-        assertEquals(processId,
-                     filterProcessId);
+        assertEquals(processId, filterProcessId);
     }
 
     @Test
     public void isFilteredByProcessIdInvalidTest() {
         final String processId = "testProc";
         final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(likeTo(COLUMN_PROCESS_ID,
-                                      processId));
+        filter.addFilterColumn(likeTo(COLUMN_PROCESS_ID, processId));
 
         final String filterProcessId = presenter.isFilteredByProcessId(Collections.<DataSetOp>singletonList(filter));
         assertNull(filterProcessId);
@@ -390,79 +387,66 @@ public class ProcessInstanceListPresenterTest {
     @Test
     public void getDomainSpecifDataForProcessInstancesTest() {
         final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(equalsTo(COLUMN_PROCESS_ID,
-                                        "testProc"));
+        filter.addFilterColumn(equalsTo(COLUMN_PROCESS_ID, "testProc"));
         filterSettings.getDataSetLookup().addOperation(filter);
 
+        testDomainSpecificData();
+    }
+
+    @Test
+    public void getDomainSpecifDataForProcessInstancesUsingPreferenceTest() {
+        when(preferences.getLoadProcessVariablesByDefault()).thenReturn(true);
+
+        testDomainSpecificData();
+    }
+
+    protected void testDomainSpecificData() {
         when(dataSet.getRowCount()).thenReturn(1);//1 process instance
-        when(dataSet.getValueAt(0,
-                                COLUMN_PROCESS_INSTANCE_ID)).thenReturn(Long.valueOf(1));
+        when(dataSet.getValueAt(0, COLUMN_PROCESS_INSTANCE_ID)).thenReturn(Long.valueOf(1));
 
         when(dataSetProcessVar.getRowCount()).thenReturn(2); //two domain variables associated
-        when(dataSetProcessVar.getValueAt(0,
-                                          PROCESS_INSTANCE_ID)).thenReturn(Long.valueOf(1));
+        when(dataSetProcessVar.getValueAt(0, PROCESS_INSTANCE_ID)).thenReturn(Long.valueOf(1));
         String processVariable1 = "var1";
-        when(dataSetProcessVar.getValueAt(0,
-                                          VARIABLE_NAME)).thenReturn(processVariable1);
-        when(dataSetProcessVar.getValueAt(0,
-                                          VARIABLE_VALUE)).thenReturn("value1");
+        when(dataSetProcessVar.getValueAt(0, VARIABLE_NAME)).thenReturn(processVariable1);
+        when(dataSetProcessVar.getValueAt(0, VARIABLE_VALUE)).thenReturn("value1");
 
-        when(dataSetProcessVar.getValueAt(1,
-                                          PROCESS_INSTANCE_ID)).thenReturn(Long.valueOf(1));
+        when(dataSetProcessVar.getValueAt(1, PROCESS_INSTANCE_ID)).thenReturn(Long.valueOf(1));
         String processVariable2 = "var2";
-        when(dataSetProcessVar.getValueAt(1,
-                                          VARIABLE_NAME)).thenReturn(processVariable2);
-        when(dataSetProcessVar.getValueAt(1,
-                                          VARIABLE_VALUE)).thenReturn("value2");
+        when(dataSetProcessVar.getValueAt(1, VARIABLE_NAME)).thenReturn(processVariable2);
+        when(dataSetProcessVar.getValueAt(1, VARIABLE_VALUE)).thenReturn("value2");
 
         Set<String> expectedColumns = new HashSet<String>();
         expectedColumns.add(processVariable1);
         expectedColumns.add(processVariable2);
 
-        presenter.getData(new Range(0,
-                                    5));
+        presenter.getData(new Range(0, 5));
 
         ArgumentCaptor<Set> argument = ArgumentCaptor.forClass(Set.class);
-        verify(viewMock).addDomainSpecifColumns(any(ExtendedPagedTable.class),
-                                                argument.capture());
+        verify(viewMock).addDomainSpecifColumns(any(ExtendedPagedTable.class), argument.capture());
 
-        assertEquals(expectedColumns,
-                     argument.getValue());
+        assertEquals(expectedColumns, argument.getValue());
 
-        verify(dataSetQueryHelper).lookupDataSet(anyInt(),
-                                                 any(DataSetReadyCallback.class));
-        verify(dataSetQueryHelperDomainSpecific).lookupDataSet(anyInt(),
-                                                               any(DataSetReadyCallback.class));
+        verify(dataSetQueryHelper).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+        verify(dataSetQueryHelperDomainSpecific).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
         verify(dataSetQueryHelperDomainSpecific).setLastOrderedColumn(PROCESS_INSTANCE_ID);
         verify(dataSetQueryHelperDomainSpecific).setLastSortOrder(SortOrder.ASCENDING);
 
         when(dataSetProcessVar.getRowCount()).thenReturn(1); //one domain variables associated
-        when(dataSetProcessVar.getValueAt(0,
-                                          PROCESS_INSTANCE_ID)).thenReturn(Long.valueOf(1));
+        when(dataSetProcessVar.getValueAt(0, PROCESS_INSTANCE_ID)).thenReturn(Long.valueOf(1));
         processVariable1 = "varTest1";
-        when(dataSetProcessVar.getValueAt(0,
-                                          VARIABLE_NAME)).thenReturn(processVariable1);
-        when(dataSetProcessVar.getValueAt(0,
-                                          VARIABLE_VALUE)).thenReturn("value1");
+        when(dataSetProcessVar.getValueAt(0, VARIABLE_NAME)).thenReturn(processVariable1);
+        when(dataSetProcessVar.getValueAt(0, VARIABLE_VALUE)).thenReturn("value1");
 
         expectedColumns = Collections.singleton(processVariable1);
 
-        presenter.getData(new Range(0,
-                                    5));
+        presenter.getData(new Range(0, 5));
 
         argument = ArgumentCaptor.forClass(Set.class);
-        verify(viewMock,
-               times(2)).addDomainSpecifColumns(any(ExtendedPagedTable.class),
-                                                argument.capture());
+        verify(viewMock, times(2)).addDomainSpecifColumns(any(ExtendedPagedTable.class), argument.capture());
 
-        assertEquals(expectedColumns,
-                     argument.getValue());
-        verify(dataSetQueryHelper,
-               times(2)).lookupDataSet(anyInt(),
-                                       any(DataSetReadyCallback.class));
-        verify(dataSetQueryHelperDomainSpecific,
-               times(2)).lookupDataSet(anyInt(),
-                                       any(DataSetReadyCallback.class));
+        assertEquals(expectedColumns, argument.getValue());
+        verify(dataSetQueryHelper, times(2)).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+        verify(dataSetQueryHelperDomainSpecific, times(2)).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
     }
 
     public ArrayList<ProcessInstanceSummary> createProcessInstanceSummaryList(int listSize) {
@@ -874,8 +858,7 @@ public class ProcessInstanceListPresenterTest {
         ArgumentCaptor<ProcessInstanceSelectionEvent> argument = ArgumentCaptor.forClass(ProcessInstanceSelectionEvent.class);
         verify(processInstanceSelectionEvent).fire(argument.capture());
         verify(placeManager).goTo(PROCESS_INSTANCE_DETAILS_SCREEN);
-        verify(viewMock,
-               never()).displayNotification(anyString());
+        verify(viewMock, never()).displayNotification(anyString());
     }
 
     @Test
@@ -886,9 +869,9 @@ public class ProcessInstanceListPresenterTest {
         String variableNameWithoutInitiator = "noinitiator";
         String variableValueWithoutInitiator = "other people";
 
-        assertEquals(true, presenter.filterInitiator(variableNameWithInitiator, variableValueWithInitiator, variableValueWithInitiator));
-        assertEquals(false, presenter.filterInitiator(variableNameWithoutInitiator, variableValueWithoutInitiator, variableValueWithoutInitiator));
-        assertEquals(false, presenter.filterInitiator(variableNameWithInitiator, variableValueWithInitiator, variableValueWithoutInitiator));
-        assertEquals(false, presenter.filterInitiator(variableNameWithoutInitiator, variableValueWithoutInitiator, variableValueWithInitiator));
+        assertTrue(presenter.filterInitiator(variableNameWithInitiator, variableValueWithInitiator, variableValueWithInitiator));
+        assertFalse(presenter.filterInitiator(variableNameWithoutInitiator, variableValueWithoutInitiator, variableValueWithoutInitiator));
+        assertFalse(presenter.filterInitiator(variableNameWithInitiator, variableValueWithInitiator, variableValueWithoutInitiator));
+        assertFalse(presenter.filterInitiator(variableNameWithoutInitiator, variableValueWithoutInitiator, variableValueWithInitiator));
     }
 }

@@ -38,6 +38,7 @@ import org.jbpm.workbench.common.client.filters.basic.BasicFilterRemoveEvent;
 import org.jbpm.workbench.common.client.filters.saved.SavedFilterSelectedEvent;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.model.GenericSummary;
+import org.jbpm.workbench.common.preferences.ManagePreferences;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.filter.FilterSettingsManager;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
@@ -63,6 +64,9 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
 
     @Inject
     protected DefaultWorkbenchErrorCallback errorCallback;
+
+    @Inject
+    protected ManagePreferences preferences;
 
     protected ManagedInstance<ErrorHandlerBuilder> errorHandlerBuilder;
 
@@ -115,6 +119,7 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
         final BiConsumer<String, Consumer<String>> filterNameCallback = (name, callback) -> saveSearchFilterSettings(name,
                                                                                                                      callback);
         view.setSaveFilterCallback(filterNameCallback);
+        preferences.load();
     }
 
     @Override

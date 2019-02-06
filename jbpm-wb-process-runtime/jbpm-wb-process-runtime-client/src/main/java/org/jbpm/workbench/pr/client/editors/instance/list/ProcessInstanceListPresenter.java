@@ -164,8 +164,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                             lastPage = true;
                         }
 
-                        final String filterValue = isFilteredByProcessId(tableSettings.getDataSetLookup().getOperationList());
-                        if (filterValue != null) {
+                        if (preferences.getLoadProcessVariablesByDefault() || isFilteredByProcessId(tableSettings.getDataSetLookup().getOperationList()) != null) {
                             getDomainSpecifDataForProcessInstances(startRange,
                                                                    myProcessInstancesFromDataSet,
                                                                    lastPage);
