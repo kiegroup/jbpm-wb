@@ -58,7 +58,7 @@ public class TimerInstanceRescheduleView implements TakesValue<TimerInstanceSumm
 
     @Inject
     @DataField("timer-delay-input")
-    @Bound
+    @Bound(converter = MillisecondsToSecondsConverter.class)
     @SuppressWarnings("unused")
     private SanitizedNumberInput delay;
 
