@@ -5,7 +5,7 @@
                 <button type="button" class="close" data-field="close" data-dismiss="modal" aria-hidden="true">
                     <span class="pficon pficon-close"></span>
                 </button>
-                <h4 class="modal-title"><span data-i18n-key="New_Job"></span></h4>
+                <h4 class="modal-title"><span data-i18n-key="Reschedule"></span></h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal">
@@ -14,10 +14,7 @@
                             <label class="control-label col-md-3" data-i18n-key="Delay"></label>
                             <div class="col-md-9">
                                 <input type="number" data-field="timer-delay-input" class="form-control"/>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-md-offset-3 col-md-9">
+                                <p class="help-block" data-i18n-key="TimerDelayHelp"></p>
                                 <label class="radio-inline">
                                     <input type="radio" name="run" value="true" data-field="timer-relative">
                                     <span data-i18n-key="FromNow"></span>
