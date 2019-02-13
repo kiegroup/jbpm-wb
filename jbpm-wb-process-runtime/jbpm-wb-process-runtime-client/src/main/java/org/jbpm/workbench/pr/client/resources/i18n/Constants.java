@@ -354,4 +354,6 @@ public interface Constants extends Messages {
     String TimerInstanceRescheduled(String timerId);
 
     String Trigger();
+
+    String TimerDelayHelp();
 }
