@@ -108,35 +108,17 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
         svg.call(zoom.on("zoom",
                          callback));
 
-        zoomControlView.setScaleTo100Command(() -> {
-            zoom.transform(svg.transition().duration(500),
-                           d3.getZoomIdentity());
-        });
+        zoomControlView.setScaleTo100Command(() -> zoom.transform(svg.transition().duration(500), d3.getZoomIdentity()));
 
-        zoomControlView.setScaleTo300Command(() -> {
-            zoom.scaleTo(svg.transition().duration(500),
-                         3.0);
-        });
+        zoomControlView.setScaleTo300Command(() -> zoom.scaleTo(svg.transition().duration(500), 3.0));
 
-        zoomControlView.setScaleTo150Command(() -> {
-            zoom.scaleTo(svg.transition().duration(500),
-                         1.5);
-        });
+        zoomControlView.setScaleTo150Command(() -> zoom.scaleTo(svg.transition().duration(500), 1.5));
 
-        zoomControlView.setScaleTo50Command(() -> {
-            zoom.scaleTo(svg.transition().duration(500),
-                         0.5);
-        });
+        zoomControlView.setScaleTo50Command(() -> zoom.scaleTo(svg.transition().duration(500), 0.5));
 
-        zoomControlView.setScaleMinusCommand(() -> {
-            zoom.scaleBy(svg.transition().duration(200),
-                         0.95);
-        });
+        zoomControlView.setScaleMinusCommand(() -> zoom.scaleBy(svg.transition().duration(200), 0.95));
 
-        zoomControlView.setScalePlusCommand(() -> {
-            zoom.scaleBy(svg.transition().duration(200),
-                         1.05);
-        });
+        zoomControlView.setScalePlusCommand(() -> zoom.scaleBy(svg.transition().duration(200), 1.05));
 
         processDiagramDiv.appendChild(zoomControlView.getElement());
 
@@ -144,7 +126,7 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
             return;
         }
 
-        final D3 selectAll = svg.selectAll("g [bpmn2nodeid]");
+        final D3.Selection selectAll = select();
         selectAll.on("mouseenter", () -> {
             Object target = D3.Builder.get().getEvent().getCurrentTarget();
             D3 node = d3.select(target);
@@ -163,6 +145,12 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
             nodeSelectionCallback.callback((String) node.attr("bpmn2nodeid"));
         });
     }
+
+    protected native D3.Selection select() /*-{
+        return $wnd.d3.selectAll("[bpmn2nodeid]").filter(function(){
+            return $wnd.d3.select(this).select("[bpmn2nodeid]").empty();
+        });
+    }-*/;
 
     private void refreshExtent(D3.Zoom zoom, double minX, double minY, double maxX, double maxY) {
         double[][] translateExtent = new double[2][2];
