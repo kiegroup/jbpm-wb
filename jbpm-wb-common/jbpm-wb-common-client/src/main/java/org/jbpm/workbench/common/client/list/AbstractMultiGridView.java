@@ -15,12 +15,17 @@
  */
 package org.jbpm.workbench.common.client.list;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.StreamSupport;
+import java.util.stream.Collectors;
+
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
@@ -58,6 +63,7 @@ import org.jbpm.workbench.common.model.GenericSummary;
 import org.jbpm.workbench.common.preferences.ManagePreferences;
 import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback;
 import org.uberfire.client.mvp.PlaceManager;
+import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
@@ -185,9 +191,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                 readyCallback.accept(listTable);
             }).loadUserPreferences(key,
                                    UserPreferencesType.GRIDPREFERENCES);
-
         }, error -> new DefaultWorkbenchErrorCallback().error(error));
-
     }
 
     protected void addNewTableToColumn(final ListTable<T> newListGrid) {
@@ -293,7 +297,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         return column;
     }
 
-    protected ColumnMeta<T> initChecksColumn(final ListTable<T> extendedPagedTable) {
+    public ColumnMeta<T> initChecksColumn(final ListTable<T> extendedPagedTable) {
         CheckboxCell checkboxCell = new CheckboxCell(true,
                                                      false);
         Column<T, Boolean> checkColumn = new Column<T, Boolean>(checkboxCell) {
@@ -352,9 +356,13 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         return false;
     }
 
+    protected boolean existsColumnWithSameName(GridColumnPreference gridColumnPreference, List<ColumnMeta<T>> columns) {
+        return columns.stream().filter(meta -> meta.getCaption().equals(gridColumnPreference.getName())).findFirst().isPresent();
+    }
+
     protected abstract List<ConditionalAction<T>> getConditionalActions();
 
-    protected ColumnMeta<T> initActionsColumn() {
+    public ColumnMeta<T> initActionsColumn() {
         final ConditionalKebabActionCell<T> cell = conditionalKebabActionCell.get();
 
         cell.setActions(getConditionalActions());
@@ -376,6 +384,97 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         actionsColMeta.setHeader(header);
         actionsColMeta.setVisibleIndex(false);
         return actionsColMeta;
+    }
+
+    public List<ColumnMeta<T>> renameVariables(ListTable<T> extendedPagedTable, List<ColumnMeta<T>> columnMetas) {
+        List<GridColumnPreference> columnPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
+
+        return (List<ColumnMeta<T>>) columnPreferenceList.stream().filter(colPref -> !isColumnAdded(columnMetas, colPref.getName())).map(colPref -> {
+            return newColumnMeta(colPref.getName(),
+                                 existsColumnWithSameName(colPref,
+                                                          columnMetas),
+                                 false);
+        }).collect(Collectors.toList());
+    }
+
+    private ColumnMeta<T> newColumnMeta(String columnName, boolean existsColumnWithSameName, boolean isVisible) {
+
+        Column genericColumn = initGenericColumn(columnName);
+        genericColumn.setSortable(false);
+
+        String caption = !existsColumnWithSameName ? columnName : "Var_" + columnName;
+        return new ColumnMeta<T>(genericColumn,
+                                 caption,
+                                 isVisible,
+                                 true);
+    }
+
+    public void addDomainSpecifColumns(ExtendedPagedTable<T> extendedPagedTable,
+                                       Set<String> columns) {
+        extendedPagedTable.storeColumnToPreferences();
+
+        List<GridColumnPreference> gridColumnPreferenceList = removeRedundantColumns(extendedPagedTable, columns);
+
+        List<ColumnMeta<T>> columnMetaList = renameDomainSpecifColumns(extendedPagedTable,
+                                                                       columns);
+
+        addDomainColumns(columnMetaList,
+                         columns);
+
+        extendedPagedTable.getGridPreferencesStore().getColumnPreferences().addAll(gridColumnPreferenceList);
+        columnMetaList.forEach(columnMeta -> {
+            List<GridColumnPreference> list = gridColumnPreferenceList.stream().filter(gridColumnPreference -> gridColumnPreference.getName().equals(columnMeta.getColumn().getDataStoreName())).collect(Collectors.toList());
+            extendedPagedTable.getGridPreferencesStore().getColumnPreferences().addAll(list);
+            extendedPagedTable.addColumns(Arrays.asList(columnMeta));
+        });
+    }
+
+    private void addDomainColumns(List<ColumnMeta<T>> columnMetaList,
+                                  Set<String> columns) {
+        columns.stream().filter(newColumn -> newColumnIsNotInDataStoreNames(newColumn, columnMetaList))
+                .forEach(column -> {
+                    ColumnMeta<T> columnMeta = newColumnMeta(column,
+                                                             false,
+                                                             false);
+                    columnMetaList.add(columnMeta);
+                });
+    }
+
+    private boolean newColumnIsNotInDataStoreNames(String newColumn, List<ColumnMeta<T>> columnMetaList) {
+        return columnMetaList.stream()
+                .map(colMeta -> colMeta.getColumn().getDataStoreName())
+                .noneMatch(newColumn::contains);
+    }
+
+    private List<ColumnMeta<T>> renameDomainSpecifColumns(ExtendedPagedTable<T> extendedPagedTable,
+                                                          Set<String> columns) {
+        return (List<ColumnMeta<T>>) extendedPagedTable.getColumnMetaList().stream()
+                .filter(cm -> !cm.isExtraColumn() && columns.contains(cm.getCaption()))
+                .map(colMet -> newColumnMeta(colMet.getCaption(),
+                                             true,
+                                             false)
+                ).collect(Collectors.toList());
+    }
+
+    private List<GridColumnPreference> removeRedundantColumns(ExtendedPagedTable<T> extendedPagedTable,
+                                                              Set<String> columns) {
+
+        List<ColumnMeta<T>> columnMetas = extendedPagedTable.getColumnMetaList().stream()
+                .filter(cm -> cm.isExtraColumn())
+                .collect(Collectors.toList());
+
+        List<GridColumnPreference> gridColumnPreferenceList = new ArrayList<GridColumnPreference>();
+        columnMetas.forEach(colMet -> {
+            if (!columns.contains(colMet.getCaption())) {
+                List<GridColumnPreference> columnPreferences = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
+                columnPreferences.stream().filter(columnPreference -> columnPreference.getName().equals(colMet.getColumn().getDataStoreName())).forEach(columnPreference -> gridColumnPreferenceList.add(columnPreference));
+                extendedPagedTable.removeColumnMeta(colMet);
+            } else {
+                columns.remove(colMet.getCaption());
+            }
+        });
+
+        return gridColumnPreferenceList;
     }
 
     @Override
