@@ -16,14 +16,10 @@
 
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -31,28 +27,20 @@ import javax.inject.Inject;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.DataSetOpType;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
-import org.dashbuilder.dataset.filter.ColumnFilter;
-import org.dashbuilder.dataset.filter.CoreFunctionFilter;
-import org.dashbuilder.dataset.filter.CoreFunctionType;
-import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.dashbuilder.dataset.filter.*;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
-import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
-import org.jbpm.workbench.ht.model.events.AbstractTaskEvent;
-import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
-import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
-import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
+import org.jbpm.workbench.ht.model.events.*;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.workbench.ht.util.TaskStatus;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
@@ -135,28 +123,41 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                 .withEmptyResultsCallback(() -> setEmptyResults());
     }
 
+    @Override
+    protected void removeActiveFilter(final ColumnFilter columnFilter) {
+        super.removeActiveFilter(columnFilter);
+        if (isFilteredByTaskName(columnFilter) != null) {
+            view.removeDomainSpecifColumns();
+        }
+    }
+
     protected String isFilteredByTaskName(List<DataSetOp> ops) {
         for (DataSetOp dataSetOp : ops) {
             if (dataSetOp.getType().equals(DataSetOpType.FILTER)) {
                 List<ColumnFilter> filters = ((DataSetFilter) dataSetOp).getColumnFilterList();
-
                 for (ColumnFilter filter : filters) {
-
-                    if (filter instanceof CoreFunctionFilter) {
-                        CoreFunctionFilter coreFilter = ((CoreFunctionFilter) filter);
-                        if (filter.getColumnId().toUpperCase().equals(COLUMN_NAME.toUpperCase()) &&
-                                ((CoreFunctionFilter) filter).getType() == CoreFunctionType.EQUALS_TO) {
-
-                            List parameters = coreFilter.getParameters();
-                            if (parameters.size() > 0) {
-                                return parameters.get(0).toString();
-                            }
-                        }
+                    final String taskName = isFilteredByTaskName(filter);
+                    if (taskName != null) {
+                        return taskName;
                     }
                 }
             }
         }
+        return null;
+    }
 
+    protected String isFilteredByTaskName(ColumnFilter filter) {
+        if (filter instanceof CoreFunctionFilter) {
+            CoreFunctionFilter coreFilter = ((CoreFunctionFilter) filter);
+            if (filter.getColumnId().toUpperCase().equals(COLUMN_NAME.toUpperCase()) &&
+                    ((CoreFunctionFilter) filter).getType() == CoreFunctionType.EQUALS_TO) {
+
+                List parameters = coreFilter.getParameters();
+                if (parameters.size() > 0) {
+                    return parameters.get(0).toString();
+                }
+            }
+        }
         return null;
     }
 
@@ -206,8 +207,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                                 }
                             }
                         }
-                        view.addDomainSpecifColumns((ListTable) view.getListGrid(),
-                                                    columns);
+                        view.addDomainSpecifColumns(columns);
                     }
                     updateDataOnCallback(instances,
                                          startRange,
@@ -420,8 +420,9 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     public interface TaskListView<T extends AbstractTaskListPresenter> extends MultiGridView<TaskSummary, T> {
 
-        void addDomainSpecifColumns(ExtendedPagedTable<TaskSummary> extendedPagedTable,
-                                    Set<String> columns);
+        void addDomainSpecifColumns(Set<String> columns);
+
+        void removeDomainSpecifColumns();
     }
 
     @Inject

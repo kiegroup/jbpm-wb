@@ -15,8 +15,8 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.google.gwt.user.cellview.client.RowStyles;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridViewTest;
@@ -25,12 +25,15 @@ import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
+import org.uberfire.ext.services.shared.preferences.*;
+import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.COL_ID_ACTIONS;
-import static org.jbpm.workbench.ht.util.TaskStatus.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.COLUMN_NAME;
-import static org.junit.Assert.*;
+import static org.jbpm.workbench.ht.util.TaskStatus.TASK_STATUS_COMPLETED;
+import static org.jbpm.workbench.ht.util.TaskStatus.TASK_STATUS_READY;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
 public abstract class AbstractTaskListViewTest extends AbstractMultiGridViewTest<TaskSummary> {
@@ -48,6 +51,50 @@ public abstract class AbstractTaskListViewTest extends AbstractMultiGridViewTest
     @Override
     public Integer getExpectedNumberOfColumns() {
         return 15;
+    }
+
+    @Test
+    public void addDomainSpecifColumnsTest() {
+        final ListTable<TaskSummary> currentListGrid = spy(new ListTable<>(new GridGlobalPreferences()));
+        when(getView().getListGrid()).thenReturn(currentListGrid);
+        final Set<String> domainColumns = new HashSet<String>();
+        domainColumns.add("var1");
+        domainColumns.add("var2");
+        domainColumns.add("var3");
+        getView().addDomainSpecifColumns(domainColumns);
+
+        final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
+        verify(currentListGrid, times(3)).addColumns(argument.capture());
+
+        final List<List> columns = argument.getAllValues();
+        assertEquals(3, columns.size());
+        final Set<String> captions = columns.stream().map(l -> (ColumnMeta)l.get(0)).map(m -> m.getCaption()).collect(Collectors.toSet());
+        assertEquals(domainColumns, captions);
+    }
+
+    @Test
+    public void removeDomainSpecifColumnsTest() {
+        final ListTable<TaskSummary> listGrid = spy(new ListTable<>(new GridGlobalPreferences()));
+        final ColumnMeta columnToRemove = new ColumnMeta<>(newColumnMock("c1"), "", true, true);
+        listGrid.getColumnMetaList().add(columnToRemove);
+        listGrid.getColumnMetaList().add(new ColumnMeta<>(newColumnMock("c2"), "", false, true));
+        listGrid.getColumnMetaList().add(new ColumnMeta<>(newColumnMock("c3"), "", true, false));
+        listGrid.getColumnMetaList().add(new ColumnMeta<>(newColumnMock("c4"), "", false, false));
+        listGrid.getGridPreferencesStore().setPreferenceKey("key");
+        when(getView().getListGrid()).thenReturn(listGrid);
+        doNothing().when(listGrid).removeColumnMeta(any());
+        final GridPreferencesStore store = new GridPreferencesStore(new GridGlobalPreferences());
+        store.getColumnPreferences().add(new GridColumnPreference("c3", 0, ""));
+        store.getColumnPreferences().add(new GridColumnPreference("c1", 1, ""));
+
+        when(userPreferencesServiceMock.loadUserPreferences(listGrid.getGridPreferencesStore().getPreferenceKey(), UserPreferencesType.GRIDPREFERENCES)).thenReturn(store);
+
+        getView().removeDomainSpecifColumns();
+
+        assertEquals(1, store.getColumnPreferences().size());
+        assertEquals("c3", store.getColumnPreferences().get(0).getName());
+        verify(listGrid).removeColumnMeta(columnToRemove);
+        verify(listGrid).saveGridPreferences();
     }
 
     @Test
