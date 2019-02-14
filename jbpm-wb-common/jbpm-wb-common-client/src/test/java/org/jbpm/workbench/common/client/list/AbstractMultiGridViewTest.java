@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.common.client.util.ConditionalKebabActionCell;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.jbpm.workbench.common.preferences.ManagePreferences;
-import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -41,7 +40,6 @@ import org.mockito.stubbing.Answer;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
-import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesType;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
@@ -52,9 +50,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
-
-    @Spy
-    protected FilterSettings filterSettings;
 
     @Mock
     protected AsyncDataProvider dataProviderMock;
@@ -72,9 +67,6 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
 
     @Mock
     protected Button mockButton;
-
-    @Spy
-    protected MultiGridPreferencesStore multiGridPreferencesStore;
 
     @Spy
     protected GridPreferencesStore gridPreferencesStore;
@@ -106,23 +98,19 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
         doNothing().when(getView()).addNewTableToColumn(any());
         when(extendedPagedTable.getRightActionsToolbar()).thenReturn(rightActionsToolbar);
         List<Button> a = Collections.singletonList(mockButton);
-        when(rightActionsToolbar.spliterator())
-                .thenReturn(Spliterators.spliteratorUnknownSize(a.iterator(),
-                                                                0));
+        when(rightActionsToolbar.spliterator()).thenReturn(Spliterators.spliteratorUnknownSize(a.iterator(), 0));
     }
 
     @Test
     public void selectionIgnoreColumnTest() {
         ExtendedPagedTable<GenericSummary> extPagedTable = new ExtendedPagedTable<GenericSummary>(new GridGlobalPreferences());
-        Column testCol = getView().createTextColumn("testCol",
-                                                    (val -> val));
+        Column testCol = getView().createTextColumn("testCol", (val -> val));
 
         extPagedTable.addSelectionIgnoreColumn(testCol);
         assertFalse(extPagedTable.isSelectionIgnoreColumn(extPagedTable.getColumnIndex(testCol)));
         assertTrue(extPagedTable.removeSelectionIgnoreColumn(testCol));
 
-        extPagedTable.addColumn(testCol,
-                                "");
+        extPagedTable.addColumn(testCol, "");
         assertFalse(extPagedTable.isSelectionIgnoreColumn(extPagedTable.getColumnIndex(testCol)));
         extPagedTable.addSelectionIgnoreColumn(testCol);
         assertTrue(extPagedTable.isSelectionIgnoreColumn(extPagedTable.getColumnIndex(testCol)));
@@ -132,12 +120,9 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
     public void testInitialColumns() {
         final List<String> expectedInitColumns = getExpectedInitialColumns();
 
-        assertEquals(expectedInitColumns.size(),
-                     getView().getInitColumns().size());
-
+        assertEquals(expectedInitColumns.size(), getView().getInitColumns().size());
         for (int i = 0; i < expectedInitColumns.size(); i++) {
-            assertEquals(expectedInitColumns.get(i),
-                         getView().getInitColumns().get(i));
+            assertEquals(expectedInitColumns.get(i), getView().getInitColumns().get(i));
         }
     }
 
@@ -145,12 +130,9 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
     public void testBannedColumns() {
         List<String> bannedColumns = getView().getBannedColumns();
 
-        assertEquals(getExpectedBannedColumns().size(),
-                     bannedColumns.size());
-
+        assertEquals(getExpectedBannedColumns().size(), bannedColumns.size());
         for (int i = 0; i < bannedColumns.size(); i++) {
-            assertEquals(getExpectedBannedColumns().get(i),
-                         bannedColumns.get(i));
+            assertEquals(getExpectedBannedColumns().get(i), bannedColumns.get(i));
         }
     }
 
@@ -193,9 +175,7 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
 
         InOrder inOrder = inOrder(currentListGrid);
         inOrder.verify(currentListGrid).addColumns(anyList());
-        inOrder.verify(currentListGrid).setColumnWidth(any(),
-                                                       anyDouble(),
-                                                       any());
+        inOrder.verify(currentListGrid).setColumnWidth(any(), anyDouble(), any());
     }
 
     @Test
@@ -209,14 +189,10 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
         doAnswer((InvocationOnMock inv) -> {
             ((ParameterizedCommand<ManagePreferences>) inv.getArguments()[0]).execute(new ManagePreferences().defaultValue(new ManagePreferences()));
             return null;
-        }).when(preferences).load(any(ParameterizedCommand.class),
-                                  any(ParameterizedCommand.class));
-
+        }).when(preferences).load(any(ParameterizedCommand.class), any(ParameterizedCommand.class));
         Consumer<ListTable> consumer = table -> assertEquals(ManagePreferences.DEFAULT_PAGINATION_OPTION.intValue(),
                                                              table.getGridPreferencesStore().getPageSizePreferences());
-
-        getView().loadListTable("key",
-                                consumer);
+        getView().loadListTable("key", consumer);
     }
 
     @Test
@@ -231,5 +207,15 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
         when(extendedPagedTable.hasSelectedItems()).thenReturn(false);
         getView().controlBulkOperations(extendedPagedTable);
         verify(mockButton).setEnabled(false);
+    }
+
+    @Test
+    public void testEnableDataGridMinWidth() {
+        doAnswer((InvocationOnMock inv) -> {
+            ((ParameterizedCommand<ManagePreferences>) inv.getArguments()[0]).execute(new ManagePreferences().defaultValue(new ManagePreferences()));
+            return null;
+        }).when(preferences).load(any(ParameterizedCommand.class), any(ParameterizedCommand.class));
+        Consumer<ListTable> consumer = table -> assertTrue(table.isDataGridMinWidthEnabled());
+        getView().loadListTable("key", consumer);
     }
 }
