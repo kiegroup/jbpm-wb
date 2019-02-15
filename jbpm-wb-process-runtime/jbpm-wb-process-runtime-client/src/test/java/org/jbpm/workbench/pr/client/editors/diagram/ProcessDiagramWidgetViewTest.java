@@ -51,7 +51,7 @@ public class ProcessDiagramWidgetViewTest {
     private D3 d3Mock;
 
     @Mock
-    private D3 svgSelect;
+    private D3.Selection svgSelect;
 
     @Mock
     private D3.Zoom zoomMock;

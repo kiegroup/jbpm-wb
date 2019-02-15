@@ -41,6 +41,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
@@ -419,7 +420,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     public interface TaskListView<T extends AbstractTaskListPresenter> extends MultiGridView<TaskSummary, T> {
 
-        void addDomainSpecifColumns(ListTable<TaskSummary> extendedPagedTable,
+        void addDomainSpecifColumns(ExtendedPagedTable<TaskSummary> extendedPagedTable,
                                     Set<String> columns);
     }
 

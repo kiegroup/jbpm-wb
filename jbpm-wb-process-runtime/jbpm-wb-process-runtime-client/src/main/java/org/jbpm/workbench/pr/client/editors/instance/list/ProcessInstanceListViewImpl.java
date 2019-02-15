@@ -17,9 +17,8 @@ package org.jbpm.workbench.pr.client.editors.instance.list;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -41,7 +40,6 @@ import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.views.pfly.widgets.ConfirmPopup;
-import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
 
@@ -99,6 +97,39 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         final ColumnMeta checkColumnMeta = initChecksColumn(extendedPagedTable);
         ColumnMeta<ProcessInstanceSummary> actionsColumnMeta = initActionsColumn();
         Column<ProcessInstanceSummary, ?> errorCountColumn = initErrorCountColumn();
+        final Column<ProcessInstanceSummary, String> startColumn = createTextColumn(COLUMN_START,
+                                                                                    process -> DateUtils.getDateTimeStr(process.getStartTime()));
+
+        final List<ColumnMeta<ProcessInstanceSummary>> columnMetas = getGeneralColumnMetas(extendedPagedTable,
+                                                                                           startColumn,
+                                                                                           checkColumnMeta,
+                                                                                           actionsColumnMeta,
+                                                                                           errorCountColumn);
+
+        columnMetas.addAll(renameVariables(extendedPagedTable, columnMetas));
+
+        extendedPagedTable.addColumns(columnMetas);
+
+        extendedPagedTable.setColumnWidth(checkColumnMeta.getColumn(),
+                                          CHECK_COLUMN_WIDTH,
+                                          Style.Unit.PX);
+        extendedPagedTable.setColumnWidth(errorCountColumn,
+                                          ERROR_COLUMN_WIDTH,
+                                          Style.Unit.PX);
+
+        extendedPagedTable.setColumnWidth(actionsColumnMeta.getColumn(),
+                                          ACTIONS_COLUMN_WIDTH,
+                                          Style.Unit.PX);
+
+        extendedPagedTable.getColumnSortList().push(startColumn);
+
+    }
+
+    protected List<ColumnMeta<ProcessInstanceSummary>> getGeneralColumnMetas(final ListTable<ProcessInstanceSummary> extendedPagedTable,
+                                                                             final Column<ProcessInstanceSummary, String> startColumn,
+                                                                             final ColumnMeta checkColumnMeta,
+                                                                             final ColumnMeta<ProcessInstanceSummary> actionsColumnMeta,
+                                                                             final Column<ProcessInstanceSummary, ?> errorCountColumn) {
         Column<ProcessInstanceSummary, ?> slaComplianceColumn = initSlaComplianceColumn();
         extendedPagedTable.addSelectionIgnoreColumn(checkColumnMeta.getColumn());
         extendedPagedTable.addSelectionIgnoreColumn(actionsColumnMeta.getColumn());
@@ -140,8 +171,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                                                               }
                                                           }),
                                          constants.State()));
-        final Column<ProcessInstanceSummary, String> startColumn = createTextColumn(COLUMN_START,
-                                                                                    process -> DateUtils.getDateTimeStr(process.getStartTime()));
         startColumn.setDefaultSortAscending(false);
         columnMetas.add(new ColumnMeta<>(startColumn,
                                          constants.Start_Date()));
@@ -160,77 +189,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         columnMetas.add(new ColumnMeta<>(errorCountColumn,
                                          constants.Errors()));
         columnMetas.add(actionsColumnMeta);
-
-        List<GridColumnPreference> columnPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
-
-        for (GridColumnPreference colPref : columnPreferenceList) {
-            if (!isColumnAdded(columnMetas,
-                               colPref.getName())) {
-                Column genericColumn = initGenericColumn(colPref.getName());
-                genericColumn.setSortable(false);
-                columnMetas.add(new ColumnMeta<>(genericColumn,
-                                                 colPref.getName(),
-                                                 true,
-                                                 true));
-            }
-        }
-        extendedPagedTable.addColumns(columnMetas);
-        extendedPagedTable.setColumnWidth(checkColumnMeta.getColumn(),
-                                          CHECK_COLUMN_WIDTH,
-                                          Style.Unit.PX);
-        extendedPagedTable.setColumnWidth(errorCountColumn,
-                                          ERROR_COLUMN_WIDTH,
-                                          Style.Unit.PX);
-        extendedPagedTable.setColumnWidth(actionsColumnMeta.getColumn(),
-                                          ACTIONS_COLUMN_WIDTH,
-                                          Style.Unit.PX);
-        extendedPagedTable.getColumnSortList().push(startColumn);
-    }
-
-    public void addDomainSpecifColumns(ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable,
-                                       Set<String> columns) {
-
-        extendedPagedTable.storeColumnToPreferences();
-
-        HashMap modifiedCaptions = new HashMap<String, String>();
-        ArrayList<ColumnMeta> existingExtraColumns = new ArrayList<ColumnMeta>();
-        for (ColumnMeta<ProcessInstanceSummary> cm : extendedPagedTable.getColumnMetaList()) {
-            if (cm.isExtraColumn()) {
-                existingExtraColumns.add(cm);
-            } else if (columns.contains(cm.getCaption())) {      //exist a column with the same caption
-                for (String c : columns) {
-                    if (c.equals(cm.getCaption())) {
-                        modifiedCaptions.put(c,
-                                             "Var_" + c);
-                    }
-                }
-            }
-        }
-        for (ColumnMeta colMet : existingExtraColumns) {
-            if (!columns.contains(colMet.getCaption())) {
-                extendedPagedTable.removeColumnMeta(colMet);
-            } else {
-                columns.remove(colMet.getCaption());
-            }
-        }
-
-        List<ColumnMeta<ProcessInstanceSummary>> columnMetas = new ArrayList<ColumnMeta<ProcessInstanceSummary>>();
-        String caption = "";
-        for (String c : columns) {
-            caption = c;
-            if (modifiedCaptions.get(c) != null) {
-                caption = (String) modifiedCaptions.get(c);
-            }
-            Column genericColumn = initGenericColumn(c);
-            genericColumn.setSortable(false);
-
-            columnMetas.add(new ColumnMeta<ProcessInstanceSummary>(genericColumn,
-                                                                   caption,
-                                                                   true,
-                                                                   true));
-        }
-
-        extendedPagedTable.addColumns(columnMetas);
+        return columnMetas;
     }
 
     protected Column initGenericColumn(final String key) {
@@ -274,7 +233,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         };
     }
 
-    private Column<ProcessInstanceSummary, ProcessInstanceSummary> initErrorCountColumn() {
+    protected Column<ProcessInstanceSummary, ProcessInstanceSummary> initErrorCountColumn() {
 
         Column<ProcessInstanceSummary, ProcessInstanceSummary> column = new Column<ProcessInstanceSummary, ProcessInstanceSummary>(
                 popoverCellInstance.get().init(presenter)) {
@@ -290,7 +249,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         return column;
     }
 
-    private Column<ProcessInstanceSummary, Integer> initSlaComplianceColumn() {
+    protected Column<ProcessInstanceSummary, Integer> initSlaComplianceColumn() {
 
         final List<String> slaDescriptions = new ArrayList<>();
         slaDescriptions.add(constants.Unknown());

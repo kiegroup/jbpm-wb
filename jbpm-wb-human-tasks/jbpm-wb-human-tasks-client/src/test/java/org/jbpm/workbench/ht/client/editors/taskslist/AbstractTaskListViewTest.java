@@ -16,9 +16,7 @@
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.google.gwt.user.cellview.client.RowStyles;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridViewTest;
@@ -28,7 +26,6 @@ import org.jbpm.workbench.ht.model.TaskSummary;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.COL_ID_ACTIONS;
 import static org.jbpm.workbench.ht.util.TaskStatus.*;
@@ -51,29 +48,6 @@ public abstract class AbstractTaskListViewTest extends AbstractMultiGridViewTest
     @Override
     public Integer getExpectedNumberOfColumns() {
         return 15;
-    }
-
-    @Test
-    public void addDomainSpecifColumnsTest() {
-        final ListTable<TaskSummary> currentListGrid = spy(new ListTable<>(new GridGlobalPreferences()));
-        final Set<String> domainColumns = new HashSet<String>();
-        domainColumns.add("var1");
-        domainColumns.add("var2");
-        domainColumns.add("var3");
-        getView().addDomainSpecifColumns(currentListGrid,
-                                         domainColumns);
-
-        final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
-        verify(currentListGrid).addColumns(argument.capture());
-
-        final List<ColumnMeta> columns = argument.getValue();
-        assertTrue(columns.size() == 3);
-        int i = 0;
-        for (String domainColumn : domainColumns) {
-            assertEquals(columns.get(i).getCaption(),
-                         domainColumn);
-            i++;
-        }
     }
 
     @Test

@@ -23,7 +23,7 @@ public class LogUtils {
     public static String NODE_TYPE_END = "EndNode";
     public static String NODE_TYPE_ACTION = "ActionNode";
     public static String NODE_TYPE_MILESTONE = "MilestoneNode";
-    public static String NODE_TYPE_SUBPROCESS = "SubprocessNode";
+    public static String NODE_TYPE_SUBPROCESS = "SubProcessNode";
     public static String NODE_TYPE_RULE_SET = "RuleSetNode";
     public static String NODE_TYPE_WORK_ITEM = "WorkItemNode";
     public static String ALL_NODES = "All";
