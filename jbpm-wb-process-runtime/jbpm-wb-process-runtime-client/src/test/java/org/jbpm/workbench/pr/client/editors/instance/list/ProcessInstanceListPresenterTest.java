@@ -76,6 +76,7 @@ import org.uberfire.workbench.model.ActivityResourceType;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+import static org.dashbuilder.dataset.filter.FilterFactory.in;
 import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
 import static org.jbpm.workbench.common.client.PerspectiveIds.*;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
@@ -268,23 +269,34 @@ public class ProcessInstanceListPresenterTest {
     }
 
     @Test
+    public void testRemoveActiveFilter() {
+        final String processId = "testProc";
+        presenter.removeActiveFilter(equalsTo(COLUMN_PROCESS_ID, processId));
+
+        verify(viewMock).removeDomainSpecifColumns();
+
+        reset(viewMock);
+
+        presenter.removeActiveFilter(in(COLUMN_PROCESS_ID, Arrays.asList(processId)));
+
+        verify(viewMock, never()).removeDomainSpecifColumns();
+    }
+
+    @Test
     public void isFilteredByProcessIdTest() {
         final String processId = "testProc";
         final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(equalsTo(COLUMN_PROCESS_ID,
-                                        processId));
+        filter.addFilterColumn(equalsTo(COLUMN_PROCESS_ID, processId));
 
         final String filterProcessId = presenter.isFilteredByProcessId(Collections.<DataSetOp>singletonList(filter));
-        assertEquals(processId,
-                     filterProcessId);
+        assertEquals(processId, filterProcessId);
     }
 
     @Test
     public void isFilteredByProcessIdInvalidTest() {
         final String processId = "testProc";
         final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(likeTo(COLUMN_PROCESS_ID,
-                                      processId));
+        filter.addFilterColumn(likeTo(COLUMN_PROCESS_ID, processId));
 
         final String filterProcessId = presenter.isFilteredByProcessId(Collections.<DataSetOp>singletonList(filter));
         assertNull(filterProcessId);
@@ -423,8 +435,7 @@ public class ProcessInstanceListPresenterTest {
                                     5));
 
         ArgumentCaptor<Set> argument = ArgumentCaptor.forClass(Set.class);
-        verify(viewMock).addDomainSpecifColumns(any(ExtendedPagedTable.class),
-                                                argument.capture());
+        verify(viewMock).addDomainSpecifColumns(argument.capture());
 
         assertEquals(expectedColumns,
                      argument.getValue());
@@ -451,9 +462,7 @@ public class ProcessInstanceListPresenterTest {
                                     5));
 
         argument = ArgumentCaptor.forClass(Set.class);
-        verify(viewMock,
-               times(2)).addDomainSpecifColumns(any(ExtendedPagedTable.class),
-                                                argument.capture());
+        verify(viewMock, times(2)).addDomainSpecifColumns(argument.capture());
 
         assertEquals(expectedColumns,
                      argument.getValue());

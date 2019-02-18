@@ -19,6 +19,7 @@ package org.jbpm.workbench.ht.client.editors.taskslist;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import javax.inject.Inject;
 
 import org.dashbuilder.dataset.DataSetLookup;
@@ -89,6 +90,8 @@ public abstract class AbstractTaskListBasicFiltersPresenter extends BasicFilters
                                                        false))
         );
 
+        addTaskNameFilter(getDataSetId());
+
         addProcessNameFilter(getDataSetId());
 
         view.addDateRangeFilter(constants.Created_On(),
@@ -99,6 +102,20 @@ public abstract class AbstractTaskListBasicFiltersPresenter extends BasicFilters
                                                              f.getValue().getStartDate(),
                                                              f.getValue().getEndDate()))
         );
+    }
+
+    protected void addTaskNameFilter(final String dataSetId) {
+        final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
+                .dataset(dataSetId)
+                .group(COLUMN_NAME)
+                .column(COLUMN_NAME)
+                .sort(COLUMN_NAME, SortOrder.ASCENDING)
+                .buildLookup();
+        view.addDataSetSelectFilter(constants.Task_Name(),
+                                    dataSetLookup,
+                                    COLUMN_NAME,
+                                    COLUMN_NAME,
+                                    f -> addSearchFilter(f, equalsTo(COLUMN_NAME, f.getValue())));
     }
 
     protected void addProcessNameFilter(final String dataSetId) {

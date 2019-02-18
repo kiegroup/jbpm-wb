@@ -48,8 +48,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
 
     @Override
     public List<String> getBannedColumns() {
-        return Arrays.asList(COLUMN_NAME,
-                             COL_ID_ACTIONS);
+        return Arrays.asList(COLUMN_NAME, COL_ID_ACTIONS);
     }
 
     @Override
@@ -169,8 +168,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
         return columnMetas;
     }
 
-    protected void addNewColumn(ListTable<TaskSummary> extendedPagedTable,
-                                List<ColumnMeta<TaskSummary>> columnMetas) {
+    protected void addNewColumn(ListTable<TaskSummary> extendedPagedTable, List<ColumnMeta<TaskSummary>> columnMetas) {
     }
 
     protected void initCellPreview(final ListTable<TaskSummary> extendedPagedTable) {
@@ -230,8 +228,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
     }
 
     protected Column<TaskSummary, ?> initGenericColumn(final String key) {
-        return createTextColumn(key,
-                                task -> task.getDomainDataValue(key));
+        return createTextColumn(key, task -> task.getDomainDataValue(key));
     }
 
     @Inject

@@ -16,18 +16,14 @@
 
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
+
 import javax.enterprise.event.Event;
 
 import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
-import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
@@ -65,8 +61,11 @@ import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
-import static java.util.Collections.*;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+import static org.dashbuilder.dataset.filter.FilterFactory.in;
 import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
 import static org.jbpm.workbench.ht.client.util.TaskUtils.TaskType;
 import static org.jbpm.workbench.ht.client.util.TaskUtils.getStatusByType;
@@ -258,25 +257,36 @@ public abstract class AbstractTaskListPresenterTest {
     }
 
     @Test
+    public void testRemoveActiveFilter() {
+        final String taskName = "taskName";
+        getPresenter().removeActiveFilter(equalsTo(COLUMN_NAME, taskName));
+
+        verify(viewMock).removeDomainSpecifColumns();
+
+        reset(viewMock);
+
+        getPresenter().removeActiveFilter(in(COLUMN_NAME, Arrays.asList(taskName)));
+
+        verify(viewMock, never()).removeDomainSpecifColumns();
+    }
+
+    @Test
     public void isFilteredByTaskNameTest() {
         final String taskName = "taskName";
         final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(equalsTo(COLUMN_NAME,
-                                        taskName));
+        filter.addFilterColumn(equalsTo(COLUMN_NAME, taskName));
 
-        final String filterTaskName = getPresenter().isFilteredByTaskName(Collections.<DataSetOp>singletonList(filter));
-        assertEquals(taskName,
-                     filterTaskName);
+        final String filterTaskName = getPresenter().isFilteredByTaskName(Collections.singletonList(filter));
+        assertEquals(taskName, filterTaskName);
     }
 
     @Test
     public void isFilteredByTaskNameInvalidTest() {
         final String taskName = "taskName";
         final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(likeTo(COLUMN_DESCRIPTION,
-                                      taskName));
+        filter.addFilterColumn(likeTo(COLUMN_DESCRIPTION, taskName));
 
-        final String filterTaskName = getPresenter().isFilteredByTaskName(Collections.<DataSetOp>singletonList(filter));
+        final String filterTaskName = getPresenter().isFilteredByTaskName(Collections.singletonList(filter));
         assertNull(filterTaskName);
     }
 
@@ -319,11 +329,9 @@ public abstract class AbstractTaskListPresenterTest {
                                          5));
 
         ArgumentCaptor<Set> argument = ArgumentCaptor.forClass(Set.class);
-        verify(viewMock).addDomainSpecifColumns(any(ListTable.class),
-                                                argument.capture());
+        verify(viewMock).addDomainSpecifColumns(argument.capture());
 
-        assertEquals(expectedColumns,
-                     argument.getValue());
+        assertEquals(expectedColumns, argument.getValue());
 
         verify(dataSetQueryHelper).lookupDataSet(anyInt(),
                                                  any(DataSetReadyCallback.class));
@@ -345,9 +353,7 @@ public abstract class AbstractTaskListPresenterTest {
                                          5));
 
         argument = ArgumentCaptor.forClass(Set.class);
-        verify(viewMock,
-               times(2)).addDomainSpecifColumns(any(ListTable.class),
-                                                argument.capture());
+        verify(viewMock, times(2)).addDomainSpecifColumns(argument.capture());
 
         assertEquals(expectedColumns,
                      argument.getValue());

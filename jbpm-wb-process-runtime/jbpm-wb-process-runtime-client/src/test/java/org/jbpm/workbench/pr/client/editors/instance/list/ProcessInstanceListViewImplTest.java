@@ -30,30 +30,23 @@ import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.assertj.core.data.Index;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
-import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
-import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
-import org.jbpm.workbench.common.client.list.AbstractMultiGridViewTest;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
-import org.jbpm.workbench.common.client.list.ListTable;
+import org.jbpm.workbench.common.client.list.*;
 import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.common.client.util.GenericErrorSummaryCountCell;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.uberfire.client.views.pfly.widgets.ConfirmPopup;
-import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
-import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
+import org.uberfire.ext.services.shared.preferences.*;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.Command;
 
 import static org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceListViewImpl.COL_ID_ACTIONS;
 import static org.jbpm.workbench.pr.client.editors.instance.list.ProcessInstanceListViewImpl.COL_ID_SELECT;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -183,9 +176,9 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
     @Test
     public void addDomainSpecifColumnsTest() {
         final ListTable<ProcessInstanceSummary> currentListGrid = spy(new ListTable<>(new GridGlobalPreferences()));
+        when(view.getListGrid()).thenReturn(currentListGrid);
         final Set<String> domainColumns = new HashSet<String>(Arrays.asList("var1", "var2", "var3"));
-        getView().addDomainSpecifColumns(currentListGrid,
-                                         domainColumns);
+        getView().addDomainSpecifColumns(domainColumns);
 
         final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
         verify(currentListGrid, times(3)).addColumns(argument.capture());
@@ -241,13 +234,14 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
         GridGlobalPreferences gridPreferences = new GridGlobalPreferences("test", view.getInitColumns(), view.getBannedColumns());
 
         ListTable<ProcessInstanceSummary> extendedPagedTable = new ListTable<ProcessInstanceSummary>(gridPreferences);
+        when(view.getListGrid()).thenReturn(extendedPagedTable);
 
         Set<String> set = Collections.singleton("Version");
         view.initColumns(extendedPagedTable);
 
         assertThat(extendedPagedTable.getColumnMetaList()).extracting(columnMeta -> columnMeta.getCaption()).hasSize(14).doesNotContain("Var_Version");
 
-        view.addDomainSpecifColumns(extendedPagedTable, set);
+        view.addDomainSpecifColumns(set);
 
         assertThat(extendedPagedTable.getColumnMetaList()).extracting(columnMeta -> columnMeta.getCaption()).hasSize(15).containsOnlyOnce("Var_Version");
     }
@@ -258,6 +252,7 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
 
 
         ListTable<ProcessInstanceSummary> extendedPagedTable = new ListTable<ProcessInstanceSummary>(gridPreferences);
+        when(view.getListGrid()).thenReturn(extendedPagedTable);
 
         extendedPagedTable.getGridPreferencesStore().getColumnPreferences().add(new GridColumnPreference("Extra",-1,""));
 
@@ -266,7 +261,7 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
         view.initColumns(extendedPagedTable);
         assertThat(extendedPagedTable.getColumnMetaList().size()).isEqualTo(15);
 
-        view.addDomainSpecifColumns(extendedPagedTable, set);
+        view.addDomainSpecifColumns(set);
 
         assertThat(set.size()).isEqualTo(0);
     }
@@ -276,6 +271,7 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
         GridGlobalPreferences gridPreferences = new GridGlobalPreferences("test", view.getInitColumns(), view.getBannedColumns());
 
         ListTable<ProcessInstanceSummary> extendedPagedTable = new ListTable<ProcessInstanceSummary>(gridPreferences);
+        when(view.getListGrid()).thenReturn(extendedPagedTable);
 
         extendedPagedTable.getGridPreferencesStore().getColumnPreferences().add(new GridColumnPreference("Extra", -1, ""));
 
@@ -284,10 +280,35 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
 
         view.initColumns(extendedPagedTable);
 
-        assertThat(extendedPagedTable.getColumnMetaList()).hasSize(15).extracting( columnMeta -> columnMeta.getCaption()).containsOnlyOnce("Extra");
-        view.addDomainSpecifColumns(extendedPagedTable, set);
+        assertThat(extendedPagedTable.getColumnMetaList()).hasSize(15).extracting(columnMeta -> columnMeta.getCaption()).containsOnlyOnce("Extra");
+        view.addDomainSpecifColumns(set);
 
-        assertThat(extendedPagedTable.getColumnMetaList()).hasSize(15).extracting( columnMeta -> columnMeta.getCaption()).doesNotContain("Extra").containsOnlyOnce("Extra_test");
+        assertThat(extendedPagedTable.getColumnMetaList()).hasSize(15).extracting(columnMeta -> columnMeta.getCaption()).doesNotContain("Extra").containsOnlyOnce("Extra_test");
         assertThat(set.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void removeDomainSpecifColumnsTest() {
+        final ListTable<ProcessInstanceSummary> listGrid = spy(new ListTable<>(new GridGlobalPreferences()));
+        final ColumnMeta columnToRemove = new ColumnMeta<>(newColumnMock("c1"), "", true, true);
+        listGrid.getColumnMetaList().add(columnToRemove);
+        listGrid.getColumnMetaList().add(new ColumnMeta<>(newColumnMock("c2"), "", false, true));
+        listGrid.getColumnMetaList().add(new ColumnMeta<>(newColumnMock("c3"), "", true, false));
+        listGrid.getColumnMetaList().add(new ColumnMeta<>(newColumnMock("c4"), "", false, false));
+        listGrid.getGridPreferencesStore().setPreferenceKey("key");
+        when(getView().getListGrid()).thenReturn(listGrid);
+        doNothing().when(listGrid).removeColumnMeta(any());
+        final GridPreferencesStore store = new GridPreferencesStore(new GridGlobalPreferences());
+        store.getColumnPreferences().add(new GridColumnPreference("c3", 0, ""));
+        store.getColumnPreferences().add(new GridColumnPreference("c1", 1, ""));
+
+        when(userPreferencesServiceMock.loadUserPreferences(listGrid.getGridPreferencesStore().getPreferenceKey(), UserPreferencesType.GRIDPREFERENCES)).thenReturn(store);
+
+        getView().removeDomainSpecifColumns();
+
+        assertEquals(1, store.getColumnPreferences().size());
+        assertEquals("c3", store.getColumnPreferences().get(0).getName());
+        verify(listGrid).removeColumnMeta(columnToRemove);
+        verify(listGrid).saveGridPreferences();
     }
 }

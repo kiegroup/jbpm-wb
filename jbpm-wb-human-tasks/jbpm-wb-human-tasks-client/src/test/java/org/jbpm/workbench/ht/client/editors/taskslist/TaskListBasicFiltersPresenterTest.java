@@ -76,6 +76,11 @@ public class TaskListBasicFiltersPresenterTest extends AbstractBasicFiltersPrese
         inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Process_Instance_Description()),
                                                 any(),
                                                 any());
+        inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Task_Name()),
+                                                         any(),
+                                                         any(),
+                                                         any(),
+                                                         any());
         inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Process_Definition_Id()),
                                                          any(),
                                                          any(),
