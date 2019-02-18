@@ -29,9 +29,7 @@ import org.mockito.Mock;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class TaskAdminListBasicFiltersPresenterTest extends AbstractBasicFiltersPresenterTest {
@@ -60,14 +58,32 @@ public class TaskAdminListBasicFiltersPresenterTest extends AbstractBasicFilters
 
         final InOrder inOrder = inOrder(getView());
 
-        inOrder.verify(getView()).addNumericFilter(eq(Constants.INSTANCE.Id()), any(), any());
-        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Task()), any(), any());
-        inOrder.verify(getView()).addMultiSelectFilter(eq(Constants.INSTANCE.Status()), any(), any());
-        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Process_Instance_Correlation_Key()), any(), any());
-        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Actual_Owner()), any(), any());
-        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Process_Instance_Description()), any(), any());
-        inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Task_Name()), any(), any(), any(), any());
-        inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Process_Definition_Id()), any(), any(), any(), any());
-        inOrder.verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.Created_On()), any(), any(), any());
+        inOrder.verify(getView()).addNumericFilter(eq(Constants.INSTANCE.Id()),
+                                                   any(),
+                                                   any());
+        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Task()),
+                                                any(),
+                                                any());
+        inOrder.verify(getView()).addMultiSelectFilter(eq(Constants.INSTANCE.Status()),
+                                                       any(),
+                                                       any());
+        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Process_Instance_Correlation_Key()),
+                                                any(),
+                                                any());
+        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Actual_Owner()),
+                                                any(),
+                                                any());
+        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Process_Instance_Description()),
+                                                any(),
+                                                any());
+        inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Process_Definition_Id()),
+                                                         any(),
+                                                         any(),
+                                                         any(),
+                                                         any());
+        inOrder.verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.Created_On()),
+                                                     any(),
+                                                     any(),
+                                                     any());
     }
 }

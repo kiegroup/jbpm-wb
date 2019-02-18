@@ -18,7 +18,6 @@ package org.jbpm.workbench.pr.client.editors.instance.list;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -28,10 +27,14 @@ import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetOp;
 import org.dashbuilder.dataset.DataSetOpType;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
-import org.dashbuilder.dataset.filter.*;
+import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.CoreFunctionFilter;
+import org.dashbuilder.dataset.filter.CoreFunctionType;
+import org.dashbuilder.dataset.filter.DataSetFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
@@ -126,7 +129,8 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                             }
                         }
                     }
-                    view.addDomainSpecifColumns(columns);
+                    view.addDomainSpecifColumns(view.getListGrid(),
+                                                columns);
 
                     updateDataOnCallback(myProcessInstancesFromDataSet,
                                          startRange,
@@ -177,41 +181,28 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                 .withEmptyResultsCallback(() -> setEmptyResults());
     }
 
-    @Override
-    protected void removeActiveFilter(final ColumnFilter columnFilter) {
-        if (isFilteredByProcessId(columnFilter) != null) {
-            view.removeDomainSpecifColumns();
-        }
-        super.removeActiveFilter(columnFilter);
-    }
-
-    protected String isFilteredByProcessId(ColumnFilter filter) {
-        if (filter instanceof CoreFunctionFilter) {
-            CoreFunctionFilter coreFilter = ((CoreFunctionFilter) filter);
-            if (filter.getColumnId().toUpperCase().equals(COLUMN_PROCESS_ID.toUpperCase()) &&
-                    ((CoreFunctionFilter) filter).getType() == CoreFunctionType.EQUALS_TO) {
-
-                List parameters = coreFilter.getParameters();
-                if (parameters.size() > 0) {
-                    return parameters.get(0).toString();
-                }
-            }
-        }
-        return null;
-    }
-
     protected String isFilteredByProcessId(List<DataSetOp> ops) {
         for (DataSetOp dataSetOp : ops) {
             if (dataSetOp.getType().equals(DataSetOpType.FILTER)) {
                 List<ColumnFilter> filters = ((DataSetFilter) dataSetOp).getColumnFilterList();
+
                 for (ColumnFilter filter : filters) {
-                    String processId = isFilteredByProcessId(filter);
-                    if (processId != null) {
-                        return processId;
+
+                    if (filter instanceof CoreFunctionFilter) {
+                        CoreFunctionFilter coreFilter = ((CoreFunctionFilter) filter);
+                        if (filter.getColumnId().toUpperCase().equals(COLUMN_PROCESS_ID.toUpperCase()) &&
+                                ((CoreFunctionFilter) filter).getType() == CoreFunctionType.EQUALS_TO) {
+
+                            List parameters = coreFilter.getParameters();
+                            if (parameters.size() > 0) {
+                                return parameters.get(0).toString();
+                            }
+                        }
                     }
                 }
             }
         }
+
         return null;
     }
 
@@ -510,8 +501,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     public interface ProcessInstanceListView extends MultiGridView<ProcessInstanceSummary, ProcessInstanceListPresenter> {
 
-        void addDomainSpecifColumns(Set<String> columns);
-
-        void removeDomainSpecifColumns();
+        void addDomainSpecifColumns(ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable,
+                                    Set<String> columns);
     }
 }

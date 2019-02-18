@@ -15,12 +15,16 @@
  */
 package org.jbpm.workbench.common.client.list;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import java.util.stream.Collectors;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -33,10 +37,16 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.Header;
 import com.google.gwt.user.cellview.client.TextHeader;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.RequiresResize;
+import com.google.gwt.user.client.ui.Widget;
 import elemental2.dom.HTMLDivElement;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.*;
+import org.gwtbootstrap3.client.ui.ButtonGroup;
+import org.gwtbootstrap3.client.ui.DropDownMenu;
 import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jboss.errai.common.client.api.Caller;
@@ -53,7 +63,11 @@ import org.jbpm.workbench.common.model.GenericSummary;
 import org.jbpm.workbench.common.preferences.ManagePreferences;
 import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.ext.services.shared.preferences.*;
+import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
+import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
+import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
+import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
+import org.uberfire.ext.services.shared.preferences.UserPreferencesType;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -396,27 +410,33 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                                  true);
     }
 
-    public void addDomainSpecifColumns(Set<String> columns) {
-        getListGrid().storeColumnToPreferences();
+    public void addDomainSpecifColumns(ExtendedPagedTable<T> extendedPagedTable,
+                                       Set<String> columns) {
+        extendedPagedTable.storeColumnToPreferences();
 
-        List<GridColumnPreference> gridColumnPreferenceList = removeRedundantColumns(getListGrid(), columns);
+        List<GridColumnPreference> gridColumnPreferenceList = removeRedundantColumns(extendedPagedTable, columns);
 
-        List<ColumnMeta<T>> columnMetaList = renameDomainSpecifColumns(getListGrid(), columns);
+        List<ColumnMeta<T>> columnMetaList = renameDomainSpecifColumns(extendedPagedTable,
+                                                                       columns);
 
-        addDomainColumns(columnMetaList, columns);
+        addDomainColumns(columnMetaList,
+                         columns);
 
-        getListGrid().getGridPreferencesStore().getColumnPreferences().addAll(gridColumnPreferenceList);
+        extendedPagedTable.getGridPreferencesStore().getColumnPreferences().addAll(gridColumnPreferenceList);
         columnMetaList.forEach(columnMeta -> {
             List<GridColumnPreference> list = gridColumnPreferenceList.stream().filter(gridColumnPreference -> gridColumnPreference.getName().equals(columnMeta.getColumn().getDataStoreName())).collect(Collectors.toList());
-            getListGrid().getGridPreferencesStore().getColumnPreferences().addAll(list);
-            getListGrid().addColumns(Arrays.asList(columnMeta));
+            extendedPagedTable.getGridPreferencesStore().getColumnPreferences().addAll(list);
+            extendedPagedTable.addColumns(Arrays.asList(columnMeta));
         });
     }
 
-    private void addDomainColumns(List<ColumnMeta<T>> columnMetaList, Set<String> columns) {
+    private void addDomainColumns(List<ColumnMeta<T>> columnMetaList,
+                                  Set<String> columns) {
         columns.stream().filter(newColumn -> newColumnIsNotInDataStoreNames(newColumn, columnMetaList))
                 .forEach(column -> {
-                    ColumnMeta<T> columnMeta = newColumnMeta(column, false, false);
+                    ColumnMeta<T> columnMeta = newColumnMeta(column,
+                                                             false,
+                                                             false);
                     columnMetaList.add(columnMeta);
                 });
     }
@@ -431,7 +451,9 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                                                           Set<String> columns) {
         return (List<ColumnMeta<T>>) extendedPagedTable.getColumnMetaList().stream()
                 .filter(cm -> !cm.isExtraColumn() && columns.contains(cm.getCaption()))
-                .map(colMet -> newColumnMeta(colMet.getCaption(), true, false)
+                .map(colMet -> newColumnMeta(colMet.getCaption(),
+                                             true,
+                                             false)
                 ).collect(Collectors.toList());
     }
 
@@ -454,22 +476,6 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         });
 
         return gridColumnPreferenceList;
-    }
-
-    public void removeDomainSpecifColumns() {
-        final ListTable<T> listGrid = getListGrid();
-        userPreferencesService.call((GridPreferencesStore preferencesStore) -> {
-            List<ColumnMeta<T>> metas = listGrid.getColumnMetaList().stream().filter(c -> c.isExtraColumn() && c.isVisible()).collect(Collectors.toList());
-            metas.forEach(meta -> {
-                listGrid.removeColumnMeta(meta);
-                Optional<GridColumnPreference> preference = preferencesStore.getColumnPreferences().stream().filter(pref -> pref.getName().equals(meta.getColumn().getDataStoreName())
-                ).findFirst();
-                if (preference.isPresent()) {
-                    preferencesStore.getColumnPreferences().remove(preference.get());
-                }
-            });
-            listGrid.saveGridPreferences();
-        }).loadUserPreferences(listGrid.getGridPreferencesStore().getPreferenceKey(), UserPreferencesType.GRIDPREFERENCES);
     }
 
     @Override
