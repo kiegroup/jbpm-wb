@@ -124,20 +124,9 @@ public class ProcessInstanceListBasicFiltersPresenter extends BasicFiltersPresen
                                                           columnFilter);
         });
 
-        final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
-                .dataset(PROCESS_INSTANCE_DATASET)
-                .group(COLUMN_PROCESS_NAME)
-                .column(COLUMN_PROCESS_NAME)
-                .sort(COLUMN_PROCESS_NAME,
-                      SortOrder.ASCENDING)
-                .buildLookup();
-        view.addDataSetSelectFilter(constants.Name(),
-                                    dataSetLookup,
-                                    COLUMN_PROCESS_NAME,
-                                    COLUMN_PROCESS_NAME,
-                                    f -> addSearchFilter(f,
-                                                         equalsTo(COLUMN_PROCESS_NAME,
-                                                                  f.getValue())));
+        addProcessNameFilter();
+
+        addProcessIdFilter();
 
         view.addDateRangeFilter(constants.Start_Date(),
                                 constants.Start_Date_Placeholder(),
@@ -156,6 +145,34 @@ public class ProcessInstanceListBasicFiltersPresenter extends BasicFiltersPresen
                                                              f.getValue().getStartDate(),
                                                              f.getValue().getEndDate()))
         );
+    }
+
+    protected void addProcessNameFilter() {
+        final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
+                .dataset(PROCESS_INSTANCE_DATASET)
+                .group(COLUMN_PROCESS_NAME)
+                .column(COLUMN_PROCESS_NAME)
+                .sort(COLUMN_PROCESS_NAME, SortOrder.ASCENDING)
+                .buildLookup();
+        view.addDataSetSelectFilter(constants.Name(),
+                                    dataSetLookup,
+                                    COLUMN_PROCESS_NAME,
+                                    COLUMN_PROCESS_NAME,
+                                    f -> addSearchFilter(f, equalsTo(COLUMN_PROCESS_NAME, f.getValue())));
+    }
+
+    protected void addProcessIdFilter() {
+        final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
+                .dataset(PROCESS_INSTANCE_DATASET)
+                .group(COLUMN_PROCESS_ID)
+                .column(COLUMN_PROCESS_ID)
+                .sort(COLUMN_PROCESS_ID, SortOrder.ASCENDING)
+                .buildLookup();
+        view.addDataSetSelectFilter(constants.Process_Definition_Id(),
+                                    dataSetLookup,
+                                    COLUMN_PROCESS_ID,
+                                    COLUMN_PROCESS_ID,
+                                    f -> addSearchFilter(f, equalsTo(COLUMN_PROCESS_ID, f.getValue())));
     }
 
     @Override
