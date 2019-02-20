@@ -64,7 +64,7 @@ public class ProcessDiagramPresenter {
     }
 
     public void expandDiagramContainer() {
-        view.expandDiagramContanier();
+        view.expandDiagramContainer();
     }
 
     @WorkbenchPartTitle
