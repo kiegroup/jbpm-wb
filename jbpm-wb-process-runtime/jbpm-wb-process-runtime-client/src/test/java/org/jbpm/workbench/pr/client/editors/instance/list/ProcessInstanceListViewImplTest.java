@@ -270,15 +270,20 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
     public void testRemoveColumnMetaFromExtendedPagedTableForAddDomainSpecifColumns() {
         GridGlobalPreferences gridPreferences = new GridGlobalPreferences("test", view.getInitColumns(), view.getBannedColumns());
 
-        ListTable<ProcessInstanceSummary> extendedPagedTable = new ListTable<ProcessInstanceSummary>(gridPreferences);
+        final ListTable<ProcessInstanceSummary> extendedPagedTable = spy(new ListTable<ProcessInstanceSummary>(gridPreferences));
         when(view.getListGrid()).thenReturn(extendedPagedTable);
+        Column<ProcessInstanceSummary, String> column = view.createTextColumn("Extra", process -> process.getDeploymentId());
 
         extendedPagedTable.getGridPreferencesStore().getColumnPreferences().add(new GridColumnPreference("Extra", -1, ""));
 
-        Column<ProcessInstanceSummary, String> column = view.createTextColumn("Extra", process -> process.getDeploymentId());
         Set<String> set = Collections.singleton("Extra_test");
 
         view.initColumns(extendedPagedTable);
+
+        doAnswer(handler -> {
+            extendedPagedTable.getColumnMetaList().remove(extendedPagedTable.getColumnMetaList().stream().filter(c -> c.getCaption().equals("Extra")).findFirst().get());
+            return extendedPagedTable;
+        }).when(extendedPagedTable).removeColumnMeta(any());
 
         assertThat(extendedPagedTable.getColumnMetaList()).hasSize(15).extracting(columnMeta -> columnMeta.getCaption()).containsOnlyOnce("Extra");
         view.addDomainSpecifColumns(set);
