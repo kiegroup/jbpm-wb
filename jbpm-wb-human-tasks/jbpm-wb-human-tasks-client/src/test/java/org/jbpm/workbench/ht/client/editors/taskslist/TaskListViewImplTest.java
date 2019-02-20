@@ -111,10 +111,10 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
     @Test
     public void addDomainSpecifColumnsTest() {
         final ListTable<TaskSummary> currentListGrid = spy(new ListTable<>(new GridGlobalPreferences()));
-        when(view.getListGrid()).thenReturn(currentListGrid);
         final List<String> resultList = Arrays.asList("var1", "var2", "var3");
         final Set<String> domainColumns = new HashSet<String>(resultList);
-        getView().addDomainSpecifColumns(domainColumns);
+        getView().addDomainSpecifColumns(currentListGrid,
+                                         domainColumns);
 
         final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
         verify(currentListGrid, times(3)).addColumns(argument.capture());
@@ -162,14 +162,13 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
         GridGlobalPreferences gridPreferences = new GridGlobalPreferences("test", view.getInitColumns(), view.getBannedColumns());
 
         ListTable<TaskSummary> extendedPagedTable = new ListTable<TaskSummary>(gridPreferences);
-        when(view.getListGrid()).thenReturn(extendedPagedTable);
 
         Set<String> set = Collections.singleton("Id");
         view.initColumns(extendedPagedTable);
 
         assertThat(extendedPagedTable.getColumnMetaList().stream()).extracting(c -> c.getCaption()).hasSize(15).doesNotContain("Var_Id");
 
-        view.addDomainSpecifColumns(set);
+        view.addDomainSpecifColumns(extendedPagedTable, set);
 
         assertThat(extendedPagedTable.getColumnMetaList().stream()).extracting(c -> c.getCaption()).hasSize(16).containsOnlyOnce("Var_Id");
     }
@@ -178,8 +177,8 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
     public void testRemoveColumnMetaFromColumnsForAddDomainSpecifColumns() {
         GridGlobalPreferences gridPreferences = new GridGlobalPreferences("test", view.getInitColumns(), view.getBannedColumns());
 
+
         ListTable<TaskSummary> extendedPagedTable = new ListTable<TaskSummary>(gridPreferences);
-        when(view.getListGrid()).thenReturn(extendedPagedTable);
 
         extendedPagedTable.getGridPreferencesStore().getColumnPreferences().add(new GridColumnPreference("Extra",-1,""));
 
@@ -187,7 +186,7 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
 
         view.initColumns(extendedPagedTable);
         assertThat(extendedPagedTable.getColumnMetaList().size()).isEqualTo(16);
-        view.addDomainSpecifColumns(set);
+        view.addDomainSpecifColumns(extendedPagedTable, set);
 
         assertThat(set.size()).isEqualTo(0);
     }
@@ -196,8 +195,8 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
     public void testRemoveColumnMetaFromExtendedPagedTableForAddDomainSpecifColumns() {
         GridGlobalPreferences gridPreferences = new GridGlobalPreferences("test", view.getInitColumns(), view.getBannedColumns());
 
+
         ListTable<TaskSummary> extendedPagedTable = new ListTable<TaskSummary>(gridPreferences);
-        when(view.getListGrid()).thenReturn(extendedPagedTable);
 
         Column<TaskSummary, String> column = view.createTextColumn("Extra", taskSummary -> taskSummary.getName());
         ColumnMeta<TaskSummary> columnMeta = new ColumnMeta<TaskSummary>(column,"Extra",true,true);
@@ -208,7 +207,7 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
         extendedPagedTable.addColumns(Collections.singletonList(columnMeta));
 
         assertThat(extendedPagedTable.getColumnMetaList().stream()).extracting(c -> c.getCaption()).hasSize(16).containsOnlyOnce("Extra");
-        view.addDomainSpecifColumns(set);
+        view.addDomainSpecifColumns(extendedPagedTable, set);
 
         assertThat(extendedPagedTable.getColumnMetaList().stream()).extracting(c -> c.getCaption()).hasSize(16).doesNotContain("Extra");
 

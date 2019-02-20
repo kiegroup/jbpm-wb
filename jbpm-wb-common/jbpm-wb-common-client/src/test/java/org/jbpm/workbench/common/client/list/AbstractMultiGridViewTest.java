@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Spliterators;
 import java.util.function.Consumer;
 
-import com.google.gwt.cell.client.Cell;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -93,7 +92,8 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
         userPreferencesService = new CallerMock<>(userPreferencesServiceMock);
         getView().setUserPreferencesService(userPreferencesService);
         when(getPresenter().getDataProvider()).thenReturn(dataProviderMock);
-        when(userPreferencesServiceMock.loadUserPreferences(any(), eq(UserPreferencesType.GRIDPREFERENCES))).thenReturn(new GridPreferencesStore(new GridGlobalPreferences()));
+        when(userPreferencesServiceMock.loadUserPreferences(anyString(),
+                                                            eq(UserPreferencesType.GRIDPREFERENCES))).thenReturn(new GridPreferencesStore(new GridGlobalPreferences()));
         when(conditionalKebabActionCell.get()).thenReturn(mock(ConditionalKebabActionCell.class));
         doNothing().when(getView()).addNewTableToColumn(any());
         when(extendedPagedTable.getRightActionsToolbar()).thenReturn(rightActionsToolbar);
@@ -217,12 +217,5 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
         }).when(preferences).load(any(ParameterizedCommand.class), any(ParameterizedCommand.class));
         Consumer<ListTable> consumer = table -> assertTrue(table.isDataGridMinWidthEnabled());
         getView().loadListTable("key", consumer);
-    }
-
-    public static Column newColumnMock(final String dataStoreName){
-        Column column = mock(Column.class);
-        when(column.getCell()).thenReturn(mock(Cell.class));
-        when(column.getDataStoreName()).thenReturn(dataStoreName);
-        return column;
     }
 }
