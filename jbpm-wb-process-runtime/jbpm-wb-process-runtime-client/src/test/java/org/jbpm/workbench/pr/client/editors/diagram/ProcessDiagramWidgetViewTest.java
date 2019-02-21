@@ -198,5 +198,15 @@ public class ProcessDiagramWidgetViewTest {
         public D3.Transform getTransform() {
             return null;
         }
+
+        @Override
+        public int getPageX() {
+            return 0;
+        }
+
+        @Override
+        public int getPageY() {
+            return 0;
+        }
     }
 }
