@@ -16,6 +16,13 @@
 
 package org.jbpm.workbench.ks.integration;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+
 import javax.enterprise.event.Event;
 
 import org.jbpm.workbench.ks.integration.event.ServerInstanceRegistered;
@@ -31,21 +38,24 @@ import org.kie.server.controller.api.model.events.ServerTemplateDeleted;
 import org.kie.server.controller.api.model.runtime.ServerInstance;
 import org.kie.server.controller.api.model.spec.ContainerSpec;
 import org.kie.server.controller.api.model.spec.ServerTemplate;
+import org.kie.server.controller.api.model.spec.ServerTemplateList;
 import org.kie.server.controller.impl.client.KieServicesClientProvider;
 import org.kie.workbench.common.screens.server.management.service.SpecManagementService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.jbpm.workbench.ks.integration.KieServerIntegration.SERVER_TEMPLATE_KEY;
-import static org.jbpm.workbench.ks.integration.KieServerIntegrationServerTemplateTest.*;
-import static org.junit.Assert.*;
+import static org.jbpm.workbench.ks.integration.KieServerIntegrationServerTemplateTest.assertContainerFailedEndpoint;
+import static org.jbpm.workbench.ks.integration.KieServerIntegrationServerTemplateTest.assertServerInstanceFailedEndpoint;
+import static org.jbpm.workbench.ks.integration.KieServerIntegrationServerTemplateTest.newContainerSpec;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KieServerIntegrationClientsTest {
@@ -59,6 +69,7 @@ public class KieServerIntegrationClientsTest {
     @Mock
     Event<ServerInstanceRegistered> serverInstanceRegisteredEvent;
 
+    @Spy
     @InjectMocks
     KieServerIntegration kieServerIntegration;
 
@@ -78,8 +89,7 @@ public class KieServerIntegrationClientsTest {
         serverInstance1.setUrl("http://1");
 
         serverInstance1.setServerInstanceId(serverInstanceId1);
-        final ServerTemplate serverTemplate = new ServerTemplate(serverTemplateId,
-                                                                 serverTemplateId);
+        final ServerTemplate serverTemplate = new ServerTemplate(serverTemplateId, serverTemplateId);
         serverTemplate.addContainerSpec(containerSpec);
 
         final ServerInstance serverInstance2 = new ServerInstance();
@@ -93,83 +103,108 @@ public class KieServerIntegrationClientsTest {
 
         kieServerIntegration.onServerInstanceConnected(new ServerInstanceConnected(serverInstance2));
 
-        assertEquals(1,
-                     kieServerIntegration.getServerTemplatesClients().size());
+        assertEquals(1, kieServerIntegration.getServerTemplatesClients().size());
         assertNotNull(kieServerIntegration.getServerTemplatesClients().get(serverTemplateId));
-        assertEquals(2,
-                     kieServerIntegration.getServerTemplatesClients().get(serverTemplateId).size());
+        assertEquals(2, kieServerIntegration.getServerTemplatesClients().get(serverTemplateId).size());
         assertNotNull(kieServerIntegration.getServerTemplatesClients().get(serverTemplateId).get(SERVER_TEMPLATE_KEY));
         assertNotNull(kieServerIntegration.getServerTemplatesClients().get(serverTemplateId).get(containerSpec.getId()));
         assertNotNull(kieServerIntegration.getServerClient(serverTemplateId, "not-existing"));
         assertEquals(kieServerIntegration.getServerTemplatesClients().get(serverTemplateId).get(SERVER_TEMPLATE_KEY),
                      kieServerIntegration.getServerClient(serverTemplateId, "not-existing"));
-        assertEquals(1,
-                     kieServerIntegration.getServerInstancesById().size());
+        assertEquals(1, kieServerIntegration.getServerInstancesById().size());
         assertNotNull(kieServerIntegration.getServerInstancesById().get(serverInstanceId2));
 
         serverTemplate.addServerInstance(serverInstance1);
 
         kieServerIntegration.onServerInstanceConnected(new ServerInstanceConnected(serverInstance1));
 
-        assertEquals(1,
-                     kieServerIntegration.getServerTemplatesClients().size());
+        assertEquals(1, kieServerIntegration.getServerTemplatesClients().size());
         assertNotNull(kieServerIntegration.getServerTemplatesClients().get(serverTemplateId));
-        assertEquals(2,
-                     kieServerIntegration.getServerTemplatesClients().get(serverTemplateId).size());
+        assertEquals(2, kieServerIntegration.getServerTemplatesClients().get(serverTemplateId).size());
         assertNotNull(kieServerIntegration.getServerTemplatesClients().get(serverTemplateId).get(SERVER_TEMPLATE_KEY));
         assertNotNull(kieServerIntegration.getServerTemplatesClients().get(serverTemplateId).get(containerSpec.getId()));
-        assertEquals(2,
-                     kieServerIntegration.getServerInstancesById().size());
+        assertEquals(2, kieServerIntegration.getServerInstancesById().size());
         assertNotNull(kieServerIntegration.getServerInstancesById().get(serverInstanceId1));
 
         kieServerIntegration.onServerInstanceDisconnected(new ServerInstanceDisconnected(serverInstanceId1));
 
-        assertEquals(1,
-                     kieServerIntegration.getServerTemplatesClients().size());
-        assertServerInstanceFailedEndpoint(kieServerIntegration,
-                                           serverInstance1);
-        assertContainerFailedEndpoint(kieServerIntegration,
-                                      serverInstance1,
-                                      containerSpec.getId());
+        assertEquals(1, kieServerIntegration.getServerTemplatesClients().size());
+        assertServerInstanceFailedEndpoint(kieServerIntegration, serverInstance1);
+        assertContainerFailedEndpoint(kieServerIntegration, serverInstance1, containerSpec.getId());
 
-        assertEquals(1,
-                     kieServerIntegration.getServerInstancesById().size());
+        assertEquals(1, kieServerIntegration.getServerInstancesById().size());
         assertNull(kieServerIntegration.getServerInstancesById().get(serverInstanceId1));
         assertNotNull(kieServerIntegration.getServerInstancesById().get(serverInstanceId2));
 
         kieServerIntegration.onServerInstanceDisconnected(new ServerInstanceDisconnected(serverInstanceId2));
 
-        assertEquals(1,
-                     kieServerIntegration.getServerTemplatesClients().size());
-        assertServerInstanceFailedEndpoint(kieServerIntegration,
-                                           serverInstance2);
-        assertContainerFailedEndpoint(kieServerIntegration,
-                                      serverInstance2,
-                                      containerSpec.getId());
+        assertEquals(1, kieServerIntegration.getServerTemplatesClients().size());
+        assertServerInstanceFailedEndpoint(kieServerIntegration, serverInstance2);
+        assertContainerFailedEndpoint(kieServerIntegration, serverInstance2, containerSpec.getId());
 
-        assertEquals(0,
-                     kieServerIntegration.getServerInstancesById().size());
+        assertEquals(0, kieServerIntegration.getServerInstancesById().size());
         assertNull(kieServerIntegration.getServerInstancesById().get(serverInstanceId1));
         assertNull(kieServerIntegration.getServerInstancesById().get(serverInstanceId2));
 
         kieServerIntegration.onServerTemplateDeleted(new ServerTemplateDeleted(serverTemplateId));
-        assertEquals(0,
-                     kieServerIntegration.getServerTemplatesClients().size());
+        assertEquals(0, kieServerIntegration.getServerTemplatesClients().size());
     }
-    
+
+    @Test
+    public void testCreateAvailableClients() throws Exception {
+        final String serverTemplateId = "kie-server-test";
+        final ServerTemplate serverTemplate = new ServerTemplate(serverTemplateId, serverTemplateId);
+        final ContainerSpec containerSpec = newContainerSpec();
+        serverTemplate.addContainerSpec(containerSpec);
+
+        final String serverInstanceId1 = serverTemplateId + "@1";
+        final ServerInstance serverInstance1 = new ServerInstance();
+        serverInstance1.setServerTemplateId(serverTemplateId);
+        serverInstance1.setUrl("http://1");
+        serverInstance1.setServerInstanceId(serverInstanceId1);
+
+        serverTemplate.addServerInstance(serverInstance1);
+        
+        final String serverInstanceId2 = serverTemplateId + "@2";
+        final ServerInstance serverInstance2 = new ServerInstance();
+        serverInstance2.setServerTemplateId(serverTemplateId);
+        serverInstance2.setUrl("http://2");
+        serverInstance2.setServerInstanceId(serverInstanceId2);
+
+        serverTemplate.addServerInstance(serverInstance2);
+
+        when(specManagementService.listServerTemplates()).thenReturn(new ServerTemplateList(Collections.singletonList(serverTemplate)));
+
+        CountDownLatch latch = new CountDownLatch(2);
+
+        doAnswer(a -> {
+            final Object result = a.callRealMethod();
+            latch.countDown();
+            return result;
+        }).when(kieServerIntegration).createClientForTemplate(any(), any(), any());
+
+        kieServerIntegration.createAvailableClients();
+
+        assertTrue("Clients not created within 10 seconds", latch.await(10, TimeUnit.SECONDS));
+
+        assertEquals(1, kieServerIntegration.getServerTemplatesClients().size());
+        assertNotNull(kieServerIntegration.getServerClient(serverTemplateId));
+        assertNotNull(kieServerIntegration.getAdminServerClient(serverTemplateId, serverInstanceId1));
+        assertNotNull(kieServerIntegration.getAdminServerClient(serverTemplateId, serverInstanceId2));
+    }
+
     @Test
     public void testBroadcastToKieServers() {
         final String serverTemplateId = "kie-server-test";
         final String serverInstanceId1 = serverTemplateId + "@1";
         final String serverInstanceId2 = serverTemplateId + "@2";
-        
+
         final ServerInstance serverInstance1 = new ServerInstance();
         serverInstance1.setServerTemplateId(serverTemplateId);
         serverInstance1.setUrl("http://1");
 
         serverInstance1.setServerInstanceId(serverInstanceId1);
-        final ServerTemplate serverTemplate = new ServerTemplate(serverTemplateId,
-                                                                 serverTemplateId);
+        final ServerTemplate serverTemplate = new ServerTemplate(serverTemplateId, serverTemplateId);
         serverTemplate.addServerInstance(serverInstance1);
 
         final ServerInstance serverInstance2 = new ServerInstance();
@@ -182,16 +217,16 @@ public class KieServerIntegrationClientsTest {
         KieServicesClientProvider provider = Mockito.mock(KieServicesClientProvider.class);
         List<KieServicesClientProvider> providers = new ArrayList<>();
         providers.add(provider);
-        
+
         kieServerIntegration.setKieServicesClientProviders(providers);
-        
+
         when(provider.supports(anyString())).thenReturn(true);
         when(provider.get(anyString())).thenReturn(Mockito.mock(KieServicesClient.class));
-        
+
         when(specManagementService.getServerTemplate(serverTemplateId)).thenReturn(serverTemplate);
         Function<KieServicesClient, Object> operation = Mockito.mock(Function.class);
         kieServerIntegration.broadcastToKieServers(serverTemplateId, operation);
-                
+
         verify(operation, times(2)).apply(any());
     }
 }
