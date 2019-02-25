@@ -135,6 +135,20 @@ public abstract class AbstractTaskListBasicFiltersPresenter extends BasicFilters
                                                                   f.getValue())));
     }
 
+    protected void addDeploymentIdFilter(final String dataSetId) {
+        final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
+                .dataset(dataSetId)
+                .group(COLUMN_DEPLOYMENT_ID)
+                .column(COLUMN_DEPLOYMENT_ID)
+                .sort(COLUMN_DEPLOYMENT_ID, SortOrder.ASCENDING)
+                .buildLookup();
+        view.addDataSetSelectFilter(constants.DeploymentId(),
+                                    dataSetLookup,
+                                    COLUMN_DEPLOYMENT_ID,
+                                    COLUMN_DEPLOYMENT_ID,
+                                    f -> addSearchFilter(f, equalsTo(COLUMN_DEPLOYMENT_ID, f.getValue())));
+    }
+
     @Inject
     public void setTranslationService(TranslationService translationService) {
         this.translationService = translationService;

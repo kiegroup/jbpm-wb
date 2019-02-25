@@ -32,4 +32,10 @@ public class TaskAdminListBasicFiltersPresenter extends AbstractTaskListBasicFil
         return HUMAN_TASKS_WITH_ADMIN_DATASET;
     }
 
+    @Override
+    public void loadFilters() {
+        super.loadFilters();
+
+        addDeploymentIdFilter(getDataSetId());
+    }
 }
