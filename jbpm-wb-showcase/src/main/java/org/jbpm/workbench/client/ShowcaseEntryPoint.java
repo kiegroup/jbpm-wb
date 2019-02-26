@@ -33,6 +33,7 @@ import org.jbpm.workbench.client.perspectives.ProcessAdminSettingsPerspective;
 import org.jbpm.workbench.client.perspectives.TaskAdminSettingsPerspective;
 import org.kie.workbench.common.workbench.client.admin.DefaultAdminPageHelper;
 import org.kie.workbench.common.workbench.client.entrypoint.DefaultWorkbenchEntryPoint;
+import org.kie.workbench.common.workbench.client.entrypoint.GenericErrorPopup;
 import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback;
 import org.kie.workbench.common.workbench.client.menu.DefaultWorkbenchFeaturesMenusHelper;
 import org.uberfire.client.mvp.ActivityBeansCache;
@@ -70,10 +71,12 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
                               final DefaultAdminPageHelper adminPageHelper,
                               final DefaultWorkbenchFeaturesMenusHelper menusHelper,
                               final WorkbenchMegaMenuPresenter menuBar,
-                              final DefaultWorkbenchErrorCallback defaultWorkbenchErrorCallback) {
+                              final DefaultWorkbenchErrorCallback defaultWorkbenchErrorCallback,
+                              final GenericErrorPopup genericErrorPopup) {
         super(appConfigService,
               activityBeansCache,
-              defaultWorkbenchErrorCallback);
+              defaultWorkbenchErrorCallback,
+              genericErrorPopup);
         this.iocManager = iocManager;
         this.identity = identity;
         this.menusHelper = menusHelper;
