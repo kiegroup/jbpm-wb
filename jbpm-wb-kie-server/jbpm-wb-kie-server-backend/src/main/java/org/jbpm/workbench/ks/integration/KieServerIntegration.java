@@ -16,11 +16,6 @@
 
 package org.jbpm.workbench.ks.integration;
 
-import static java.util.Collections.emptyMap;
-import static org.jbpm.workbench.ks.utils.KieServerUtils.createKieServicesClient;
-import static org.jbpm.workbench.ks.utils.KieServerUtils.getAdminCredentialsProvider;
-import static org.jbpm.workbench.ks.utils.KieServerUtils.getCredentialsProvider;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,9 +23,12 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -60,6 +58,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.commons.services.cdi.Startup;
 
+import static java.util.Collections.emptyMap;
+import static org.jbpm.workbench.ks.utils.KieServerUtils.createKieServicesClient;
+import static org.jbpm.workbench.ks.utils.KieServerUtils.getAdminCredentialsProvider;
+import static org.jbpm.workbench.ks.utils.KieServerUtils.getCredentialsProvider;
+
 @Startup
 @ApplicationScoped
 public class KieServerIntegration {
@@ -76,6 +79,8 @@ public class KieServerIntegration {
 
     private List<KieServicesClientProvider> clientProviders = new ArrayList<>();
     private List<KieServicesClientProvider> allClientProviders = new ArrayList<>();
+    
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @Inject
     private SpecManagementService specManagementService;
@@ -85,28 +90,33 @@ public class KieServerIntegration {
 
     @PostConstruct
     public void createAvailableClients() {
+        executorService.submit(() -> {
+            ServiceLoader<KieServicesClientProvider> loader = ServiceLoader.load(KieServicesClientProvider.class);
 
-        ServiceLoader<KieServicesClientProvider> loader = ServiceLoader.load(KieServicesClientProvider.class);
+            loader.forEach(provider -> {
+                // skip default http/rest based client providers and use admin client created here
+                if (!provider.supports("http")) {
+                    clientProviders.add(provider);
+                }
+                allClientProviders.add(provider);
+            });
 
-        loader.forEach(provider -> {
-            // skip default http/rest based client providers and use admin client created here
-            if (!provider.supports("http")) {
-                clientProviders.add(provider);
-            }
-            allClientProviders.add(provider);
+            clientProviders.sort((KieServicesClientProvider one, KieServicesClientProvider two) -> one.getPriority().compareTo(two.getPriority()));
+
+            kieServices = KieServices.Factory.get();
+
+            ServerTemplateList serverTemplates = specManagementService.listServerTemplates();
+            logger.debug("Found {} server templates, creating clients for them...", serverTemplates.getServerTemplates().length);
+
+            for (ServerTemplate serverTemplate : serverTemplates.getServerTemplates()) {
+                buildClientsForServer(serverTemplate);
+            }    
         });
-
-        clientProviders.sort((KieServicesClientProvider one, KieServicesClientProvider two) -> one.getPriority().compareTo(two.getPriority()));
-
-        kieServices = KieServices.Factory.get();
-
-        ServerTemplateList serverTemplates = specManagementService.listServerTemplates();
-        logger.debug("Found {} server templates, creating clients for them...",
-                     serverTemplates.getServerTemplates().length);
-
-        for (ServerTemplate serverTemplate : serverTemplates.getServerTemplates()) {
-            buildClientsForServer(serverTemplate);
-        }
+    }
+    
+    @PreDestroy
+    public void stop(){
+        executorService.shutdownNow();
     }
 
     protected void setKieServices(final KieServices kieServices) {
@@ -316,18 +326,15 @@ public class KieServerIntegration {
                                                                       null,
                                                                       getCredentialsProvider());
         if (kieServicesClient != null) {
-            serverTemplatesClients.computeIfAbsent(serverTemplate.getId(),
-                                                   (k) -> new ConcurrentHashMap<String, KieServicesClient>());
-            serverTemplatesClients.get(serverTemplate.getId()).put(SERVER_TEMPLATE_KEY,
-                                                                   kieServicesClient);
+            serverTemplatesClients.computeIfAbsent(serverTemplate.getId(), (k) -> new ConcurrentHashMap<>());
+            serverTemplatesClients.get(serverTemplate.getId()).put(SERVER_TEMPLATE_KEY, kieServicesClient);
         }
 
         if (serverTemplate.getContainersSpec() != null) {
             for (ContainerSpec containerSpec : serverTemplate.getContainersSpec()) {
                 try {
                     if (serverTemplatesClients.get(serverTemplate.getId()).containsKey(containerSpec.getId())) {
-                        logger.debug("KieServerClient for {} is already created",
-                                     containerSpec.getId());
+                        logger.debug("KieServerClient for {} is already created", containerSpec.getId());
                         continue;
                     }
 
@@ -370,8 +377,7 @@ public class KieServerIntegration {
                 endpoints.append(serverInstanceKey.getUrl() + "|");
             }
             endpoints.deleteCharAt(endpoints.length() - 1);
-            logger.debug("Creating client that will use following list of endpoints {}",
-                         endpoints);
+            logger.debug("Creating client that will use following list of endpoints {}", endpoints);
 
             final List<String> mappedCapabilities = new ArrayList<>();
             if (serverTemplate.getCapabilities().contains(Capability.PROCESS.name())) {
@@ -391,8 +397,7 @@ public class KieServerIntegration {
                                                                                 credentialsProvider,
                                                                                 mappedCapabilities.toArray(new String[mappedCapabilities.size()]));
 
-            logger.debug("KieServerClient created successfully for server template {}",
-                         serverTemplate.getId());
+            logger.debug("KieServerClient created successfully for server template {}", serverTemplate.getId());
 
             indexServerInstances(serverTemplate);
 
