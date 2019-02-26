@@ -25,12 +25,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.uberfire.client.views.pfly.widgets.D3;
+import org.uberfire.client.views.pfly.widgets.D3.ZoomEvent;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class ProcessDiagramWidgetViewTest {
@@ -70,9 +72,10 @@ public class ProcessDiagramWidgetViewTest {
         when(svgSelect.attr("width")).thenReturn(String.valueOf(svgWidth));
         when(svgSelect.attr("height")).thenReturn(String.valueOf(svgHeight));
 
-        TestEvent testEvent = mock(TestEvent.class);
-        when(d3Mock.getEvent()).thenReturn(testEvent);
-        when(testEvent.getTransform()).thenReturn(transformMock);
+        D3.Event event = mock( D3.Event.class, withSettings().extraInterfaces(ZoomEvent.class));
+        ZoomEvent zoomEvent = (ZoomEvent) event; 
+        when(d3Mock.getEvent()).thenReturn(event);
+        when(zoomEvent.getTransform()).thenReturn(transformMock);
     }
 
     private void testD3ZoomInitialization() {
@@ -186,27 +189,4 @@ public class ProcessDiagramWidgetViewTest {
         verify(zoomControlView).disablePlusButton(true);
     }
 
-    private class TestEvent implements D3.Event,
-                                       D3.ZoomEvent {
-
-        @Override
-        public Object getCurrentTarget() {
-            return null;
-        }
-
-        @Override
-        public D3.Transform getTransform() {
-            return null;
-        }
-
-        @Override
-        public int getPageX() {
-            return 0;
-        }
-
-        @Override
-        public int getPageY() {
-            return 0;
-        }
-    }
 }
