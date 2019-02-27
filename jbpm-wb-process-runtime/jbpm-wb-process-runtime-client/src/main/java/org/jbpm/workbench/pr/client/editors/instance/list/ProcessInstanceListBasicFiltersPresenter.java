@@ -130,6 +130,8 @@ public class ProcessInstanceListBasicFiltersPresenter extends BasicFiltersPresen
 
         addDeploymentIdFilter();
 
+        addSLAComplianceFilter();
+
         view.addDateRangeFilter(constants.Start_Date(),
                                 constants.Start_Date_Placeholder(),
                                 true,
@@ -189,6 +191,18 @@ public class ProcessInstanceListBasicFiltersPresenter extends BasicFiltersPresen
                                     COLUMN_EXTERNAL_ID,
                                     COLUMN_EXTERNAL_ID,
                                     f -> addSearchFilter(f, equalsTo(COLUMN_EXTERNAL_ID, f.getValue())));
+    }
+
+    protected void addSLAComplianceFilter() {
+        Map<String, String> aliasMap = new HashMap<String, String>();
+        aliasMap.put(String.valueOf(ProcessInstance.SLA_ABORTED), constants.SlaAborted());
+        aliasMap.put(String.valueOf(ProcessInstance.SLA_MET), constants.SlaMet());
+        aliasMap.put(String.valueOf(ProcessInstance.SLA_NA), constants.SlaNA());
+        aliasMap.put(String.valueOf(ProcessInstance.SLA_PENDING), constants.SlaPending());
+        aliasMap.put(String.valueOf(ProcessInstance.SLA_VIOLATED), constants.SlaViolated());
+        view.addSelectFilter(constants.SlaCompliance(),
+                             aliasMap,
+                             f -> addSearchFilter(f, equalsTo(COLUMN_SLA_COMPLIANCE, f.getValue())));
     }
 
     @Override
