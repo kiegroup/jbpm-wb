@@ -15,7 +15,12 @@
  */
 package org.jbpm.workbench.common.client.list;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -31,12 +36,19 @@ import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.user.cellview.client.Header;
 import com.google.gwt.user.cellview.client.TextHeader;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.RequiresResize;
+import com.google.gwt.user.client.ui.Widget;
 import elemental2.dom.HTMLDivElement;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
 import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.*;
+import org.gwtbootstrap3.client.ui.ButtonGroup;
+import org.gwtbootstrap3.client.ui.DropDownMenu;
 import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.jboss.errai.common.client.api.Caller;
@@ -53,7 +65,12 @@ import org.jbpm.workbench.common.model.GenericSummary;
 import org.jbpm.workbench.common.preferences.ManagePreferences;
 import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback;
 import org.uberfire.client.mvp.PlaceManager;
-import org.uberfire.ext.services.shared.preferences.*;
+import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
+import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
+import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
+import org.uberfire.ext.services.shared.preferences.GridSortedColumnPreference;
+import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
+import org.uberfire.ext.services.shared.preferences.UserPreferencesType;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.workbench.events.NotificationEvent;
@@ -159,6 +176,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
             newListGrid.setShowFastFordwardPagerButton(false);
             newListGrid.enableDataGridMinWidth(true);
             initSelectionModel(newListGrid);
+            addColumnSortHandler(newListGrid);
 
             userPreferencesService.call((GridPreferencesStore preferencesStore) -> {
                 if (preferencesStore == null) {
@@ -179,6 +197,21 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
             }).loadUserPreferences(key,
                                    UserPreferencesType.GRIDPREFERENCES);
         }, error -> new DefaultWorkbenchErrorCallback().error(error));
+    }
+
+    protected void addColumnSortHandler(ExtendedPagedTable listTable) {
+        listTable.addColumnSortHandler(event -> {
+            GridPreferencesStore gridPreferencesStore = listTable.getGridPreferencesStore();
+            if (gridPreferencesStore != null && event.getColumnSortList().size() > 0) {
+                ColumnSortList.ColumnSortInfo columnSortInfo = event.getColumnSortList().get(0);
+                if (columnSortInfo != null) {
+                    GridSortedColumnPreference gridSortedColumnPreference = new GridSortedColumnPreference(columnSortInfo.getColumn().getDataStoreName(),
+                                                                                                           columnSortInfo.isAscending());
+                    gridPreferencesStore.setGridSortedColumnPreference(gridSortedColumnPreference);
+                }
+            }
+            listTable.saveGridPreferences();
+        });
     }
 
     protected void addNewTableToColumn(final ListTable<T> newListGrid) {
@@ -497,5 +530,27 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         if (listTable != null) {
             listTable.onResize();
         }
+    }
+
+    @Override
+    public ColumnSortList reloadColumnSortList() {
+        ColumnSortList columnSortList = getListGrid().getColumnSortList();
+        GridPreferencesStore gridPreferencesStore = getListGrid().getGridPreferencesStore();
+        if (gridPreferencesStore != null) {
+            GridSortedColumnPreference gridSortedColumnPreference = gridPreferencesStore.getGridSortedColumnPreference();
+            //Avoid duplicating the call push method of ColumnSortList when catch ColumnSortedEvent
+            //If repeating the call push method, there will throw 'IndexOutOfBoundsException: Row index: 0, Row size: 1'
+            if (gridSortedColumnPreference != null && columnSortList.size() <= 1) {
+                Optional<ColumnMeta<T>> optional = getListGrid().getColumnMetaList().stream().filter(
+                        tColumnMeta -> tColumnMeta.getColumn().getDataStoreName().equals(gridSortedColumnPreference.getDataStoreName()))
+                        .findFirst();
+                if (optional.isPresent()) {
+                    Column col = optional.get().getColumn();
+                    col.setDataStoreName(gridSortedColumnPreference.getDataStoreName());
+                    columnSortList.push(new ColumnSortList.ColumnSortInfo(col, gridSortedColumnPreference.isAscending()));
+                }
+            }
+        }
+        return columnSortList;
     }
 }

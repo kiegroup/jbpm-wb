@@ -23,7 +23,7 @@ import org.uberfire.ext.widgets.common.client.common.HasBusyIndicator;
 public interface ProcessDiagramWidgetView extends HasBusyIndicator,
                                                   IsWidget {
 
-    void expandDiagramContanier();
+    void expandDiagramContainer();
 
     void displayImage(String svgContent);
 

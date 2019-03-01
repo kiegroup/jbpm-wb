@@ -25,6 +25,8 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.guvnor.structure.repositories.Repository;
+import org.guvnor.structure.organizationalunit.RepoRemovedFromOrganizationalUnitEvent;
 import org.guvnor.structure.repositories.RepositoryRemovedEvent;
 import org.jbpm.process.workitem.repository.service.RepoData;
 import org.jbpm.process.workitem.repository.storage.InMemoryRepositoryStorage;
@@ -157,7 +159,21 @@ public class RepositoryStorageVFSImpl extends InMemoryRepositoryStorage<ServiceT
     
     public void onProjectDeleted(@Observes RepositoryRemovedEvent deletedEvent) {
         
-        String target = ServiceTaskUtils.extractTargetInfo(deletedEvent.getRepository().getUri());        
+        uninstallOnRepositoryRemoved(deletedEvent.getRepository());        
+    }
+    
+    public void onSpaceDeleted(@Observes RepoRemovedFromOrganizationalUnitEvent deletedEvent) {
+        
+        uninstallOnRepositoryRemoved(deletedEvent.getRepository());
+    }
+        
+    
+    /*
+     * Helper methods
+     */
+
+    protected void uninstallOnRepositoryRemoved(Repository repository) {
+        String target = ServiceTaskUtils.extractTargetInfo(repository.getUri());        
         logger.debug("{} has been removed, removing any references to it on service tasks", target);
         
         services.stream()
@@ -165,14 +181,9 @@ public class RepositoryStorageVFSImpl extends InMemoryRepositoryStorage<ServiceT
                 .forEach(service -> {
                     service.uninstall(target);
                     logger.debug("Service {} uninstalled from deleted target {}", service.getName(), target);
-                });        
-        
+                });  
     }
     
-    /*
-     * Helper methods
-     */
-
     protected void store(Path path, Object data) {
         try {
             ioService.startBatch(fileSystem);

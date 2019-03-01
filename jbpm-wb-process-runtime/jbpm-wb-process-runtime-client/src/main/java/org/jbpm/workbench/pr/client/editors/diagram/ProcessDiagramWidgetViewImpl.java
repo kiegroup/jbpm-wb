@@ -187,7 +187,7 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
     }
 
     @Override
-    public void expandDiagramContanier() {
+    public void expandDiagramContainer() {
         diagramContainerDiv.classList.remove("col-md-10");
         diagramContainerDiv.classList.add("col-md-12");
     }

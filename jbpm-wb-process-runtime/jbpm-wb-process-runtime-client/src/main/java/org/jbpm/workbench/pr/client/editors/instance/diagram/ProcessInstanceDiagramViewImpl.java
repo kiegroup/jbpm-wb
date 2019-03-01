@@ -148,7 +148,7 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
     public void hideNodeActions() {
         nodeActionsPanel.classList.remove("col-md-2");
         nodeActionsPanel.classList.add("hidden");
-        diagram.expandDiagramContanier();
+        diagram.expandDiagramContainer();
     }
 
     @Override
@@ -181,7 +181,13 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
 
         final D3 d3 = D3.Builder.get();
 
-        final D3 svg = d3.select("#processDiagramDiv svg");
+        final D3.Selection svg = d3.select("#processDiagramDiv svg");
+
+        if(svg.empty()){
+            //Couldn't find SVG element
+            return;
+        }
+        
         final D3.DOMRect svgRect = svg.node().getBoundingClientRect();
         if(svgRect.getWidth() == 0 && svgRect.getHeight() == 0){
             //SVG not visible
