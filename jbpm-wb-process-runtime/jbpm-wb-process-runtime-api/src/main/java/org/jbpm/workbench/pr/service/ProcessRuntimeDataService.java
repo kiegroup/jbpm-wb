@@ -32,7 +32,10 @@ public interface ProcessRuntimeDataService {
 
     List<TimerInstanceSummary> getProcessInstanceTimerInstances(ProcessInstanceKey processInstanceKey);
 
-    ProcessInstanceDiagramSummary getProcessInstanceDiagramSummary(ProcessInstanceKey processInstanceKey);
+    ProcessInstanceDiagramSummary getProcessInstanceDiagramSummary(ProcessInstanceKey processInstanceKey,
+                                                                   String completedNodeColor,
+                                                                   String completedNodeBorderColor,
+                                                                   String activeNodeBorderColor);
 
     List<ProcessSummary> getProcesses(String serverTemplateId,
                                       Integer page,

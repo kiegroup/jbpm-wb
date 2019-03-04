@@ -23,7 +23,10 @@ public interface ProcessImageService {
 
     String getProcessInstanceDiagram(String serverTemplateId,
                                      String containerId,
-                                     Long processInstanceId);
+                                     Long processInstanceId,
+                                     String completedNodeColor,
+                                     String completedNodeBorderColor,
+                                     String activeNodeBorderColor);
 
     String getProcessDiagram(String serverTemplateId,
                              String containerId,

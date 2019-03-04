@@ -79,26 +79,37 @@ public class RemoteProcessImageServiceImplTest {
 
     @Test
     public void testProcessInstanceImageHTML() {
-        when(uiServicesClient.getProcessInstanceImage("",
-                                                      null)).thenReturn(SVG_WITH_ACTIONS,
-                                                                        SVG_WITHOUT_ACTIONS);
+        when(uiServicesClient.getProcessInstanceImageCustomColor("", null, "", "", ""))
+                .thenReturn(SVG_WITH_ACTIONS, SVG_WITHOUT_ACTIONS);
 
         validateHTMLContent(service.getProcessInstanceDiagram("",
                                                               "",
-                                                              null));
+                                                              null,
+                                                              "",
+                                                              "",
+                                                              ""));
 
         validateHTMLContent(service.getProcessInstanceDiagram("",
                                                               "",
-                                                              null));
+                                                              null,
+                                                              "",
+                                                              "",
+                                                              ""));
     }
 
     @Test
     public void testImageWithLink() {
-        when(uiServicesClient.getProcessInstanceImage("",
-                                                      null)).thenReturn(SVG_WITH_LINK);
+        when(uiServicesClient.getProcessInstanceImageCustomColor("",
+                                                                 null,
+                                                                 "",
+                                                                 "",
+                                                                 "")).thenReturn(SVG_WITH_LINK);
         final String diagram = service.getProcessInstanceDiagram("",
                                                                  "",
-                                                                 null);
+                                                                 null,
+                                                                 "",
+                                                                 "",
+                                                                 "");
         assertFalse(diagram.contains("onclick"));
         assertEquals(SVG_WITHOUT_LINK,
                      diagram);
@@ -107,24 +118,23 @@ public class RemoteProcessImageServiceImplTest {
     @Test
     public void testProcessInstanceImageNotFound() {
         final Integer okCode = 400;
-        when(uiServicesClient.getProcessInstanceImage("",
-                                                      null)).thenThrow(new KieServicesHttpException(null,
-                                                                                                    404,
-                                                                                                    null,
-                                                                                                    null),
-                                                                       new KieServicesHttpException(null,
-                                                                                                    okCode,
-                                                                                                    null,
-                                                                                                    null));
+        when(uiServicesClient.getProcessInstanceImageCustomColor("", null, "", "", ""))
+                .thenThrow(new KieServicesHttpException(null, 404, null, null), new KieServicesHttpException(null, okCode, null, null));
 
         assertNull(service.getProcessInstanceDiagram("",
                                                      "",
-                                                     null));
+                                                     null,
+                                                     "",
+                                                     "",
+                                                     ""));
 
         try {
             service.getProcessInstanceDiagram("",
                                               "",
-                                              null);
+                                              null,
+                                              "",
+                                              "",
+                                              "");
             fail("Method should throw exception");
         } catch (KieServicesHttpException ex) {
             assertEquals(okCode,
@@ -158,5 +168,19 @@ public class RemoteProcessImageServiceImplTest {
             assertEquals(okCode,
                          ex.getHttpCode());
         }
+    }
+
+    @Test
+    public void testProcessInstanceImageCustomColors() {
+        String completeNodeColor = "#888888";
+        String completeNodeBorderColor = "#888887";
+        String activeNodeBorderColor = "#888886";
+
+        service.getProcessInstanceDiagram("", "", null,
+                                          completeNodeColor, completeNodeBorderColor, activeNodeBorderColor);
+
+        verify(uiServicesClient).getProcessInstanceImageCustomColor("", null,
+                                                                    completeNodeColor, completeNodeBorderColor,
+                                                                    activeNodeBorderColor);
     }
 }

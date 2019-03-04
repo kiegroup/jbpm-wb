@@ -35,14 +35,20 @@ public class RemoteProcessImageServiceImpl extends AbstractKieServerService impl
     @Override
     public String getProcessInstanceDiagram(String serverTemplateId,
                                             String containerId,
-                                            Long processInstanceId) {
+                                            Long processInstanceId,
+                                            String completedNodeColor,
+                                            String completedNodeBorderColor,
+                                            String activeNodeBorderColor) {
         UIServicesClient uiServicesClient = getClient(serverTemplateId,
                                                       containerId,
                                                       UIServicesClient.class);
 
         try {
-            return removeActionsFromSVG(uiServicesClient.getProcessInstanceImage(containerId,
-                                                                                 processInstanceId));
+            return removeActionsFromSVG(uiServicesClient.getProcessInstanceImageCustomColor(containerId,
+                                                                                            processInstanceId,
+                                                                                            completedNodeColor,
+                                                                                            completedNodeBorderColor,
+                                                                                            activeNodeBorderColor));
         } catch (KieServicesHttpException ex) {
             LOGGER.warn("Failed to retrieve process instance image: {}",
                         ex.getMessage());
