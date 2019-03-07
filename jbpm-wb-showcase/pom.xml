@@ -934,6 +934,10 @@
     </dependency>
     <dependency>
       <groupId>org.kie.workbench.screens</groupId>
+      <artifactId>kie-wb-common-home-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.workbench.screens</groupId>
       <artifactId>kie-wb-common-home-client</artifactId>
     </dependency>
 
@@ -1698,6 +1702,7 @@
             <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-contributors-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-examples-screen-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-examples-screen-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-home-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.screens:kie-wb-common-home-client</compileSourcesArtifact>
 
             <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-api</compileSourcesArtifact>
@@ -2033,8 +2038,6 @@
                     <resource>
                       <directory>${project.build.directory}/appformer-js-workbench-screens/META-INF/resources/webjars/appformer-js-workbench-screens/${project.version}</directory>
                       <includes>
-                        <include>home-perspective-bundle.js</include>
-                        <include>jbpm-wb-home-screen-bundle.js</include>
                         <include>spaces-screen-bundle.js</include>
                       </includes>
                     </resource>
