@@ -69,5 +69,6 @@ public class TaskAdminListBasicFiltersPresenterTest extends AbstractBasicFilters
         inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Task_Name()), any(), any(), any(), any());
         inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Process_Definition_Id()), any(), any(), any(), any());
         inOrder.verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.Created_On()), any(), any(), any());
+        inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.DeploymentId()), any(), any(), any(), any());
     }
 }

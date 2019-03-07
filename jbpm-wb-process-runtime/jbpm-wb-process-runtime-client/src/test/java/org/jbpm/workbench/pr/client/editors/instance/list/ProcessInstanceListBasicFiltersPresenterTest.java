@@ -54,6 +54,7 @@ public class ProcessInstanceListBasicFiltersPresenterTest extends AbstractBasicF
         inOrder.verify(getView()).addMultiSelectFilter(eq(Constants.INSTANCE.State()), any(), any());
         inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Name()), any(), any(), any(), any());
         inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Process_Definition_Id()), any(), any(), any(), any());
+        inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.DeploymentId()), any(), any(), any(), any());
         inOrder.verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.Start_Date()), any(), any(), any());
         inOrder.verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.Last_Modification_Date()), any(), any(), any());
     }
