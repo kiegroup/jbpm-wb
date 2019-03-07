@@ -90,7 +90,7 @@ public class ShowcaseEntryPoint extends DefaultWorkbenchEntryPoint {
 
     @PostConstruct
     protected void setup() {
-        this.appFormerJsBridge.init("jbpm-wb-showcase/org.jbpm.workbench.jBPMShowcase");
+        this.appFormerJsBridge.init("org.jbpm.workbench.jBPMShowcase");
     }
 
     @Override
