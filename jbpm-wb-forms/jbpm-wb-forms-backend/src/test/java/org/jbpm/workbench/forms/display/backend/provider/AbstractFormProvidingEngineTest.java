@@ -28,6 +28,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.kie.internal.task.api.ContentMarshallerContext;
 import org.kie.soup.project.datamodel.commons.util.RawMVELEvaluator;
+import org.kie.workbench.common.forms.data.modeller.service.ext.ModelReaderService;
+import org.kie.workbench.common.forms.data.modeller.service.impl.ext.dmo.runtime.RuntimeDMOModelReader;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.BackendFormRenderingContextManagerImpl;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.FieldValueMarshaller;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.FieldValueMarshallerRegistry;
@@ -55,6 +57,7 @@ import org.mockito.Mock;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertNotNull;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -65,17 +68,20 @@ public abstract class AbstractFormProvidingEngineTest<SETTINGS extends Rendering
     @Mock
     protected ContentMarshallerContext marshallerContext;
 
-    protected FormDefinitionSerializer formSerializer;
+    @Mock
+    private ModelReaderService<ClassLoader> modelReaderService;
 
-    protected BackendFormRenderingContextManagerImpl contextManager;
+    private FormDefinitionSerializer formSerializer;
+
+    private BackendFormRenderingContextManagerImpl contextManager;
 
     private FieldValueMarshallerRegistry registry;
 
-    protected DynamicBPMNFormGenerator dynamicBPMNFormGenerator;
+    private DynamicBPMNFormGenerator dynamicBPMNFormGenerator;
 
     protected PROCESSOR processor;
 
-    protected SETTINGS settings;
+    private SETTINGS settings;
 
     protected PROVIDER workbenchFormsProvider;
 
@@ -108,8 +114,9 @@ public abstract class AbstractFormProvidingEngineTest<SETTINGS extends Rendering
 
         multipleSubFormFieldValueMarshaller.setRegistry(registry);
 
-        dynamicBPMNFormGenerator = new DynamicBPMNFormGeneratorImpl(new BPMNRuntimeFormGeneratorService(new TestFieldManager(),
-                                                                                                        new RawMVELEvaluator()));
+        when(modelReaderService.getModelReader(any())).thenReturn(new RuntimeDMOModelReader(this.getClass().getClassLoader(), new RawMVELEvaluator()));
+
+        dynamicBPMNFormGenerator = new DynamicBPMNFormGeneratorImpl(new BPMNRuntimeFormGeneratorService(modelReaderService, new TestFieldManager()));
 
         contextManager = new BackendFormRenderingContextManagerImpl(registry, new ContextModelConstraintsExtractorImpl());
 
