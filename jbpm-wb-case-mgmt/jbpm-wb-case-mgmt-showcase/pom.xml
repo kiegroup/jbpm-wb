@@ -547,6 +547,7 @@
               <compileSourcesArtifact>org.uberfire:uberfire-preferences-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-preferences-client</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-ssh-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.uberfire:appformer-js-bridge</compileSourcesArtifact>
 
               <!-- Kie Server -->
               <compileSourcesArtifact>org.kie:kie-api</compileSourcesArtifact>
