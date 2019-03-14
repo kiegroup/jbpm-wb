@@ -236,6 +236,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                     @Override
                     public void callback(Void nothing) {
                         view.displayNotification(constants.TaskClaimed(String.valueOf(task.getId())));
+                        selectSummaryItem(task);
                         refreshGrid();
                     }
                 }
