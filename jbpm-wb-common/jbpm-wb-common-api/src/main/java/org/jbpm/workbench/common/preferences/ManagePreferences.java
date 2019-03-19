@@ -27,6 +27,10 @@ import org.uberfire.preferences.shared.bean.BasePreference;
 @WorkbenchPreference(identifier = "ManagePreferences", bundleKey = "ManagePreferences.Label")
 public class ManagePreferences implements BasePreference<ManagePreferences> {
 
+    public static String COMPLETED_COLOR = "#C0C0C0";
+    public static String COMPLETED_BORDER_COLOR = "#030303";
+    public static String ACTIVE_BORDER_COLOR = "#FF0000";
+
     public static List<Integer> PAGINATION_OPTIONS = Arrays.asList(10, 20, 50, 100);
     public static Integer DEFAULT_PAGINATION_OPTION = 10;
 
@@ -34,9 +38,25 @@ public class ManagePreferences implements BasePreference<ManagePreferences> {
             formType = PropertyFormType.NATURAL_NUMBER, validators = ItemPerPageValidator.class)
     private Integer itemsPerPage;
 
+    @Property(bundleKey = "ManagePreferences.ProcessInstanceDiagramCompletedNodeColor", helpBundleKey = "ManagePreferences.ProcessInstanceDiagramCompletedNodeColor.Help",
+            formType = PropertyFormType.COLOR)
+    private String processInstanceDiagramCompletedNodeColor;
+
+    @Property(bundleKey = "ManagePreferences.ProcessInstanceDiagramCompletedNodeBorderColor",
+            helpBundleKey = "ManagePreferences.ProcessInstanceDiagramCompletedNodeBorderColor.Help",
+            formType = PropertyFormType.COLOR)
+    private String processInstanceDiagramCompletedNodeBorderColor;
+
+    @Property(bundleKey = "ManagePreferences.ProcessInstanceDiagramActiveNodeBorderColor", helpBundleKey = "ManagePreferences.ProcessInstanceDiagramActiveNodeBorderColor.Help",
+            formType = PropertyFormType.COLOR)
+    private String processInstanceDiagramActiveNodeBorderColor;
+
     @Override
     public ManagePreferences defaultValue(final ManagePreferences defaultValue) {
         defaultValue.itemsPerPage = DEFAULT_PAGINATION_OPTION;
+        defaultValue.processInstanceDiagramCompletedNodeColor = COMPLETED_COLOR;
+        defaultValue.processInstanceDiagramCompletedNodeBorderColor = COMPLETED_BORDER_COLOR;
+        defaultValue.processInstanceDiagramActiveNodeBorderColor = ACTIVE_BORDER_COLOR;
         return defaultValue;
     }
 
@@ -46,5 +66,29 @@ public class ManagePreferences implements BasePreference<ManagePreferences> {
 
     public void setItemsPerPage(Integer itemsPerPage) {
         this.itemsPerPage = itemsPerPage;
+    }
+
+    public String getProcessInstanceDiagramCompletedNodeColor() {
+        return processInstanceDiagramCompletedNodeColor;
+    }
+
+    public void setProcessInstanceDiagramCompletedNodeColor(String processInstanceDiagramCompletedNodeColor) {
+        this.processInstanceDiagramCompletedNodeColor = processInstanceDiagramCompletedNodeColor;
+    }
+
+    public String getProcessInstanceDiagramCompletedNodeBorderColor() {
+        return processInstanceDiagramCompletedNodeBorderColor;
+    }
+
+    public void setProcessInstanceDiagramCompletedNodeBorderColor(String processInstanceDiagramCompletedNodeBorderColor) {
+        this.processInstanceDiagramCompletedNodeBorderColor = processInstanceDiagramCompletedNodeBorderColor;
+    }
+
+    public String getProcessInstanceDiagramActiveNodeBorderColor() {
+        return processInstanceDiagramActiveNodeBorderColor;
+    }
+
+    public void setProcessInstanceDiagramActiveNodeBorderColor(String processInstanceDiagramActiveNodeBorderColor) {
+        this.processInstanceDiagramActiveNodeBorderColor = processInstanceDiagramActiveNodeBorderColor;
     }
 }

@@ -105,7 +105,8 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
     }
 
     @Override
-    public ProcessInstanceDiagramSummary getProcessInstanceDiagramSummary(ProcessInstanceKey processInstanceKey) {
+    public ProcessInstanceDiagramSummary getProcessInstanceDiagramSummary(ProcessInstanceKey processInstanceKey, String completedNodeColor,
+                                                                          String completedNodeBorderColor, String activeNodeBorderColor) {
         if (processInstanceKey == null || processInstanceKey.isValid() == false) {
             return null;
         }
@@ -118,7 +119,10 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
 
         summary.setSvgContent(processImageService.getProcessInstanceDiagram(processInstanceKey.getServerTemplateId(),
                                                                             processInstanceKey.getDeploymentId(),
-                                                                            processInstanceKey.getProcessInstanceId()));
+                                                                            processInstanceKey.getProcessInstanceId(),
+                                                                            completedNodeColor,
+                                                                            completedNodeBorderColor,
+                                                                            activeNodeBorderColor));
 
         summary.setProcessDefinition(getProcess(new ProcessDefinitionKey(processInstance.getServerTemplateId(),
                                                                          processInstance.getDeploymentId(),

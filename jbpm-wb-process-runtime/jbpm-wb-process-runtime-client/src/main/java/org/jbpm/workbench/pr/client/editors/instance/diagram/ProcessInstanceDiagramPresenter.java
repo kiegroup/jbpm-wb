@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.util.DateUtils;
+import org.jbpm.workbench.common.preferences.ManagePreferences;
 import org.jbpm.workbench.pr.client.editors.instance.ProcessInstanceSummaryAware;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
@@ -74,10 +75,14 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
     @Inject
     private Event<NotificationEvent> notification;
 
+    @Inject
+    protected ManagePreferences preferences;
+
     @PostConstruct
     public void init() {
         view.setOnProcessNodeSelectedCallback(id -> onDiagramNodeSelected(id));
         view.setOnDiagramNodeSelectionCallback(id -> onDiagramNodeSelected(id));
+        preferences.load();
     }
 
     @Override
@@ -152,8 +157,10 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
             }
 
             view.onShow();
-
-        }).getProcessInstanceDiagramSummary(processInstance.getProcessInstanceKey());
+        }).getProcessInstanceDiagramSummary(processInstance.getProcessInstanceKey(),
+                                            preferences.getProcessInstanceDiagramCompletedNodeColor(),
+                                            preferences.getProcessInstanceDiagramCompletedNodeBorderColor(),
+                                            preferences.getProcessInstanceDiagramActiveNodeBorderColor());
     }
 
     public void displayImage(final String svgContent, final String containerId) {
