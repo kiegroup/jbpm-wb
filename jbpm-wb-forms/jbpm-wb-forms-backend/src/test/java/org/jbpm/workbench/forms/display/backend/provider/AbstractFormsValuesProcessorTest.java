@@ -33,6 +33,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.kie.internal.task.api.ContentMarshallerContext;
 import org.kie.soup.project.datamodel.commons.util.RawMVELEvaluator;
+import org.kie.workbench.common.forms.data.modeller.service.ext.ModelReaderService;
+import org.kie.workbench.common.forms.data.modeller.service.impl.ext.dmo.runtime.RuntimeDMOModelReader;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.BackendFormRenderingContextManagerImpl;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.FieldValueMarshaller;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.FieldValueMarshallerRegistry;
@@ -61,6 +63,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -87,19 +90,22 @@ public abstract class AbstractFormsValuesProcessorTest<PROCESSOR extends KieWork
     @Mock
     protected ContentMarshallerContext marshallerContext;
 
+    @Mock
+    private ModelReaderService<ClassLoader> modelReaderService;
+
     private FieldValueMarshallerRegistry registry;
 
     protected DynamicBPMNFormGenerator dynamicBPMNFormGenerator;
 
-    protected BackendFormRenderingContextManagerImpl backendFormRenderingContextManager;
+    private BackendFormRenderingContextManagerImpl backendFormRenderingContextManager;
 
-    protected BPMNRuntimeFormGeneratorService runtimeFormGeneratorService;
+    private BPMNRuntimeFormGeneratorService runtimeFormGeneratorService;
 
-    protected KieWorkbenchFormRenderingSettings kieWorkbenchFormRenderingSettings;
+    private KieWorkbenchFormRenderingSettings kieWorkbenchFormRenderingSettings;
 
-    protected SETTINGS renderingSettings;
+    private SETTINGS renderingSettings;
 
-    protected PROCESSOR processor;
+    private PROCESSOR processor;
 
     @Before
     public void init() {
@@ -125,7 +131,7 @@ public abstract class AbstractFormsValuesProcessorTest<PROCESSOR extends KieWork
 
         backendFormRenderingContextManager = new BackendFormRenderingContextManagerImpl(registry, new ContextModelConstraintsExtractorImpl());
 
-        runtimeFormGeneratorService = new BPMNRuntimeFormGeneratorService(new TestFieldManager(), new RawMVELEvaluator());
+        runtimeFormGeneratorService = new BPMNRuntimeFormGeneratorService(modelReaderService, new TestFieldManager());
 
         dynamicBPMNFormGenerator = new DynamicBPMNFormGeneratorImpl(runtimeFormGeneratorService);
 
@@ -136,6 +142,7 @@ public abstract class AbstractFormsValuesProcessorTest<PROCESSOR extends KieWork
                                          dynamicBPMNFormGenerator);
 
         when(marshallerContext.getClassloader()).thenReturn(this.getClass().getClassLoader());
+        when(modelReaderService.getModelReader(any())).thenReturn(new RuntimeDMOModelReader(this.getClass().getClassLoader(), new RawMVELEvaluator()));
     }
 
     @Test

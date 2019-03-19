@@ -31,6 +31,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.kie.internal.task.api.ContentMarshallerContext;
 import org.kie.soup.project.datamodel.commons.util.RawMVELEvaluator;
+import org.kie.workbench.common.forms.data.modeller.service.ext.ModelReaderService;
+import org.kie.workbench.common.forms.data.modeller.service.impl.ext.dmo.runtime.RuntimeDMOModelReader;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.BackendFormRenderingContextManagerImpl;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.FieldValueMarshaller;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.FieldValueMarshallerRegistry;
@@ -62,6 +64,7 @@ import org.mockito.Mock;
 import org.uberfire.ext.layout.editor.api.editor.LayoutComponent;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -78,21 +81,24 @@ public abstract class AbstractFormsValuesProcessorWithWrongTypesTest<PROCESSOR e
     protected Map<String, String> variables = new HashMap<>();
 
     @Mock
-    ContentMarshallerContext marshallerContext;
+    protected ContentMarshallerContext marshallerContext;
+
+    @Mock
+    private ModelReaderService<ClassLoader> modelReaderService;
 
     private FieldValueMarshallerRegistry registry;
 
-    DynamicBPMNFormGenerator dynamicBPMNFormGenerator;
+    private DynamicBPMNFormGenerator dynamicBPMNFormGenerator;
 
-    BackendFormRenderingContextManagerImpl backendFormRenderingContextManager;
+    private BackendFormRenderingContextManagerImpl backendFormRenderingContextManager;
 
-    BPMNRuntimeFormGeneratorService runtimeFormGeneratorService;
+    private BPMNRuntimeFormGeneratorService runtimeFormGeneratorService;
 
-    KieWorkbenchFormRenderingSettings kieWorkbenchFormRenderingSettings;
+    private KieWorkbenchFormRenderingSettings kieWorkbenchFormRenderingSettings;
 
-    SETTINGS renderingSettings;
+    private SETTINGS renderingSettings;
 
-    PROCESSOR processor;
+    private PROCESSOR processor;
 
     @Before
     public void init() {
@@ -125,7 +131,7 @@ public abstract class AbstractFormsValuesProcessorWithWrongTypesTest<PROCESSOR e
 
         backendFormRenderingContextManager = new BackendFormRenderingContextManagerImpl(registry, new ContextModelConstraintsExtractorImpl());
 
-        runtimeFormGeneratorService = new BPMNRuntimeFormGeneratorService(new TestFieldManager(), new RawMVELEvaluator());
+        runtimeFormGeneratorService = new BPMNRuntimeFormGeneratorService(modelReaderService, new TestFieldManager());
 
         dynamicBPMNFormGenerator = new DynamicBPMNFormGeneratorImpl(runtimeFormGeneratorService);
 
@@ -134,6 +140,7 @@ public abstract class AbstractFormsValuesProcessorWithWrongTypesTest<PROCESSOR e
                                          dynamicBPMNFormGenerator);
 
         when(marshallerContext.getClassloader()).thenReturn(this.getClass().getClassLoader());
+        when(modelReaderService.getModelReader(any())).thenReturn(new RuntimeDMOModelReader(this.getClass().getClassLoader(), new RawMVELEvaluator()));
     }
 
     @Test

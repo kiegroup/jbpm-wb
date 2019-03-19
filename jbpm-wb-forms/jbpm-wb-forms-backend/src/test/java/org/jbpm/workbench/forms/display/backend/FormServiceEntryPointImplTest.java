@@ -52,6 +52,8 @@ import org.kie.server.client.ProcessServicesClient;
 import org.kie.server.client.UIServicesClient;
 import org.kie.server.client.UserTaskServicesClient;
 import org.kie.soup.project.datamodel.commons.util.RawMVELEvaluator;
+import org.kie.workbench.common.forms.data.modeller.service.ext.ModelReaderService;
+import org.kie.workbench.common.forms.data.modeller.service.impl.ext.dmo.runtime.RuntimeDMOModelReader;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.BackendFormRenderingContextManagerImpl;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.FieldValueMarshaller;
 import org.kie.workbench.common.forms.dynamic.backend.server.context.generation.dynamic.impl.marshalling.FieldValueMarshallerRegistry;
@@ -111,6 +113,9 @@ public class FormServiceEntryPointImplTest {
     @Mock
     private KieServicesClient kieServicesClient;
 
+    @Mock
+    private ModelReaderService<ClassLoader> modelReaderService;
+
     private FieldValueMarshallerRegistry registry;
 
     private DynamicBPMNFormGenerator dynamicBPMNFormGenerator;
@@ -147,8 +152,9 @@ public class FormServiceEntryPointImplTest {
 
         backendFormRenderingContextManager = new BackendFormRenderingContextManagerImpl(registry, new ContextModelConstraintsExtractorImpl());
 
-        runtimeFormGeneratorService = new BPMNRuntimeFormGeneratorService(new TestFieldManager(),
-                                                                          new RawMVELEvaluator());
+        when(modelReaderService.getModelReader(any())).thenReturn(new RuntimeDMOModelReader(this.getClass().getClassLoader(), new RawMVELEvaluator()));
+
+        runtimeFormGeneratorService = new BPMNRuntimeFormGeneratorService(modelReaderService, new TestFieldManager());
 
         dynamicBPMNFormGenerator = new DynamicBPMNFormGeneratorImpl(runtimeFormGeneratorService);
 
