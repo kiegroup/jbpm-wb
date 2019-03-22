@@ -227,9 +227,21 @@ public abstract class AbstractTaskListPresenterTest {
 
     @Test
     public void claimTaskTest() {
-        final TaskSummary task = TaskSummary.builder().id(TASK_ID).deploymentId(TASK_DEPLOYMENT_ID).status("Ready").build();
+        final TaskSummary task = TaskSummary.builder().id(TASK_ID).deploymentId(TASK_DEPLOYMENT_ID).build();
 
         getPresenter().claimTask(task);
+
+        verify(taskService).claimTask("",
+                                      TASK_DEPLOYMENT_ID,
+                                      TASK_ID);
+        verify(viewMock).displayNotification(any());
+    }
+
+    @Test
+    public void claimAndWorkTaskTest() {
+        final TaskSummary task = TaskSummary.builder().id(TASK_ID).deploymentId(TASK_DEPLOYMENT_ID).status("Ready").build();
+
+        getPresenter().claimAndWorkTask(task);
 
         verify(taskService).claimTask("",
                                       TASK_DEPLOYMENT_ID,

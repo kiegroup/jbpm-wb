@@ -71,6 +71,8 @@ public interface Constants extends Messages {
 
     String Claim();
 
+    String ClaimAndWork();
+
     String Work();
 
     String Suspend();
