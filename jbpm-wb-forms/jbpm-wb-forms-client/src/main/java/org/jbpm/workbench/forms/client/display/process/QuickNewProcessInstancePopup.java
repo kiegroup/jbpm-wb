@@ -260,6 +260,8 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
 
     public void closePopup() {
         initialized = false;
+        body.clear();
+        removeFooter(this);
         hide();
         super.hide();
     }
@@ -298,6 +300,10 @@ public class QuickNewProcessInstancePopup extends BaseModal implements FormDispl
     @Inject
     public void setProcessRuntimeDataService(Caller<ProcessRuntimeDataService> processRuntimeDataService) {
         this.processRuntimeDataService = processRuntimeDataService;
+    }
+
+    protected void setFlowPanelBody(FlowPanel body) {
+        this.body = body;
     }
 
     interface Binder
