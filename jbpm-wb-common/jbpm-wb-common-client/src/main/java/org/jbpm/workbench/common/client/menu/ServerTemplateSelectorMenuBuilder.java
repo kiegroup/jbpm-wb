@@ -100,6 +100,11 @@ public class ServerTemplateSelectorMenuBuilder implements MenuFactory.CustomMenu
                 } else {
                     widgetView.clearSelectedServerTemplate();
                     view.clearSelectedServerTemplate();
+                    if (ids.size() > 1) {
+                        String defaultServerTemplate = ids.get(0);
+                        widgetView.selectServerTemplate(defaultServerTemplate);
+                        view.selectServerTemplate(defaultServerTemplate);
+                    }
                 }
             }
 
