@@ -204,6 +204,10 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
                                                    task -> presenter.claimTask(task),
                                                    presenter.getClaimActionCondition(),
                                                    false),
+                new ConditionalAction<TaskSummary>(constants.ClaimAndWork(),
+                                                   task -> presenter.claimAndWorkTask(task),
+                                                   presenter.getClaimActionCondition(),
+                                                   false),
 
                 new ConditionalAction<TaskSummary>(constants.Release(),
                                                    task -> presenter.releaseTask(task),

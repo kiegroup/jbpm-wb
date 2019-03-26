@@ -244,6 +244,21 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                     task.getId());
     }
 
+    public void claimAndWorkTask(final TaskSummary task) {
+        taskService.call(
+                new RemoteCallback<Void>() {
+                    @Override
+                    public void callback(Void nothing) {
+                        view.displayNotification(constants.TaskClaimed(String.valueOf(task.getId())));
+                        selectSummaryItem(task);
+                        refreshGrid();
+                    }
+                }
+        ).claimTask(getSelectedServerTemplate(),
+                    task.getDeploymentId(),
+                    task.getId());
+    }
+
     public void resumeTask(final TaskSummary task) {
         taskService.call(
                 new RemoteCallback<Void>() {

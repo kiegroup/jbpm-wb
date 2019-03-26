@@ -43,6 +43,7 @@ import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
+import org.jbpm.workbench.ht.util.TaskStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.kie.server.controller.api.model.spec.Capability;
@@ -50,12 +51,14 @@ import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.mockito.internal.verification.Times;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
+import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
@@ -78,8 +81,8 @@ import static org.mockito.Mockito.*;
 
 public abstract class AbstractTaskListPresenterTest {
 
-    private static final Long TASK_ID = 1L;
-    private static final String TASK_DEPLOYMENT_ID = "deploymentId";
+    protected static final Long TASK_ID = 1L;
+    protected static final String TASK_DEPLOYMENT_ID = "deploymentId";
 
     @Mock
     protected User identity;
@@ -160,7 +163,6 @@ public abstract class AbstractTaskListPresenterTest {
         dataSetLookup.setDataSetUUID(HUMAN_TASKS_DATASET);
 
         when(filterSettings.getDataSetLookup()).thenReturn(dataSetLookup);
-
         when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
         when(extendedPagedTable.getPageSize()).thenReturn(10);
         when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
@@ -232,6 +234,20 @@ public abstract class AbstractTaskListPresenterTest {
         verify(taskService).claimTask("",
                                       TASK_DEPLOYMENT_ID,
                                       TASK_ID);
+        verify(viewMock).displayNotification(any());
+    }
+
+    @Test
+    public void claimAndWorkTaskTest() {
+        final TaskSummary task = TaskSummary.builder().id(TASK_ID).deploymentId(TASK_DEPLOYMENT_ID).status("Ready").build();
+
+        getPresenter().claimAndWorkTask(task);
+
+        verify(taskService).claimTask("",
+                                      TASK_DEPLOYMENT_ID,
+                                      TASK_ID);
+        verify(placeManager).goTo(PerspectiveIds.TASK_DETAILS_SCREEN);
+        verify(viewMock).displayNotification(any());
     }
 
     @Test
