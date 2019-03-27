@@ -81,8 +81,12 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
 
         final D3 svg = d3.select("#processDiagramDiv svg");
 
-        double svgWidth = Double.parseDouble(svg.attr("width").toString());
-        double svgHeight = Double.parseDouble(svg.attr("height").toString());
+        String[] viewBoxValues = svg.attr("viewBox").toString().split(" ");
+
+        double svgWidth = Double.parseDouble(viewBoxValues[2]);
+        double svgHeight = Double.parseDouble(viewBoxValues[3]);
+        svg.attr("width", svgWidth);
+        svg.attr("height", svgHeight);
         final D3.Zoom zoom = d3.zoom();
 
         double[] scaleExtent = new double[2];

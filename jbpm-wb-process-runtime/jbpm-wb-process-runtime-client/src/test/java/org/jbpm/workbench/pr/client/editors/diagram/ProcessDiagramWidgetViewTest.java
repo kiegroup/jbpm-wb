@@ -69,8 +69,7 @@ public class ProcessDiagramWidgetViewTest {
         view.setD3Component(d3Mock);
         when(d3Mock.select(anyString())).thenReturn(svgSelect);
         when(d3Mock.zoom()).thenReturn(zoomMock);
-        when(svgSelect.attr("width")).thenReturn(String.valueOf(svgWidth));
-        when(svgSelect.attr("height")).thenReturn(String.valueOf(svgHeight));
+        when(svgSelect.attr("viewBox")).thenReturn("0 0 " + svgWidth + " " + svgHeight);
 
         D3.Event event = mock( D3.Event.class, withSettings().extraInterfaces(ZoomEvent.class));
         ZoomEvent zoomEvent = (ZoomEvent) event; 
