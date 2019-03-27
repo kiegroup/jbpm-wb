@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ public class TaskAdminListViewImplTest extends AbstractTaskListViewTest {
 
     @Override
     public Integer getExpectedNumberOfColumns() {
-        return 16;
+        return 18;
     }
 
     @Before
@@ -98,7 +98,7 @@ public class TaskAdminListViewImplTest extends AbstractTaskListViewTest {
             @Override
             public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
                 final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[0];
-                assertEquals(19,
+                assertEquals(21,
                              columns.size());
                 return null;
             }

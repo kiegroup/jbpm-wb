@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package org.jbpm.workbench.ht.client.editors.taskdetailsmulti;
 
 import java.util.Date;
+
 import javax.enterprise.event.Event;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
@@ -32,6 +33,7 @@ import org.jbpm.workbench.ht.service.TaskService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.api.runtime.process.ProcessInstance;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -92,10 +94,8 @@ public class TaskDetailsMultiPresenterTest extends AbstractTaskPresenterTest {
     public void setupMocks() {
         taskService = new CallerMock<>(taskServiceMock);
         presenter.setTaskDataService(taskService);
-        when(taskServiceMock.getTask(anyString(),
-                                     anyString(),
-                                     anyLong())).thenReturn(mock(TaskSummary.class));
-
+        when(taskServiceMock.getTask(anyString(), anyString(), anyLong()))
+                .thenReturn(mock(TaskSummary.class));
         when(taskFormPresenter.getTaskFormView()).thenReturn(taskFormViewMock);
         when(taskFormViewMock.getDisplayerView()).thenReturn(formDisplayerViewMock);
         doNothing().when(changeTitleWidgetEvent).fire(any(ChangeTitleWidgetEvent.class));
@@ -105,12 +105,7 @@ public class TaskDetailsMultiPresenterTest extends AbstractTaskPresenterTest {
     @Test
     public void isForLogRemainsEnabledAfterRefresh() {
         //When task selected with logOnly
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent("",
-                                                              "",
-                                                              TASK_ID,
-                                                              TASK_NAME,
-                                                              false,
-                                                              true));
+        presenter.onTaskSelectionEvent(new TaskSelectionEvent("", "", TASK_ID, TASK_NAME, false, true));
 
         //Then only tab log is displayed
         verify(view).displayOnlyLogTab();
@@ -130,12 +125,7 @@ public class TaskDetailsMultiPresenterTest extends AbstractTaskPresenterTest {
     public void isForLogRemainsDisabledAfterRefresh() {
         //When task selected without logOnly
         boolean logOnly = false;
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent("",
-                                                              "",
-                                                              TASK_ID,
-                                                              TASK_NAME,
-                                                              false,
-                                                              logOnly));
+        presenter.onTaskSelectionEvent(new TaskSelectionEvent("", "", TASK_ID, TASK_NAME, false, logOnly));
 
         //Then alltabs are displayed
         verify(view).displayAllTabs();
@@ -143,8 +133,7 @@ public class TaskDetailsMultiPresenterTest extends AbstractTaskPresenterTest {
         verify(view).resetTabs(logOnly);
         assertFalse(presenter.isForAdmin());
         assertFalse(presenter.isForLog());
-        verify(taskFormPresenter,
-               times(2)).getTaskFormView();
+        verify(taskFormPresenter, times(2)).getTaskFormView();
 
         presenter.onRefresh();
         assertFalse(presenter.isForAdmin());
@@ -156,6 +145,7 @@ public class TaskDetailsMultiPresenterTest extends AbstractTaskPresenterTest {
         Long taskId = 1L;
         String containerId = "container1.2";
         String serverTemplateId = "serverTemplateId";
+        int slaCompliance = ProcessInstance.SLA_PENDING;
         TaskSummary taskSummary =
                 TaskSummary.builder()
                         .deploymentId(containerId)
@@ -168,11 +158,10 @@ public class TaskDetailsMultiPresenterTest extends AbstractTaskPresenterTest {
                         .priority(5)
                         .processInstanceId(2L)
                         .processId("Evaluation")
+                        .slaCompliance(slaCompliance)
                         .build();
 
-        when(taskServiceMock.getTask(serverTemplateId,
-                                     containerId,
-                                     taskId)).thenReturn(taskSummary);
+        when(taskServiceMock.getTask(serverTemplateId, containerId, taskId)).thenReturn(taskSummary);
         presenter.onTaskSelectionEvent(new TaskSelectionEvent(serverTemplateId,
                                                               taskSummary.getDeploymentId(),
                                                               taskSummary.getId(),
@@ -185,48 +174,35 @@ public class TaskDetailsMultiPresenterTest extends AbstractTaskPresenterTest {
                                                               taskSummary.getActualOwner(),
                                                               taskSummary.getPriority(),
                                                               taskSummary.getProcessInstanceId(),
-                                                              taskSummary.getProcessId()));
+                                                              taskSummary.getProcessId(),
+                                                              taskSummary.getSlaCompliance()));
         verify(view).displayAllTabs();
         verify(view).resetTabs(false);
         verify(view).setAdminTabVisible(false);
 
         presenter.onRefresh();
 
-        verify(taskServiceMock).getTask(eq(serverTemplateId),
-                                        eq(containerId),
-                                        eq(taskId));
+        verify(taskServiceMock).getTask(eq(serverTemplateId), eq(containerId), eq(taskId));
 
         final ArgumentCaptor<TaskSelectionEvent> taskSelectionEventArgumentCaptor = ArgumentCaptor.forClass(TaskSelectionEvent.class);
         verify(taskSelectionEvent).fire(taskSelectionEventArgumentCaptor.capture());
-        assertEquals(serverTemplateId,
-                     taskSelectionEventArgumentCaptor.getValue().getServerTemplateId());
-        assertEquals(taskSummary.getDeploymentId(),
-                     taskSelectionEventArgumentCaptor.getValue().getContainerId());
-        assertEquals(taskSummary.getId(),
-                     taskSelectionEventArgumentCaptor.getValue().getTaskId());
-        assertEquals(taskSummary.getName(),
-                     taskSelectionEventArgumentCaptor.getValue().getTaskName());
-        assertEquals(taskSummary.getDescription(),
-                     taskSelectionEventArgumentCaptor.getValue().getDescription());
-        assertEquals(taskSummary.getExpirationTime(),
-                     taskSelectionEventArgumentCaptor.getValue().getExpirationTime());
-        assertEquals(taskSummary.getStatus(),
-                     taskSelectionEventArgumentCaptor.getValue().getStatus());
-        assertEquals(taskSummary.getActualOwner(),
-                     taskSelectionEventArgumentCaptor.getValue().getActualOwner());
-        assertEquals(taskSummary.getPriority(),
-                     taskSelectionEventArgumentCaptor.getValue().getPriority());
-        assertEquals(taskSummary.getProcessInstanceId(),
-                     taskSelectionEventArgumentCaptor.getValue().getProcessInstanceId());
-        assertEquals(taskSummary.getProcessId(),
-                     taskSelectionEventArgumentCaptor.getValue().getProcessId());
+        assertEquals(serverTemplateId, taskSelectionEventArgumentCaptor.getValue().getServerTemplateId());
+        assertEquals(taskSummary.getDeploymentId(), taskSelectionEventArgumentCaptor.getValue().getContainerId());
+        assertEquals(taskSummary.getId(), taskSelectionEventArgumentCaptor.getValue().getTaskId());
+        assertEquals(taskSummary.getName(), taskSelectionEventArgumentCaptor.getValue().getTaskName());
+        assertEquals(taskSummary.getDescription(), taskSelectionEventArgumentCaptor.getValue().getDescription());
+        assertEquals(taskSummary.getExpirationTime(), taskSelectionEventArgumentCaptor.getValue().getExpirationTime());
+        assertEquals(taskSummary.getStatus(), taskSelectionEventArgumentCaptor.getValue().getStatus());
+        assertEquals(taskSummary.getActualOwner(), taskSelectionEventArgumentCaptor.getValue().getActualOwner());
+        assertEquals(taskSummary.getPriority(), taskSelectionEventArgumentCaptor.getValue().getPriority());
+        assertEquals(taskSummary.getProcessInstanceId(), taskSelectionEventArgumentCaptor.getValue().getProcessInstanceId());
+        assertEquals(taskSummary.getProcessId(), taskSelectionEventArgumentCaptor.getValue().getProcessId());
+        assertEquals(taskSummary.getSlaCompliance(), taskSelectionEventArgumentCaptor.getValue().getSlaCompliance());
 
         presenter.onTaskSelectionEvent(taskSelectionEventArgumentCaptor.getValue());
-        verify(view,
-               times(2)).displayAllTabs();
+        verify(view, times(2)).displayAllTabs();
         verify(view).resetTabs(false);
-        verify(view,
-               times(2)).setAdminTabVisible(false);
+        verify(view, times(2)).setAdminTabVisible(false);
     }
 
     @Test
@@ -234,24 +210,15 @@ public class TaskDetailsMultiPresenterTest extends AbstractTaskPresenterTest {
         Long taskId = 1L;
         String containerId = "container1.2";
         String serverTemplateId = "serverTemplateId";
-        when(taskServiceMock.getTask(serverTemplateId,
-                                     containerId,
-                                     taskId)).thenReturn(null);
+        when(taskServiceMock.getTask(serverTemplateId, containerId, taskId)).thenReturn(null);
 
-        presenter.onTaskSelectionEvent(new TaskSelectionEvent(serverTemplateId,
-                                                              containerId,
-                                                              taskId,
-                                                              "task",
-                                                              false,
-                                                              false));
+        presenter.onTaskSelectionEvent(new TaskSelectionEvent(serverTemplateId, containerId, taskId, "task", false, false));
         verify(view).displayAllTabs();
         verify(view).resetTabs(false);
 
         presenter.onRefresh();
 
-        verify(taskServiceMock).getTask(eq(serverTemplateId),
-                                        eq(containerId),
-                                        eq(taskId));
+        verify(taskServiceMock).getTask(eq(serverTemplateId), eq(containerId), eq(taskId));
 
         verify(view).displayNotification(anyString());
         verifyNoMoreInteractions(taskSelectionEvent);

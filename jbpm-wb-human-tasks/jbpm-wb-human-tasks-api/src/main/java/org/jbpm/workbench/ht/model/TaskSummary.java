@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,9 @@ public class TaskSummary extends GenericErrorSummary<Long> {
     private Boolean isForAdmin = Boolean.FALSE;
     private Boolean isLogOnly = Boolean.FALSE;
     private Long parentId;
+    private Integer slaCompliance;
+    private Date slaDueDate;
+    private Long workItemId;
     private Map<String, String> domainData = new HashMap<>();
 
     public static Builder builder() {
@@ -217,6 +220,30 @@ public class TaskSummary extends GenericErrorSummary<Long> {
         this.processSessionId = processSessionId;
     }
 
+    public Long getWorkItemId() {
+        return workItemId;
+    }
+
+    public void setWorkItemId(Long workItemId) {
+        this.workItemId = workItemId;
+    }
+
+    public Integer getSlaCompliance() {
+        return slaCompliance;
+    }
+
+    public void setSlaCompliance(Integer slaCompliance) {
+        this.slaCompliance = slaCompliance;
+    }
+
+    public Date getSlaDueDate() {
+        return slaDueDate;
+    }
+
+    public void setSlaDueDate(Date slaDueDate) {
+        this.slaDueDate = slaDueDate;
+    }
+
     @Override
     public String toString() {
         return "TaskSummary{" +
@@ -236,6 +263,9 @@ public class TaskSummary extends GenericErrorSummary<Long> {
                ", deploymentId='" + deploymentId + '\'' +
                ", isForAdmin=" + isForAdmin +
                ", isLogOnly=" + isLogOnly +
+                ", workItemId=" + workItemId +
+                ", slaCompliance=" + slaCompliance +
+                ", slaDueDate=" + slaDueDate +
                ", parentId=" + parentId +
                ", domainData=" + domainData +
                "} " + super.toString();
@@ -342,6 +372,20 @@ public class TaskSummary extends GenericErrorSummary<Long> {
             return this;
         }
 
+        public Builder workItemId(Long workItemId) {
+            taskSummary.setWorkItemId(workItemId);
+            return this;
+        }
+
+        public Builder slaCompliance(Integer slaCompliance) {
+            taskSummary.setSlaCompliance(slaCompliance);
+            return this;
+        }
+
+        public Builder slaDueDate(Date slaDueDate) {
+            taskSummary.setSlaDueDate(slaDueDate);
+            return this;
+        }
         public Builder parentId(Long parentId) {
             this.taskSummary.setParentId(parentId);
             return this;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.Arrays;
 import java.util.List;
+
 import javax.enterprise.event.Event;
 
 import org.dashbuilder.dataset.DataSetOp;
@@ -138,7 +139,9 @@ public abstract class AbstractTaskListFilterSettingsManagerTest {
                 COLUMN_WORK_ITEM_ID,
                 COLUMN_LAST_MODIFICATION_DATE,
                 COLUMN_PROCESS_INSTANCE_CORRELATION_KEY,
-                COLUMN_PROCESS_INSTANCE_DESCRIPTION
+                COLUMN_PROCESS_INSTANCE_DESCRIPTION,
+                COLUMN_SLA_COMPLIANCE,
+                COLUMN_SLA_DUE_DATE
         );
     }
 }

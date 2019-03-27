@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package org.jbpm.workbench.pr.client.util;
+package org.jbpm.workbench.common.client.util;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
-import org.jbpm.workbench.pr.client.resources.i18n.Constants;
+
+import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.api.runtime.process.ProcessInstance;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class SlaStatusConverterTest {

@@ -186,13 +186,12 @@ public class TaskDetailsMultiPresenter extends AbstractTaskPresenter implements 
                                                                  taskSummary.getActualOwner(),
                                                                  taskSummary.getPriority(),
                                                                  taskSummary.getProcessInstanceId(),
-                                                                 taskSummary.getProcessId()));
+                                                                 taskSummary.getProcessId(),
+                                                                 taskSummary.getSlaCompliance()));
                     } else {
                         view.displayNotification(constants.TaskDetailsNotAvailable());
                     }
-                }).getTask(getServerTemplateId(),
-                           getContainerId(),
-                           getTaskId());
+                }).getTask(getServerTemplateId(), getContainerId(), getTaskId());
     }
 
     @WorkbenchMenu
