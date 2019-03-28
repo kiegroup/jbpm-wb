@@ -186,7 +186,7 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
             final FilterSettings currentTableSettings = getDataSetQueryHelper().getCurrentTableSettings();
             currentTableSettings.setServerTemplateId(getSelectedServerTemplate());
             currentTableSettings.setTablePageSize(view.getListGrid().getPageSize());
-            ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
+            ColumnSortList columnSortList = view.reloadColumnSortList();
             if (columnSortList != null && columnSortList.size() > 0) {
                 getDataSetQueryHelper().setLastOrderedColumn(columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName() : "");
                 getDataSetQueryHelper().setLastSortOrder(columnSortList.size() > 0 && columnSortList.get(0).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING);

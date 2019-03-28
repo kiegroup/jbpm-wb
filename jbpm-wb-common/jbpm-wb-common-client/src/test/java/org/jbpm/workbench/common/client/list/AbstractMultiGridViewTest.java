@@ -16,12 +16,16 @@
 package org.jbpm.workbench.common.client.list;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Spliterators;
 import java.util.function.Consumer;
 
+import com.google.gwt.cell.client.Cell;
+import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.view.client.AsyncDataProvider;
@@ -40,6 +44,7 @@ import org.mockito.stubbing.Answer;
 import org.uberfire.ext.services.shared.preferences.GridColumnPreference;
 import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
+import org.uberfire.ext.services.shared.preferences.GridSortedColumnPreference;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesType;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
@@ -217,5 +222,82 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
         }).when(preferences).load(any(ParameterizedCommand.class), any(ParameterizedCommand.class));
         Consumer<ListTable> consumer = table -> assertTrue(table.isDataGridMinWidthEnabled());
         getView().loadListTable("key", consumer);
+    }
+
+    public static Column newColumnMock(final String dataStoreName){
+        Column column = mock(Column.class);
+        when(column.getCell()).thenReturn(mock(Cell.class));
+        when(column.getDataStoreName()).thenReturn(dataStoreName);
+        return column;
+    }
+
+    @Test
+    public void testReloadColumnSortListWhenInitListTable() {
+        ListTable<T> listTable = mock(ListTable.class);
+        when(getView().getListGrid()).thenReturn(listTable);
+        GridPreferencesStore gridPreferencesStore = mock(GridPreferencesStore.class);
+        when(listTable.getGridPreferencesStore()).thenReturn(gridPreferencesStore);
+        GridSortedColumnPreference gridSortedColumnPreference = new GridSortedColumnPreference("test", true);
+        when(gridPreferencesStore.getGridSortedColumnPreference()).thenReturn(gridSortedColumnPreference);
+        ColumnSortList columnSortList = getColumnSortList("startDate", null);
+        when(listTable.getColumnSortList()).thenReturn(columnSortList);
+
+        ColumnMeta columnMeta = new ColumnMeta(getColumn("test"), "test");
+        when(listTable.getColumnMetaList()).thenReturn(Arrays.asList(columnMeta));
+
+        assertEquals(1, columnSortList.size());
+
+        getView().reloadColumnSortList();
+
+        assertEquals("test", columnSortList.get(0).getColumn().getDataStoreName());
+        assertEquals("startDate", columnSortList.get(1).getColumn().getDataStoreName());
+        assertEquals(2, columnSortList.size());
+    }
+
+    private ColumnSortList getColumnSortList(String dataStoreName,
+                                             ColumnSortList columnSortList) {
+        if (columnSortList == null) {
+            columnSortList = new ColumnSortList();
+        }
+        columnSortList.push(new ColumnSortList.ColumnSortInfo(getColumn(dataStoreName),
+                                                              true));
+        return columnSortList;
+    }
+
+    private Column<T, String> getColumn(String name) {
+        Column<T, String> column = new Column<T, String>(new TextCell()) {
+            @Override
+            public String getValue(T domain) {
+                return null;
+            }
+        };
+        column.setDataStoreName(name);
+        return column;
+    }
+
+    @Test
+    public void testReloadColumnSortListWhenCatchColumnSortedEvent() {
+
+        ListTable<T> listTable = mock(ListTable.class);
+        when(getView().getListGrid()).thenReturn(listTable);
+        GridPreferencesStore gridPreferencesStore = mock(GridPreferencesStore.class);
+        when(listTable.getGridPreferencesStore()).thenReturn(gridPreferencesStore);
+        GridSortedColumnPreference gridSortedColumnPreference = new GridSortedColumnPreference("testOld", true);
+        when(gridPreferencesStore.getGridSortedColumnPreference()).thenReturn(gridSortedColumnPreference);
+
+        ColumnSortList columnSortList = getColumnSortList("startDate", null);
+        getColumnSortList("testNew", columnSortList);
+
+        when(listTable.getColumnSortList()).thenReturn(columnSortList);
+
+        ColumnMeta columnMeta = new ColumnMeta(getColumn("testNew"), "testNew");
+        when(listTable.getColumnMetaList()).thenReturn(Arrays.asList(columnMeta));
+        assertEquals(2, columnSortList.size());
+
+        getView().reloadColumnSortList();
+
+        assertEquals("testNew", columnSortList.get(0).getColumn().getDataStoreName());
+        assertEquals("startDate", columnSortList.get(1).getColumn().getDataStoreName());
+        assertEquals(2, columnSortList.size());
     }
 }
