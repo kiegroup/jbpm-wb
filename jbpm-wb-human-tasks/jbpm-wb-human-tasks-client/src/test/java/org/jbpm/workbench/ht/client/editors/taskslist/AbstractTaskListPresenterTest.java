@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -207,11 +207,8 @@ public abstract class AbstractTaskListPresenterTest {
         getPresenter().getData(new Range(0,
                                          5));
 
-        verify(dataSetQueryHelper).lookupDataSet(anyInt(),
-                                                 any(DataSetReadyCallback.class));
-        verify(dataSetQueryHelperDomainSpecific,
-               never()).lookupDataSet(anyInt(),
-                                      any(DataSetReadyCallback.class));
+        verify(dataSetQueryHelper).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+        verify(dataSetQueryHelperDomainSpecific, never()).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
     }
 
     @Test
@@ -220,9 +217,7 @@ public abstract class AbstractTaskListPresenterTest {
 
         getPresenter().releaseTask(task);
 
-        verify(taskService).releaseTask("",
-                                        TASK_DEPLOYMENT_ID,
-                                        TASK_ID);
+        verify(taskService).releaseTask("", TASK_DEPLOYMENT_ID, TASK_ID);
     }
 
     @Test
@@ -256,9 +251,7 @@ public abstract class AbstractTaskListPresenterTest {
 
         getPresenter().resumeTask(task);
 
-        verify(taskService).resumeTask("",
-                                       TASK_DEPLOYMENT_ID,
-                                       TASK_ID);
+        verify(taskService).resumeTask("", TASK_DEPLOYMENT_ID, TASK_ID);
     }
 
     @Test
@@ -267,9 +260,7 @@ public abstract class AbstractTaskListPresenterTest {
 
         getPresenter().suspendTask(task);
 
-        verify(taskService).suspendTask("",
-                                        TASK_DEPLOYMENT_ID,
-                                        TASK_ID);
+        verify(taskService).suspendTask("", TASK_DEPLOYMENT_ID, TASK_ID);
     }
 
     @Test
@@ -309,76 +300,56 @@ public abstract class AbstractTaskListPresenterTest {
     @Test
     public void getDomainSpecificDataForTasksTest() {
         final DataSetFilter filter = new DataSetFilter();
-        filter.addFilterColumn(equalsTo(COLUMN_NAME,
-                                        "taskName"));
+        filter.addFilterColumn(equalsTo(COLUMN_NAME, "taskName"));
         filterSettings.getDataSetLookup().addOperation(filter);
 
         when(dataSetMock.getRowCount()).thenReturn(1);//1 task
         //Task summary creation
-        when(dataSetMock.getValueAt(0,
-                                    COLUMN_TASK_ID)).thenReturn(Long.valueOf(1));
+        when(dataSetMock.getValueAt(0, COLUMN_TASK_ID)).thenReturn(Long.valueOf(1));
 
         when(dataSetTaskVarMock.getRowCount()).thenReturn(2); //two domain variables associated
-        when(dataSetTaskVarMock.getValueAt(0,
-                                           COLUMN_TASK_ID
+        when(dataSetTaskVarMock.getValueAt(0, COLUMN_TASK_ID
         )).thenReturn(Long.valueOf(1));
 
         String taskVariable1 = "var1";
-        when(dataSetTaskVarMock.getValueAt(0,
-                                           COLUMN_TASK_VARIABLE_NAME)).thenReturn(taskVariable1);
-        when(dataSetTaskVarMock.getValueAt(0,
-                                           COLUMN_TASK_VARIABLE_VALUE)).thenReturn("value1");
+        when(dataSetTaskVarMock.getValueAt(0, COLUMN_TASK_VARIABLE_NAME)).thenReturn(taskVariable1);
+        when(dataSetTaskVarMock.getValueAt(0, COLUMN_TASK_VARIABLE_VALUE)).thenReturn("value1");
 
-        when(dataSetTaskVarMock.getValueAt(1,
-                                           COLUMN_TASK_ID)).thenReturn(Long.valueOf(1));
+        when(dataSetTaskVarMock.getValueAt(1, COLUMN_TASK_ID)).thenReturn(Long.valueOf(1));
         String taskVariable2 = "var2";
-        when(dataSetTaskVarMock.getValueAt(1,
-                                           COLUMN_TASK_VARIABLE_NAME)).thenReturn(taskVariable2);
-        when(dataSetTaskVarMock.getValueAt(1,
-                                           COLUMN_TASK_VARIABLE_VALUE)).thenReturn("value2");
+        when(dataSetTaskVarMock.getValueAt(1, COLUMN_TASK_VARIABLE_NAME)).thenReturn(taskVariable2);
+        when(dataSetTaskVarMock.getValueAt(1, COLUMN_TASK_VARIABLE_VALUE)).thenReturn("value2");
 
         Set<String> expectedColumns = new HashSet<String>();
         expectedColumns.add(taskVariable1);
         expectedColumns.add(taskVariable2);
 
-        getPresenter().getData(new Range(0,
-                                         5));
+        getPresenter().getData(new Range(0, 5));
 
         ArgumentCaptor<Set> argument = ArgumentCaptor.forClass(Set.class);
         verify(viewMock).addDomainSpecifColumns(argument.capture());
 
         assertEquals(expectedColumns, argument.getValue());
 
-        verify(dataSetQueryHelper).lookupDataSet(anyInt(),
-                                                 any(DataSetReadyCallback.class));
-        verify(dataSetQueryHelperDomainSpecific).lookupDataSet(anyInt(),
-                                                               any(DataSetReadyCallback.class));
+        verify(dataSetQueryHelper).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+        verify(dataSetQueryHelperDomainSpecific).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
 
         when(dataSetTaskVarMock.getRowCount()).thenReturn(1); //one domain variables associated
-        when(dataSetTaskVarMock.getValueAt(0,
-                                           COLUMN_TASK_ID)).thenReturn(Long.valueOf(1));
+        when(dataSetTaskVarMock.getValueAt(0, COLUMN_TASK_ID)).thenReturn(Long.valueOf(1));
         taskVariable1 = "varTest1";
-        when(dataSetTaskVarMock.getValueAt(0,
-                                           COLUMN_TASK_VARIABLE_NAME)).thenReturn(taskVariable1);
-        when(dataSetTaskVarMock.getValueAt(0,
-                                           COLUMN_TASK_VARIABLE_VALUE)).thenReturn("value1");
+        when(dataSetTaskVarMock.getValueAt(0, COLUMN_TASK_VARIABLE_NAME)).thenReturn(taskVariable1);
+        when(dataSetTaskVarMock.getValueAt(0, COLUMN_TASK_VARIABLE_VALUE)).thenReturn("value1");
 
         expectedColumns = Collections.singleton(taskVariable1);
 
-        getPresenter().getData(new Range(0,
-                                         5));
+        getPresenter().getData(new Range(0, 5));
 
         argument = ArgumentCaptor.forClass(Set.class);
         verify(viewMock, times(2)).addDomainSpecifColumns(argument.capture());
 
-        assertEquals(expectedColumns,
-                     argument.getValue());
-        verify(dataSetQueryHelper,
-               times(2)).lookupDataSet(anyInt(),
-                                       any(DataSetReadyCallback.class));
-        verify(dataSetQueryHelperDomainSpecific,
-               times(2)).lookupDataSet(anyInt(),
-                                       any(DataSetReadyCallback.class));
+        assertEquals(expectedColumns, argument.getValue());
+        verify(dataSetQueryHelper, times(2)).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
+        verify(dataSetQueryHelperDomainSpecific, times(2)).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
     }
 
     @Test
@@ -392,11 +363,9 @@ public abstract class AbstractTaskListPresenterTest {
         for (final String dataSet : dataSets) {
             when(dataSetMock.getUUID()).thenReturn(dataSet);
 
-            final TaskSummary summary = new TaskSummaryDataSetMapper().apply(dataSetMock,
-                                                                             0);
+            final TaskSummary summary = new TaskSummaryDataSetMapper().apply(dataSetMock, 0);
             assertNotNull(summary);
-            assertEquals(HUMAN_TASKS_WITH_ADMIN_DATASET.equals(dataSet),
-                         summary.isForAdmin());
+            assertEquals(HUMAN_TASKS_WITH_ADMIN_DATASET.equals(dataSet), summary.isForAdmin());
         }
     }
 
@@ -413,14 +382,12 @@ public abstract class AbstractTaskListPresenterTest {
 
         final ActiveFilterItem filterItem = captor.getValue();
         assertNotNull(filterItem);
-        assertEquals(Constants.INSTANCE.Status(),
-                     filterItem.getKey());
+        assertEquals(Constants.INSTANCE.Status(), filterItem.getKey());
         assertEquals(Arrays.asList(TASK_STATUS_READY.getIdentifier(),
                                    TASK_STATUS_IN_PROGRESS.getIdentifier(),
                                    TASK_STATUS_RESERVED.getIdentifier()),
                      filterItem.getValue());
-        assertEquals("Status: Ready, InProgress, Reserved",
-                     filterItem.getLabelValue());
+        assertEquals("Status: Ready, InProgress, Reserved", filterItem.getLabelValue());
     }
 
     @Test
@@ -468,10 +435,12 @@ public abstract class AbstractTaskListPresenterTest {
 
     @Test
     public void testReadyTaskSelection() {
+        Integer slaCompliance = 1;
         TaskSummary taskSummary = TaskSummary.builder()
                 .id(TASK_ID)
                 .deploymentId(TASK_DEPLOYMENT_ID)
                 .status(TASK_STATUS_READY.getIdentifier())
+                .slaCompliance(slaCompliance)
                 .build();
 
         getPresenter().selectSummaryItem(taskSummary);
@@ -480,20 +449,15 @@ public abstract class AbstractTaskListPresenterTest {
         final ArgumentCaptor<TaskSelectionEvent> captor = ArgumentCaptor.forClass(TaskSelectionEvent.class);
         verify(taskSelected).fire(captor.capture());
         assertFalse(captor.getValue().isForLog());
+        assertEquals(slaCompliance, captor.getValue().getSlaCompliance());
         assertEquals(taskSummary, getPresenter().getSelectedTask());
     }
 
     @Test
     public void testOnBasicFilterAddEvent() {
-        final ActiveFilterItem<Object> filter = new ActiveFilterItem<>("key1",
-                                                                       null,
-                                                                       null,
-                                                                       null,
-                                                                       null);
+        final ActiveFilterItem<Object> filter = new ActiveFilterItem<>("key1", null, null, null, null);
         final ColumnFilter columnFilter = mock(ColumnFilter.class);
-        getPresenter().onBasicFilterAddEvent(new BasicFilterAddEvent(datasetUId,
-                                                                     filter,
-                                                                     columnFilter));
+        getPresenter().onBasicFilterAddEvent(new BasicFilterAddEvent(datasetUId, filter, columnFilter));
 
         verify(viewMock).addActiveFilter(filter);
         verify(filterSettings).addColumnFilter(columnFilter);
@@ -501,15 +465,9 @@ public abstract class AbstractTaskListPresenterTest {
 
     @Test
     public void testOnBasicFilterRemoveEvent() {
-        final ActiveFilterItem<Object> filter = new ActiveFilterItem<>("key1",
-                                                                       null,
-                                                                       null,
-                                                                       null,
-                                                                       null);
+        final ActiveFilterItem<Object> filter = new ActiveFilterItem<>("key1", null, null, null, null);
         final ColumnFilter columnFilter = mock(ColumnFilter.class);
-        getPresenter().onBasicFilterRemoveEvent(new BasicFilterRemoveEvent(datasetUId,
-                                                                           filter,
-                                                                           columnFilter));
+        getPresenter().onBasicFilterRemoveEvent(new BasicFilterRemoveEvent(datasetUId, filter, columnFilter));
 
         verify(viewMock).removeActiveFilter(filter);
         verify(filterSettings).removeColumnFilter(columnFilter);
@@ -520,15 +478,14 @@ public abstract class AbstractTaskListPresenterTest {
         final String serverTemplateId = "serverTemplateId";
 
         assertFalse(getPresenter().isSameTaskFromEvent().test(new TaskCompletedEvent(serverTemplateId,
-                                                                                    TASK_DEPLOYMENT_ID,
-                                                                                    TASK_ID)));
+                                                                                     TASK_DEPLOYMENT_ID,
+                                                                                     TASK_ID)));
 
         TaskSummary taskSummary = TaskSummary.builder()
                 .id(TASK_ID)
                 .deploymentId(TASK_DEPLOYMENT_ID)
                 .status(TASK_STATUS_READY.getIdentifier())
                 .build();
-
 
         getPresenter().setSelectedServerTemplate(new ServerTemplate(serverTemplateId,
                                                                     null,
@@ -540,7 +497,6 @@ public abstract class AbstractTaskListPresenterTest {
         assertTrue(getPresenter().isSameTaskFromEvent().test(new TaskCompletedEvent(serverTemplateId,
                                                                                     TASK_DEPLOYMENT_ID,
                                                                                     TASK_ID)));
-
         assertFalse(getPresenter().isSameTaskFromEvent().test(new TaskCompletedEvent(serverTemplateId,
                                                                                      TASK_DEPLOYMENT_ID,
                                                                                      2l)));
@@ -577,9 +533,7 @@ public abstract class AbstractTaskListPresenterTest {
                                                                    2l));
 
         //Refreshed 2 times only, one for server template and only one task event
-        verify(extendedPagedTable,
-               times(2)).setVisibleRangeAndClearData(any(),
-                                                     eq(true));
+        verify(extendedPagedTable, times(2)).setVisibleRangeAndClearData(any(), eq(true));
     }
 
     protected static BeforeClosePlaceEvent newCloseEventMock(String placeId) {
@@ -598,13 +552,11 @@ public abstract class AbstractTaskListPresenterTest {
 
         getPresenter().selectSummaryItem(taskSummary);
 
-        assertEquals(taskSummary,
-                     getPresenter().getSelectedTask());
+        assertEquals(taskSummary, getPresenter().getSelectedTask());
 
         getPresenter().onTaskDetailsClosed(newCloseEventMock(PerspectiveIds.TASK_ADMIN_LIST_SCREEN));
 
-        assertEquals(taskSummary,
-                     getPresenter().getSelectedTask());
+        assertEquals(taskSummary, getPresenter().getSelectedTask());
 
         getPresenter().onTaskDetailsClosed(newCloseEventMock(PerspectiveIds.TASK_DETAILS_SCREEN));
 

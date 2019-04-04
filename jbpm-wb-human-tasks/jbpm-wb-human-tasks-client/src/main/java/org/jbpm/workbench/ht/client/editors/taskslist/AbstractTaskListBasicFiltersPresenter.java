@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.BasicFiltersPresenter;
+import org.jbpm.workbench.common.client.util.SlaStatusConverter;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
@@ -94,6 +95,8 @@ public abstract class AbstractTaskListBasicFiltersPresenter extends BasicFilters
 
         addProcessNameFilter(getDataSetId());
 
+        addSLAComplianceFilter();
+
         view.addDateRangeFilter(constants.Created_On(),
                                 constants.Created_On_Placeholder(),
                                 true,
@@ -149,6 +152,12 @@ public abstract class AbstractTaskListBasicFiltersPresenter extends BasicFilters
                                     f -> addSearchFilter(f, equalsTo(COLUMN_DEPLOYMENT_ID, f.getValue())));
     }
 
+    protected void addSLAComplianceFilter() {
+        view.addSelectFilter(constants.SlaCompliance(),
+                             SlaStatusConverter.getSLAComplianceAliasMap(),
+                             f -> addSearchFilter(f, equalsTo(COLUMN_SLA_COMPLIANCE, f.getValue())));
+    }
+
     @Inject
     public void setTranslationService(TranslationService translationService) {
         this.translationService = translationService;
@@ -162,5 +171,4 @@ public abstract class AbstractTaskListBasicFiltersPresenter extends BasicFilters
                                                        v));
         }
     }
-
 }

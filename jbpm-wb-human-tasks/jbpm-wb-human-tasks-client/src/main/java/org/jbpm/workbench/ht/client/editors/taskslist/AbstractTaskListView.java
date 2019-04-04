@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
 import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.ConditionalAction;
 import org.jbpm.workbench.common.client.util.DateUtils;
+import org.jbpm.workbench.common.client.util.SLAComplianceCell;
 import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
@@ -92,6 +93,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
                                                                   Column<TaskSummary, String> createdOnColumn,
                                                                   ColumnMeta<TaskSummary> actionsColumnMeta) {
         List<ColumnMeta<TaskSummary>> columnMetas = new ArrayList<ColumnMeta<TaskSummary>>();
+        Column<TaskSummary, ?> slaComplianceColumn = initSlaComplianceColumn();
         columnMetas.add(new ColumnMeta<>(
                 createNumberColumn(COLUMN_TASK_ID,
                                    task -> task.getId()),
@@ -162,6 +164,11 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
                                    task -> task.getProcessSessionId()),
                 constants.ProcessSessionId()
         ));
+        columnMetas.add(new ColumnMeta<>(slaComplianceColumn,
+                                         constants.SlaCompliance()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_SLA_DUE_DATE,
+                                                          task -> DateUtils.getDateTimeStr(task.getSlaDueDate())),
+                                         constants.SlaDueDate()));
         addNewColumn(extendedPagedTable,
                      columnMetas);
         columnMetas.add(actionsColumnMeta);
@@ -169,6 +176,22 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
     }
 
     protected void addNewColumn(ListTable<TaskSummary> extendedPagedTable, List<ColumnMeta<TaskSummary>> columnMetas) {
+    }
+
+    protected Column<TaskSummary, Integer> initSlaComplianceColumn() {
+
+        Column<TaskSummary, Integer> column = new Column<TaskSummary, Integer>(
+                new SLAComplianceCell()) {
+
+            @Override
+            public Integer getValue(TaskSummary taskSummary) {
+                return taskSummary.getSlaCompliance();
+            }
+        };
+
+        column.setSortable(true);
+        column.setDataStoreName(COLUMN_SLA_COMPLIANCE);
+        return column;
     }
 
     protected void initCellPreview(final ListTable<TaskSummary> extendedPagedTable) {

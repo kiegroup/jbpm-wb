@@ -37,8 +37,8 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.util.DateTimeConverter;
 import org.jbpm.workbench.common.client.util.DateTimeNAConverter;
+import org.jbpm.workbench.common.client.util.SlaStatusConverter;
 import org.jbpm.workbench.common.model.GenericSummary;
-import org.jbpm.workbench.pr.client.util.SlaStatusConverter;
 import org.jbpm.workbench.pr.model.NodeInstanceSummary;
 
 import static org.jboss.errai.common.client.dom.Window.getDocument;

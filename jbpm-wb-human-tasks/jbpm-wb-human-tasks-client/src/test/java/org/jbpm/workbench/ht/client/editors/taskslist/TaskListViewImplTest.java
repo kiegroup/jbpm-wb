@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
             @Override
             public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
                 final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[0];
-                assertEquals(18,
+                assertEquals(20,
                              columns.size());
                 return null;
             }
@@ -148,13 +148,13 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
                                                                                        createdOnColumn,
                                                                                        actionsColumnMeta);
 
-        assertThat(columnMetas.stream()).extracting(c -> c.getCaption()).hasSize(15).doesNotContain("Var_Id");
+        assertThat(columnMetas.stream()).extracting(c -> c.getCaption()).hasSize(17).doesNotContain("Var_Id");
 
         List<ColumnMeta<TaskSummary>> tmp = view.renameVariables(extendedPagedTable, columnMetas);
 
         columnMetas.addAll(tmp);
 
-        assertThat(columnMetas.stream()).extracting(c -> c.getCaption()).hasSize(17).containsOnlyOnce("Var_Id");
+        assertThat(columnMetas.stream()).extracting(c -> c.getCaption()).hasSize(19).containsOnlyOnce("Var_Id");
     }
 
     @Test
@@ -167,11 +167,11 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
         Set<String> set = Collections.singleton("Id");
         view.initColumns(extendedPagedTable);
 
-        assertThat(extendedPagedTable.getColumnMetaList().stream()).extracting(c -> c.getCaption()).hasSize(15).doesNotContain("Var_Id");
+        assertThat(extendedPagedTable.getColumnMetaList().stream()).extracting(c -> c.getCaption()).hasSize(17).doesNotContain("Var_Id");
 
         view.addDomainSpecifColumns(set);
 
-        assertThat(extendedPagedTable.getColumnMetaList().stream()).extracting(c -> c.getCaption()).hasSize(16).containsOnlyOnce("Var_Id");
+        assertThat(extendedPagedTable.getColumnMetaList().stream()).extracting(c -> c.getCaption()).hasSize(18).containsOnlyOnce("Var_Id");
     }
 
     @Test
@@ -186,7 +186,7 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
         Set<String> set = Sets.newHashSet("Extra");
 
         view.initColumns(extendedPagedTable);
-        assertThat(extendedPagedTable.getColumnMetaList().size()).isEqualTo(16);
+        assertThat(extendedPagedTable.getColumnMetaList().size()).isEqualTo(18);
         view.addDomainSpecifColumns(set);
 
         assertThat(set.size()).isEqualTo(0);
@@ -204,13 +204,13 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
         Set<String> set = Collections.singleton("Extra_test");
 
         view.initColumns(extendedPagedTable);
-        assertThat(extendedPagedTable.getColumnMetaList().size()).isEqualTo(15);
+        assertThat(extendedPagedTable.getColumnMetaList().size()).isEqualTo(17);
         extendedPagedTable.addColumns(Collections.singletonList(columnMeta));
 
-        assertThat(extendedPagedTable.getColumnMetaList().stream()).extracting(c -> c.getCaption()).hasSize(16).containsOnlyOnce("Extra");
+        assertThat(extendedPagedTable.getColumnMetaList().stream()).extracting(c -> c.getCaption()).hasSize(18).containsOnlyOnce("Extra");
         view.addDomainSpecifColumns(set);
 
-        assertThat(extendedPagedTable.getColumnMetaList().stream()).extracting(c -> c.getCaption()).hasSize(16).doesNotContain("Extra");
+        assertThat(extendedPagedTable.getColumnMetaList().stream()).extracting(c -> c.getCaption()).hasSize(18).doesNotContain("Extra");
 
         assertThat(set.size()).isEqualTo(1);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,6 +77,8 @@ public class DataSetDefsBootstrap extends AbstractDataSetDefsBootstrap {
                 .number(COLUMN_WORK_ITEM_ID)
                 .date(COLUMN_LAST_MODIFICATION_DATE)
                 .label(COLUMN_PROCESS_INSTANCE_CORRELATION_KEY)
-                .text(COLUMN_PROCESS_INSTANCE_DESCRIPTION);
+                .text(COLUMN_PROCESS_INSTANCE_DESCRIPTION)
+                .date(COLUMN_SLA_DUE_DATE)
+                .number(COLUMN_SLA_COMPLIANCE);
     }
 }

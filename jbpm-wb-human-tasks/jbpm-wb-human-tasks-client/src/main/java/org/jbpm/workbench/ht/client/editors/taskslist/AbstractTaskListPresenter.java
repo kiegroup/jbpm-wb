@@ -321,7 +321,8 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                                                  summary.getActualOwner(),
                                                  summary.getPriority(),
                                                  summary.getProcessInstanceId(),
-                                                 summary.getProcessId()));
+                                                 summary.getProcessId(),
+                                                 summary.getSlaCompliance()));
     }
 
     public void onTaskRefreshedEvent(@Observes TaskRefreshedEvent event) {

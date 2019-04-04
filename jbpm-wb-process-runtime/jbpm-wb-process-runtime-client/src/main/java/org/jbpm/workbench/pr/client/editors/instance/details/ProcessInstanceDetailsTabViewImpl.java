@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,7 +110,7 @@ public class ProcessInstanceDetailsTabViewImpl extends Composite implements Proc
         processDefinitionIdLabel.textContent = constants.Process_Definition_Id();
         processDeploymentLabel.textContent = constants.Deployment_Name();
         processVersionLabel.textContent = constants.Process_Definition_Version();
-        slaComplianceLabel.textContent = constants.Process_SLA_Compliance();
+        slaComplianceLabel.textContent = constants.SlaCompliance();
         correlationKeyLabel.textContent = constants.Correlation_Key();
         stateLabel.textContent = constants.Process_Instance_State();
         activeTasksListLabel.textContent = constants.Active_Tasks();

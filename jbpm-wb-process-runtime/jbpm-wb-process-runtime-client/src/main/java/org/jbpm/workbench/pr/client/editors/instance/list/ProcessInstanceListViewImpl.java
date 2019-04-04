@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,7 +119,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                                           Style.Unit.PX);
 
         extendedPagedTable.getColumnSortList().push(startColumn);
-
     }
 
     protected List<ColumnMeta<ProcessInstanceSummary>> getGeneralColumnMetas(final ListTable<ProcessInstanceSummary> extendedPagedTable,
@@ -179,7 +178,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                                          constants.SlaCompliance()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_SLA_DUE_DATE,
                                                           process -> DateUtils.getDateTimeStr(process.getSlaDueDate())),
-                                        constants.SlaDueDate()));
+                                         constants.SlaDueDate()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_CORRELATION_KEY,
                                                           process -> process.getCorrelationKey()),
                                          constants.Correlation_Key()));
@@ -194,7 +193,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
                                 instance -> instance.getDomainDataValue(key));
     }
 
-    protected AnchorListItem getBulkAbort(final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable){
+    protected AnchorListItem getBulkAbort(final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable) {
         final AnchorListItem bulkAbortNavLink = GWT.create(AnchorListItem.class);
         bulkAbortNavLink.setText(constants.Bulk_Abort());
         bulkAbortNavLink.setIcon(IconType.BAN);
@@ -207,7 +206,7 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         return bulkAbortNavLink;
     }
 
-    protected AnchorListItem getBulkSignal(final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable){
+    protected AnchorListItem getBulkSignal(final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable) {
         final AnchorListItem bulkSignalNavLink = GWT.create(AnchorListItem.class);
         bulkSignalNavLink.setText(constants.Bulk_Signal());
         bulkSignalNavLink.setIcon(IconType.BELL);
@@ -248,16 +247,8 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
     protected Column<ProcessInstanceSummary, Integer> initSlaComplianceColumn() {
 
-        final List<String> slaDescriptions = new ArrayList<>();
-        slaDescriptions.add(constants.Unknown());
-        slaDescriptions.add(constants.SlaNA());
-        slaDescriptions.add(constants.SlaPending());
-        slaDescriptions.add(constants.SlaMet());
-        slaDescriptions.add(constants.SlaAborted());
-        slaDescriptions.add(constants.SlaViolated());
-
         Column<ProcessInstanceSummary, Integer> column = new Column<ProcessInstanceSummary, Integer>(
-                new SLAComplianceCell(slaDescriptions)) {
+                new SLAComplianceCell()) {
 
             @Override
             public Integer getValue(ProcessInstanceSummary process) {

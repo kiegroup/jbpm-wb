@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,16 +49,11 @@ public class DataSetDefsBootstrapTest {
         verify(dataSetDefRegistry).registerDataSetDef(argument.capture());
 
         SQLDataSetDef dataSetDef = argument.getValue();
-        assertEquals(HUMAN_TASKS_DATASET,
-                     dataSetDef.getUUID());
-        assertEquals("target-" + HUMAN_TASKS_DATASET,
-                     dataSetDef.getName());
-        assertEquals(KieServerDataSetProvider.TYPE,
-                     dataSetDef.getProvider());
-        assertEquals("SELECT *",
-                     dataSetDef.getDbSQL());
-        assertEquals(19,
-                     dataSetDef.getColumns().size());
+        assertEquals(HUMAN_TASKS_DATASET, dataSetDef.getUUID());
+        assertEquals("target-" + HUMAN_TASKS_DATASET, dataSetDef.getName());
+        assertEquals(KieServerDataSetProvider.TYPE, dataSetDef.getProvider());
+        assertEquals("SELECT *", dataSetDef.getDbSQL());
+        assertEquals(21, dataSetDef.getColumns().size());
     }
 
     @Test
@@ -70,16 +65,11 @@ public class DataSetDefsBootstrapTest {
         verify(dataSetDefRegistry).registerDataSetDef(argument.capture());
 
         SQLDataSetDef dataSetDef = argument.getValue();
-        assertEquals(HUMAN_TASKS_WITH_USER_DATASET,
-                     dataSetDef.getUUID());
-        assertEquals("target-" + HUMAN_TASKS_WITH_USER_DATASET,
-                     dataSetDef.getName());
-        assertEquals(KieServerDataSetProvider.TYPE,
-                     dataSetDef.getProvider());
-        assertEquals("SELECT *",
-                     dataSetDef.getDbSQL());
-        assertEquals(21,
-                     dataSetDef.getColumns().size());
+        assertEquals(HUMAN_TASKS_WITH_USER_DATASET, dataSetDef.getUUID());
+        assertEquals("target-" + HUMAN_TASKS_WITH_USER_DATASET, dataSetDef.getName());
+        assertEquals(KieServerDataSetProvider.TYPE, dataSetDef.getProvider());
+        assertEquals("SELECT *", dataSetDef.getDbSQL());
+        assertEquals(23, dataSetDef.getColumns().size());
     }
 
     @Test
@@ -91,16 +81,11 @@ public class DataSetDefsBootstrapTest {
         verify(dataSetDefRegistry).registerDataSetDef(argument.capture());
 
         SQLDataSetDef dataSetDef = argument.getValue();
-        assertEquals(HUMAN_TASKS_WITH_ADMIN_DATASET,
-                     dataSetDef.getUUID());
-        assertEquals("target-" + HUMAN_TASKS_WITH_ADMIN_DATASET,
-                     dataSetDef.getName());
-        assertEquals(KieServerDataSetProvider.TYPE,
-                     dataSetDef.getProvider());
-        assertEquals("SELECT *",
-                     dataSetDef.getDbSQL());
-        assertEquals(21,
-                     dataSetDef.getColumns().size());
+        assertEquals(HUMAN_TASKS_WITH_ADMIN_DATASET, dataSetDef.getUUID());
+        assertEquals("target-" + HUMAN_TASKS_WITH_ADMIN_DATASET, dataSetDef.getName());
+        assertEquals(KieServerDataSetProvider.TYPE, dataSetDef.getProvider());
+        assertEquals("SELECT *", dataSetDef.getDbSQL());
+        assertEquals(23, dataSetDef.getColumns().size());
     }
 
     @Test
@@ -112,15 +97,10 @@ public class DataSetDefsBootstrapTest {
         verify(dataSetDefRegistry).registerDataSetDef(argument.capture());
 
         SQLDataSetDef dataSetDef = argument.getValue();
-        assertEquals(HUMAN_TASKS_WITH_VARIABLES_DATASET,
-                     dataSetDef.getUUID());
-        assertEquals("target-" + HUMAN_TASKS_WITH_VARIABLES_DATASET,
-                     dataSetDef.getName());
-        assertEquals(KieServerDataSetProvider.TYPE,
-                     dataSetDef.getProvider());
-        assertEquals("SELECT *",
-                     dataSetDef.getDbSQL());
-        assertEquals(3,
-                     dataSetDef.getColumns().size());
+        assertEquals(HUMAN_TASKS_WITH_VARIABLES_DATASET, dataSetDef.getUUID());
+        assertEquals("target-" + HUMAN_TASKS_WITH_VARIABLES_DATASET, dataSetDef.getName());
+        assertEquals(KieServerDataSetProvider.TYPE, dataSetDef.getProvider());
+        assertEquals("SELECT *", dataSetDef.getDbSQL());
+        assertEquals(3, dataSetDef.getColumns().size());
     }
 }

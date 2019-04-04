@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ public class ProcessInstanceDetailsTabPresenterTest {
         verify(view).setProcessVersionText(processInstanceSummary.getProcessVersion());
         verify(view).setCorrelationKeyText(processInstanceSummary.getCorrelationKey());
         verify(view).setParentProcessInstanceIdText(Constants.INSTANCE.No_Parent_Process_Instance());
-        verify(view).setSlaComplianceText(Constants.INSTANCE.SlaMet());
+        verify(view).setSlaComplianceText(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.SlaMet());
 
         ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
         verify(view, times(2)).setActiveTasksListBox(argumentCaptor.capture());
@@ -127,10 +127,7 @@ public class ProcessInstanceDetailsTabPresenterTest {
     }
 
     private UserTaskSummary getUserTaskSummary() {
-        userTaskSummary = new UserTaskSummary(1L,
-                                              "Self Evaluation",
-                                              "testuser",
-                                              "Reserved");
+        userTaskSummary = new UserTaskSummary(1L, "Self Evaluation", "testuser", "Reserved");
         return userTaskSummary;
     }
 }

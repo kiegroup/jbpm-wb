@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public abstract class AbstractTaskListViewTest extends AbstractMultiGridViewTest
 
     @Override
     public Integer getExpectedNumberOfColumns() {
-        return 15;
+        return 17;
     }
 
     @Test
@@ -68,7 +68,7 @@ public abstract class AbstractTaskListViewTest extends AbstractMultiGridViewTest
 
         final List<List> columns = argument.getAllValues();
         assertEquals(3, columns.size());
-        final Set<String> captions = columns.stream().map(l -> (ColumnMeta)l.get(0)).map(m -> m.getCaption()).collect(Collectors.toSet());
+        final Set<String> captions = columns.stream().map(l -> (ColumnMeta) l.get(0)).map(m -> m.getCaption()).collect(Collectors.toSet());
         assertEquals(domainColumns, captions);
     }
 

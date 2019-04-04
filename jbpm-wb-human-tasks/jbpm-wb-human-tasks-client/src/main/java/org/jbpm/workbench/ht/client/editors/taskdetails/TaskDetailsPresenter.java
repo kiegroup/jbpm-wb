@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,12 +92,14 @@ public class TaskDetailsPresenter extends AbstractTaskPresenter {
                                   Date expirationTime,
                                   String priority,
                                   Long processInstanceId,
-                                  String processId) {
+                                  String processId,
+                                  Integer slaCompliance) {
         view.setTaskDescription(description);
         view.setSelectedDate(expirationTime);
         view.setUser(actualOwner);
         view.setTaskStatus(status);
         view.setTaskPriority(priority);
+        view.setSlaCompliance(slaCompliance);
         if (processInstanceId == null) {
             view.setProcessInstanceId("");
             view.setProcessId("");
@@ -127,7 +129,8 @@ public class TaskDetailsPresenter extends AbstractTaskPresenter {
                        event.getExpirationTime(),
                        String.valueOf(event.getPriority()),
                        event.getProcessInstanceId(),
-                       event.getProcessId());
+                       event.getProcessId(),
+                       event.getSlaCompliance());
     }
 
     public void onTaskRefreshedEvent(@Observes final TaskRefreshedEvent event) {
@@ -141,11 +144,10 @@ public class TaskDetailsPresenter extends AbstractTaskPresenter {
                                            task.getExpirationTime(),
                                            String.valueOf(task.getPriority()),
                                            task.getProcessInstanceId(),
-                                           task.getProcessId());
+                                           task.getProcessId(),
+                                           task.getSlaCompliance());
                         }
-                    }).getTask(getServerTemplateId(),
-                               getContainerId(),
-                               getTaskId());
+                    }).getTask(getServerTemplateId(), getContainerId(), getTaskId());
         }
     }
 
@@ -169,6 +171,8 @@ public class TaskDetailsPresenter extends AbstractTaskPresenter {
         void setUser(String user);
 
         void setTaskStatus(String status);
+
+        void setSlaCompliance(Integer slaCompliance);
 
         void setTaskPriority(String priority);
 

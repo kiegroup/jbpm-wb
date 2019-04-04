@@ -38,19 +38,19 @@
   {
     "query-name": "jbpmHumanTasks",
     "query-source": "${org.kie.server.persistence.ds}",
-    "query-expression": "select t.activationTime, t.actualOwner, t.createdBy, t.createdOn, t.deploymentId, t.description, t.dueDate, t.name, t.parentId, t.priority, t.processId, t.processInstanceId, t.processSessionId, t.status, t.taskId, t.workItemId, t.lastModificationDate, pil.correlationKey, pil.processInstanceDescription from AuditTaskImpl t left join ProcessInstanceLog pil on pil.processInstanceId=t.processInstanceId",
+    "query-expression": "select t.activationTime, t.actualOwner, t.createdBy, t.createdOn, t.deploymentId, t.description, t.dueDate, t.name, t.parentId, t.priority, t.processId, t.processInstanceId, t.processSessionId, t.status, t.taskId, t.workItemId, t.lastModificationDate, pil.correlationKey, pil.processInstanceDescription, nil.sla_due_date, nil.slaCompliance from AuditTaskImpl t left join ProcessInstanceLog pil on pil.processInstanceId=t.processInstanceId left join NodeInstanceLog nil on nil.workItemId=t.workItemId",
     "query-target": "CUSTOM"
   },
   {
     "query-name": "jbpmHumanTasksWithUser",
     "query-source": "${org.kie.server.persistence.ds}",
-    "query-expression": "select t.activationTime, t.actualOwner, t.createdBy, t.createdOn, t.deploymentId, t.description, t.dueDate, t.name, t.parentId, t.priority, t.processId, t.processInstanceId, t.processSessionId, t.status, t.taskId, t.workItemId, t.lastModificationDate, pil.correlationKey, pil.processInstanceDescription , oe.id, eo.entity_id from AuditTaskImpl t left join PeopleAssignments_PotOwners po on t.taskId=po.task_id left join OrganizationalEntity oe on po.entity_id=oe.id left join ProcessInstanceLog pil on pil.processInstanceId=t.processInstanceId left join PeopleAssignments_ExclOwners eo on t.taskId=eo.task_id",
+    "query-expression": "select t.activationTime, t.actualOwner, t.createdBy, t.createdOn, t.deploymentId, t.description, t.dueDate, t.name, t.parentId, t.priority, t.processId, t.processInstanceId, t.processSessionId, t.status, t.taskId, t.workItemId, t.lastModificationDate, pil.correlationKey, pil.processInstanceDescription , oe.id, eo.entity_id, nil.sla_due_date, nil.slaCompliance from AuditTaskImpl t left join PeopleAssignments_PotOwners po on t.taskId=po.task_id left join OrganizationalEntity oe on po.entity_id=oe.id left join ProcessInstanceLog pil on pil.processInstanceId=t.processInstanceId left join PeopleAssignments_ExclOwners eo on t.taskId=eo.task_id left join NodeInstanceLog nil on nil.workItemId=t.workItemId",
     "query-target": "FILTERED_PO_TASK"
   },
   {
     "query-name": "jbpmHumanTasksWithAdmin",
     "query-source": "${org.kie.server.persistence.ds}",
-    "query-expression": "select t.activationTime, t.actualOwner, t.createdBy, t.createdOn, t.deploymentId, t.description, t.dueDate, t.name, t.parentId, t.priority, t.processId, t.processInstanceId, t.processSessionId, t.status, t.taskId, t.workItemId, t.lastModificationDate, pil.correlationKey, pil.processInstanceDescription ,oe.id,  (select COUNT(errInfo.id) from ExecutionErrorInfo errInfo where errInfo.activity_id = t.taskId and errInfo.process_inst_id = pil.processInstanceId and errInfo.error_ack = 0 and errInfo.error_type = 'Task') as errorCount from AuditTaskImpl t  left join ProcessInstanceLog pil on pil.processInstanceId = t.processInstanceId left join PeopleAssignments_BAs ba on t.taskId = ba.task_id left join OrganizationalEntity oe on ba.entity_id = oe.id",
+    "query-expression": "select t.activationTime, t.actualOwner, t.createdBy, t.createdOn, t.deploymentId, t.description, t.dueDate, t.name, t.parentId, t.priority, t.processId, t.processInstanceId, t.processSessionId, t.status, t.taskId, t.workItemId, t.lastModificationDate, pil.correlationKey, pil.processInstanceDescription ,oe.id, nil.sla_due_date, nil.slaCompliance, (select COUNT(errInfo.id) from ExecutionErrorInfo errInfo where errInfo.activity_id = t.taskId and errInfo.process_inst_id = pil.processInstanceId and errInfo.error_ack = 0 and errInfo.error_type = 'Task') as errorCount from AuditTaskImpl t  left join ProcessInstanceLog pil on pil.processInstanceId = t.processInstanceId left join PeopleAssignments_BAs ba on t.taskId = ba.task_id left join OrganizationalEntity oe on ba.entity_id = oe.id left join NodeInstanceLog nil on nil.workItemId=t.workItemId",
     "query-target": "FILTERED_BA_TASK"
   },
   {

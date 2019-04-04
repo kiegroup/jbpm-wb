@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,64 +30,29 @@ public class TaskSummaryDataSetMapper implements BiFunction<DataSet, Integer, Ta
     public TaskSummary apply(final DataSet dataSet,
                              final Integer row) {
         return TaskSummary.builder()
-                    .id(getColumnLongValue(dataSet,
-                                           COLUMN_TASK_ID,
-                                           row))
-                    .name(getColumnStringValue(dataSet,
-                                               COLUMN_NAME,
-                                               row))
-                    .description(getColumnStringValue(dataSet,
-                                                      COLUMN_DESCRIPTION,
-                                                      row))
-                    .status(getColumnStringValue(dataSet,
-                                                 COLUMN_STATUS,
-                                                 row))
-                    .priority(getColumnIntValue(dataSet,
-                                                COLUMN_PRIORITY,
-                                                row))
-                    .actualOwner(getColumnStringValue(dataSet,
-                                                      COLUMN_ACTUAL_OWNER,
-                                                      row))
-                    .createdBy(getColumnStringValue(dataSet,
-                                                    COLUMN_CREATED_BY,
-                                                    row))
-                    .createdOn(getColumnDateValue(dataSet,
-                                                  COLUMN_CREATED_ON,
-                                                  row))
-                    .activationTime(getColumnDateValue(dataSet,
-                                                       COLUMN_ACTIVATION_TIME,
-                                                       row))
-                    .expirationTime(getColumnDateValue(dataSet,
-                                                       COLUMN_DUE_DATE,
-                                                       row))
-                    .processId(getColumnStringValue(dataSet,
-                                                    COLUMN_PROCESS_ID,
-                                                    row))
-                    .processInstanceId(getColumnLongValue(dataSet,
-                                                          COLUMN_PROCESS_INSTANCE_ID,
-                                                          row))
-                    .deploymentId(getColumnStringValue(dataSet,
-                                                       COLUMN_DEPLOYMENT_ID,
-                                                       row))
-                    .parentId(getColumnLongValue(dataSet,
-                                                 COLUMN_PARENT_ID,
-                                                 row))
-                    .lastModificationDate(getColumnDateValue(dataSet,
-                                                             COLUMN_LAST_MODIFICATION_DATE,
-                                                             row))
-                    .processInstanceCorrelationKey(getColumnStringValue(dataSet,
-                                                                        COLUMN_PROCESS_INSTANCE_CORRELATION_KEY,
-                                                                        row))
-                    .processInstanceDescription(getColumnStringValue(dataSet,
-                                                                     COLUMN_PROCESS_INSTANCE_DESCRIPTION,
-                                                                     row))
-                    .processSessionId(getColumnLongValue(dataSet,
-                                                         COLUMN_PROCESS_SESSION_ID,
-                                                         row))
-                    .errorCount(HUMAN_TASKS_WITH_ADMIN_DATASET.equals(dataSet.getUUID()) ? getColumnIntValue(dataSet,
-                                                                                                             COLUMN_ERROR_COUNT,
-                                                                                                             row) : null)
-                    .isForAdmin(HUMAN_TASKS_WITH_ADMIN_DATASET.equals(dataSet.getUUID()))
-                    .build();
+                .id(getColumnLongValue(dataSet, COLUMN_TASK_ID, row))
+                .name(getColumnStringValue(dataSet, COLUMN_NAME, row))
+                .description(getColumnStringValue(dataSet, COLUMN_DESCRIPTION, row))
+                .status(getColumnStringValue(dataSet, COLUMN_STATUS, row))
+                .priority(getColumnIntValue(dataSet, COLUMN_PRIORITY, row))
+                .actualOwner(getColumnStringValue(dataSet, COLUMN_ACTUAL_OWNER, row))
+                .createdBy(getColumnStringValue(dataSet, COLUMN_CREATED_BY, row))
+                .createdOn(getColumnDateValue(dataSet, COLUMN_CREATED_ON, row))
+                .activationTime(getColumnDateValue(dataSet, COLUMN_ACTIVATION_TIME, row))
+                .expirationTime(getColumnDateValue(dataSet, COLUMN_DUE_DATE, row))
+                .processId(getColumnStringValue(dataSet, COLUMN_PROCESS_ID, row))
+                .processInstanceId(getColumnLongValue(dataSet, COLUMN_PROCESS_INSTANCE_ID, row))
+                .deploymentId(getColumnStringValue(dataSet, COLUMN_DEPLOYMENT_ID, row))
+                .parentId(getColumnLongValue(dataSet, COLUMN_PARENT_ID, row))
+                .lastModificationDate(getColumnDateValue(dataSet, COLUMN_LAST_MODIFICATION_DATE, row))
+                .processInstanceCorrelationKey(getColumnStringValue(dataSet, COLUMN_PROCESS_INSTANCE_CORRELATION_KEY, row))
+                .processInstanceDescription(getColumnStringValue(dataSet, COLUMN_PROCESS_INSTANCE_DESCRIPTION, row))
+                .workItemId(getColumnLongValue(dataSet, COLUMN_WORK_ITEM_ID, row))
+                .slaCompliance(getColumnIntValue(dataSet, COLUMN_SLA_COMPLIANCE, row))
+                .slaDueDate(getColumnDateValue(dataSet, COLUMN_SLA_DUE_DATE, row))
+                .processSessionId(getColumnLongValue(dataSet, COLUMN_PROCESS_SESSION_ID, row))
+                .errorCount(HUMAN_TASKS_WITH_ADMIN_DATASET.equals(dataSet.getUUID()) ? getColumnIntValue(dataSet, COLUMN_ERROR_COUNT, row) : null)
+                .isForAdmin(HUMAN_TASKS_WITH_ADMIN_DATASET.equals(dataSet.getUUID()))
+                .build();
     }
 }

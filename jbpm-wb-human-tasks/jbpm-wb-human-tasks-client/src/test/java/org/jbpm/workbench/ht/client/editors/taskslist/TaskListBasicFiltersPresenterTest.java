@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,37 +58,15 @@ public class TaskListBasicFiltersPresenterTest extends AbstractBasicFiltersPrese
 
         final InOrder inOrder = inOrder(getView());
 
-        inOrder.verify(getView()).addNumericFilter(eq(Constants.INSTANCE.Id()),
-                                                   any(),
-                                                   any());
-        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Task()),
-                                                any(),
-                                                any());
-        inOrder.verify(getView()).addMultiSelectFilter(eq(Constants.INSTANCE.Status()),
-                                                       any(),
-                                                       any());
-        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Process_Instance_Correlation_Key()),
-                                                any(),
-                                                any());
-        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Actual_Owner()),
-                                                any(),
-                                                any());
-        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Process_Instance_Description()),
-                                                any(),
-                                                any());
-        inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Task_Name()),
-                                                         any(),
-                                                         any(),
-                                                         any(),
-                                                         any());
-        inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Process_Definition_Id()),
-                                                         any(),
-                                                         any(),
-                                                         any(),
-                                                         any());
-        inOrder.verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.Created_On()),
-                                                     any(),
-                                                     any(),
-                                                     any());
+        inOrder.verify(getView()).addNumericFilter(eq(Constants.INSTANCE.Id()), any(), any());
+        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Task()), any(), any());
+        inOrder.verify(getView()).addMultiSelectFilter(eq(Constants.INSTANCE.Status()), any(), any());
+        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Process_Instance_Correlation_Key()), any(), any());
+        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Actual_Owner()), any(), any());
+        inOrder.verify(getView()).addTextFilter(eq(Constants.INSTANCE.Process_Instance_Description()), any(), any());
+        inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Task_Name()), any(), any(), any(), any());
+        inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Process_Definition_Id()), any(), any(), any(), any());
+        inOrder.verify(getView()).addSelectFilter(eq(Constants.INSTANCE.SlaCompliance()), any(), any());
+        inOrder.verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.Created_On()), any(), any(), any());
     }
 }

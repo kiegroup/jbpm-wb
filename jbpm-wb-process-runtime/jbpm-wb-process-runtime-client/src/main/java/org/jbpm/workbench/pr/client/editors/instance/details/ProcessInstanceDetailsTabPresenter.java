@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 package org.jbpm.workbench.pr.client.editors.instance.details;
 
 import java.util.List;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.common.client.util.SlaStatusConverter;
 import org.jbpm.workbench.pr.client.editors.instance.ProcessInstanceSummaryAware;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.NodeInstanceSummary;
@@ -95,9 +97,7 @@ public class ProcessInstanceDetailsTabPresenter implements ProcessInstanceSummar
                 break;
         }
         view.setStateText(statusStr);
-
-        String slaComplianceStr = mapSlaCompliance(process);
-        view.setSlaComplianceText(slaComplianceStr);
+        view.setSlaComplianceText(new SlaStatusConverter().toWidgetValue(process.getSlaCompliance()));
 
         if (process.getActiveTasks() != null && !process.getActiveTasks().isEmpty()) {
             SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();
@@ -118,30 +118,6 @@ public class ProcessInstanceDetailsTabPresenter implements ProcessInstanceSummar
                     view.setCurrentActivitiesListBox(safeHtmlBuilder.toSafeHtml().asString());
                 }
         ).getProcessInstanceActiveNodes(process.getProcessInstanceKey());
-    }
-
-    protected String mapSlaCompliance(ProcessInstanceSummary process) {
-        String slaComplianceStr = constants.Unknown();
-        switch (process.getSlaCompliance()) {
-            case ProcessInstance.SLA_NA:
-                slaComplianceStr = constants.SlaNA();
-                break;
-            case ProcessInstance.SLA_PENDING:
-                slaComplianceStr = constants.SlaPending();
-                break;
-            case ProcessInstance.SLA_MET:
-                slaComplianceStr = constants.SlaMet();
-                break;
-            case ProcessInstance.SLA_ABORTED:
-                slaComplianceStr = constants.SlaAborted();
-                break;
-            case ProcessInstance.SLA_VIOLATED:
-                slaComplianceStr = constants.SlaViolated();
-                break;
-            default:
-                break;
-        }
-        return slaComplianceStr;
     }
 
     public interface ProcessInstanceDetailsTabView extends IsWidget {
