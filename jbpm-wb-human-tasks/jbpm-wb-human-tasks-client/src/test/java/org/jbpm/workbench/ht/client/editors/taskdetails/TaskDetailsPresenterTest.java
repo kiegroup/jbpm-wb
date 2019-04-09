@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,9 +64,7 @@ public class TaskDetailsPresenterTest extends AbstractTaskPresenterTest {
         callerMock = new CallerMock<TaskService>(taskService);
         doNothing().when(taskRefreshedEvent).fire(any(TaskRefreshedEvent.class));
 
-        presenter = new TaskDetailsPresenter(viewMock,
-                                             callerMock,
-                                             taskRefreshedEvent);
+        presenter = new TaskDetailsPresenter(viewMock, callerMock, taskRefreshedEvent);
         presenter.setTranslationService(translationService);
     }
 
@@ -86,19 +84,13 @@ public class TaskDetailsPresenterTest extends AbstractTaskPresenterTest {
         Date expirationTime = new Date();
         int priority = 2;
 
-        TaskSelectionEvent event = createTestTaskSelectionEvent(isForLog,
-                                                                status,
-                                                                description,
-                                                                actualOwner,
-                                                                expirationTime,
-                                                                priority);
+        TaskSelectionEvent event = createTestTaskSelectionEvent(isForLog, status, description, actualOwner,
+                                                                expirationTime, priority, 1);
         presenter.onTaskSelectionEvent(event);
 
         verify(viewMock).setSelectedDate(expirationTime);
 
-        verifySetTaskDetails(actualOwner,
-                             status,
-                             String.valueOf(priority));
+        verifySetTaskDetails(actualOwner, status, String.valueOf(priority));
         verifyReadOnlyMode(1);
     }
 
@@ -112,19 +104,13 @@ public class TaskDetailsPresenterTest extends AbstractTaskPresenterTest {
         Date expirationTime = new Date();
         int priority = 2;
 
-        TaskSelectionEvent event = createTestTaskSelectionEvent(isForLog,
-                                                                status,
-                                                                description,
-                                                                actualOwner,
-                                                                expirationTime,
-                                                                priority);
+        TaskSelectionEvent event = createTestTaskSelectionEvent(isForLog, status, description, actualOwner,
+                                                                expirationTime, priority, 1);
         presenter.onTaskSelectionEvent(event);
 
         verify(viewMock).setSelectedDate(expirationTime);
 
-        verifySetTaskDetails(actualOwner,
-                             status,
-                             String.valueOf(priority));
+        verifySetTaskDetails(actualOwner, status, String.valueOf(priority));
         verifyReadOnlyMode(0);
     }
 
@@ -135,38 +121,20 @@ public class TaskDetailsPresenterTest extends AbstractTaskPresenterTest {
         Long taskId = 1L;
         boolean isForLog = false;
 
-        TaskSelectionEvent event = new TaskSelectionEvent(serverTemplateId,
-                                                          containerId,
-                                                          taskId,
-                                                          "task",
-                                                          true,
-                                                          isForLog,
-                                                          "description",
-                                                          new Date(),
-                                                          "Completed",
-                                                          "actualOwner",
-                                                          2,
-                                                          1L,
-                                                          "processId");
+        TaskSelectionEvent event = new TaskSelectionEvent(serverTemplateId, containerId, taskId, "task", true, isForLog,
+                                                          "description", new Date(), "Completed", "actualOwner", 2, 1L,
+                                                          "processId", 1);
         presenter.onTaskSelectionEvent(event);
 
         String description = "description";
         Date dueDate = new Date();
         int priority = 3;
-        presenter.updateTask(description,
-                             dueDate,
-                             priority);
+        presenter.updateTask(description, dueDate, priority);
 
-        verify(taskService).updateTask(serverTemplateId,
-                                       containerId,
-                                       taskId,
-                                       priority,
-                                       description,
-                                       dueDate);
+        verify(taskService).updateTask(serverTemplateId, containerId, taskId, priority, description, dueDate);
         final ArgumentCaptor<TaskRefreshedEvent> argument = ArgumentCaptor.forClass(TaskRefreshedEvent.class);
         verify(taskRefreshedEvent).fire(argument.capture());
-        assertEquals(taskId,
-                     argument.getValue().getTaskId());
+        assertEquals(taskId, argument.getValue().getTaskId());
     }
 
     private void verifySetTaskDetails(String actualOwner,
@@ -178,34 +146,35 @@ public class TaskDetailsPresenterTest extends AbstractTaskPresenterTest {
     }
 
     private void verifyReadOnlyMode(int i) {
-        verify(viewMock,
-               times(i)).setTaskDescriptionEnabled(false);
-        verify(viewMock,
-               times(i)).setDueDateEnabled(false);
-        verify(viewMock,
-               times(i)).setTaskPriorityEnabled(false);
-        verify(viewMock,
-               times(i)).setUpdateTaskVisible(false);
+        verify(viewMock, times(i)).setTaskDescriptionEnabled(false);
+        verify(viewMock, times(i)).setDueDateEnabled(false);
+        verify(viewMock, times(i)).setTaskPriorityEnabled(false);
+        verify(viewMock, times(i)).setUpdateTaskVisible(false);
     }
 
-    private TaskSelectionEvent createTestTaskSelectionEvent(boolean isForLog,
-                                                            String status,
-                                                            String description,
-                                                            String actualOwner,
-                                                            Date expirationTime,
-                                                            int priority) {
-        return new TaskSelectionEvent("serverTemplateId",
-                                      "containerId",
-                                      1L,
-                                      "task",
-                                      true,
-                                      isForLog,
-                                      description,
-                                      expirationTime,
-                                      status,
-                                      actualOwner,
-                                      priority,
-                                      1L,
-                                      "processId");
+    private TaskSelectionEvent createTestTaskSelectionEvent(boolean isForLog, String status, String description,
+                                                            String actualOwner, Date expirationTime, int priority,
+                                                            Integer slaCompliance) {
+        return new TaskSelectionEvent("serverTemplateId", "containerId", 1L, "task", true, isForLog, description,
+                                      expirationTime, status, actualOwner, priority, 1L, "processId", slaCompliance);
+    }
+
+    @Test
+    public void testSetTaskDetailsWithWorkItemIdOnSelectionEvent() {
+        when(translationService.format(any())).thenReturn("Completed");
+        boolean isForLog = false;
+        String status = "Completed";
+        String description = "description";
+        String actualOwner = "Owner";
+        Date expirationTime = new Date();
+        int priority = 2;
+        Integer slaCompliance = 1;
+        TaskSelectionEvent event = createTestTaskSelectionEvent(isForLog, status, description, actualOwner,
+                                                                expirationTime, priority, slaCompliance);
+        presenter.onTaskSelectionEvent(event);
+
+        verify(viewMock).setSelectedDate(expirationTime);
+        verifySetTaskDetails(actualOwner, status, String.valueOf(priority));
+        verify(viewMock).setSlaCompliance(slaCompliance);
     }
 }

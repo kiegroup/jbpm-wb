@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,10 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.gwtbootstrap3.client.ui.html.Paragraph;
 import org.gwtbootstrap3.extras.select.client.ui.Select;
+import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.api.runtime.process.ProcessInstance;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -52,6 +54,9 @@ public class TaskDetailsViewImplTest {
     @Mock(name = "dueDateText")
     public Paragraph dueDateText;
 
+    @Mock(name = "slaComplianceText")
+    public Paragraph slaComplianceText;
+
     @Mock
     public Button updateTaskButton;
 
@@ -72,5 +77,11 @@ public class TaskDetailsViewImplTest {
 
         view.setUpdateTaskVisible(false);
         verify(updateTaskButton).setVisible(false);
+    }
+
+    @Test
+    public void setSlaComplianceTextTest() {
+        view.setSlaCompliance(ProcessInstance.SLA_PENDING);
+        verify(slaComplianceText).setText(Constants.INSTANCE.SlaPending());
     }
 }

@@ -123,6 +123,7 @@ public class ServerTemplateSelectorMenuBuilderTest {
         verify(view).getSelectedServerTemplate();
         verify(view).clearSelectedServerTemplate();
         verify(view).setVisible(true);
+        verify(view).selectServerTemplate("id1");
 
         verifyNoMoreInteractions(view);
     }
@@ -247,5 +248,94 @@ public class ServerTemplateSelectorMenuBuilderTest {
         inOrder.verify(serverTemplateSelectedEvent).fire(any());
         inOrder.verify(viewWidget).updateSelectedValue(serverTemplateId);
         inOrder.verify(serverTemplateSelectedEvent).fire(any());
+    }
+
+    @Test
+    public void testLoadServerTemplatesForSelectedServerTemplateIsNull() {
+        final String serverTemplateId1 = "id1";
+        final ServerTemplate st1 = new ServerTemplate(serverTemplateId1, "kie-server-template1");
+        st1.addServerInstance(new ServerInstanceKey());
+
+        final String serverTemplateId2 = "id2";
+        final ServerTemplate st2 = new ServerTemplate(serverTemplateId2, "kie-server-template1");
+        st2.addServerInstance(new ServerInstanceKey());
+
+        when(specManagementService.listServerTemplates()).thenReturn(new ServerTemplateList(Arrays.asList(st1, st2)));
+        when(view.getSelectedServerTemplate()).thenReturn(null);
+
+        serverTemplateSelectorMenuBuilder.loadServerTemplates();
+
+        verify(view).getSelectedServerTemplate();
+        verify(viewWidget).clearSelectedServerTemplate();
+        verify(viewWidget, times(2)).addServerTemplate(any());
+        verify(view, times(2)).addServerTemplate(any());
+        verify(view).removeAllServerTemplates();
+        verify(view).clearSelectedServerTemplate();
+        verify(viewWidget).selectServerTemplate(serverTemplateId1);
+        verify(view).selectServerTemplate(serverTemplateId1);
+        verify(viewWidget).setVisible(true);
+        verify(view).setVisible(true);
+
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void testLoadServerTemplatesForSelectedServerTemplateNotNullAndServerTemplateListContainsIt() {
+        final String serverTemplateId1 = "id1";
+        final ServerTemplate st1 = new ServerTemplate(serverTemplateId1, "kie-server-template1");
+        st1.addServerInstance(new ServerInstanceKey());
+
+        final String serverTemplateId2 = "id2";
+        final ServerTemplate st2 = new ServerTemplate(serverTemplateId2, "kie-server-template1");
+        st2.addServerInstance(new ServerInstanceKey());
+
+        when(specManagementService.listServerTemplates()).thenReturn(new ServerTemplateList(Arrays.asList(st1, st2)));
+        when(view.getSelectedServerTemplate()).thenReturn(serverTemplateId1);
+
+        serverTemplateSelectorMenuBuilder.loadServerTemplates();
+
+        verify(view).getSelectedServerTemplate();
+        verify(viewWidget, times(2)).addServerTemplate(any());
+        verify(view, times(2)).addServerTemplate(any());
+        verify(view).removeAllServerTemplates();
+
+        verify(viewWidget).selectServerTemplate(serverTemplateId1);
+        verify(view).selectServerTemplate(serverTemplateId1);
+
+        verify(viewWidget).setVisible(true);
+        verify(view).setVisible(true);
+
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void testLoadServerTemplatesForSelectedServerTemplateNotNullAndServerTemplateListNotContainsIt() {
+        final String serverTemplateId1 = "id1";
+        final ServerTemplate st1 = new ServerTemplate(serverTemplateId1, "kie-server-template1");
+        st1.addServerInstance(new ServerInstanceKey());
+
+        final String serverTemplateId2 = "id2";
+        final ServerTemplate st2 = new ServerTemplate(serverTemplateId2, "kie-server-template1");
+        st2.addServerInstance(new ServerInstanceKey());
+
+        when(specManagementService.listServerTemplates()).thenReturn(new ServerTemplateList(Arrays.asList(st1, st2)));
+        when(view.getSelectedServerTemplate()).thenReturn("id3");
+
+        serverTemplateSelectorMenuBuilder.loadServerTemplates();
+
+        verify(view).getSelectedServerTemplate();
+        verify(viewWidget, times(2)).addServerTemplate(any());
+        verify(view, times(2)).addServerTemplate(any());
+        verify(view).removeAllServerTemplates();
+        verify(viewWidget).clearSelectedServerTemplate();
+        verify(view).clearSelectedServerTemplate();
+
+        verify(viewWidget).selectServerTemplate(serverTemplateId1);
+        verify(view).selectServerTemplate(serverTemplateId1);
+
+        verify(viewWidget).setVisible(true);
+        verify(view).setVisible(true);
+
+        verifyNoMoreInteractions(view);
     }
 }

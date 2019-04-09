@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import javax.enterprise.context.ApplicationScoped;
 
 import org.dashbuilder.dataset.DataSetLookup;
@@ -29,6 +30,7 @@ import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.BasicFiltersPresenter;
+import org.jbpm.workbench.common.client.util.SlaStatusConverter;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.annotations.WorkbenchScreen;
@@ -122,7 +124,7 @@ public class ProcessInstanceListBasicFiltersPresenter extends BasicFiltersPresen
                                                                            values);
                                       addSearchFilterList(f,
                                                           columnFilter);
-        });
+                                  });
 
         addProcessNameFilter();
 
@@ -194,22 +196,15 @@ public class ProcessInstanceListBasicFiltersPresenter extends BasicFiltersPresen
     }
 
     protected void addSLAComplianceFilter() {
-        Map<String, String> aliasMap = new HashMap<String, String>();
-        aliasMap.put(String.valueOf(ProcessInstance.SLA_ABORTED), constants.SlaAborted());
-        aliasMap.put(String.valueOf(ProcessInstance.SLA_MET), constants.SlaMet());
-        aliasMap.put(String.valueOf(ProcessInstance.SLA_NA), constants.SlaNA());
-        aliasMap.put(String.valueOf(ProcessInstance.SLA_PENDING), constants.SlaPending());
-        aliasMap.put(String.valueOf(ProcessInstance.SLA_VIOLATED), constants.SlaViolated());
         view.addSelectFilter(constants.SlaCompliance(),
-                             aliasMap,
+                             SlaStatusConverter.getSLAComplianceAliasMap(),
                              f -> addSearchFilter(f, equalsTo(COLUMN_SLA_COMPLIANCE, f.getValue())));
     }
 
     @Override
     protected void onActiveFilterAdded(ActiveFilterItem activeFilterItem) {
-        if(activeFilterItem.getKey().equals(constants.State())){
+        if (activeFilterItem.getKey().equals(constants.State())) {
             view.checkSelectFilter(constants.State(), activeFilterItem.getValue().toString());
         }
     }
-
 }

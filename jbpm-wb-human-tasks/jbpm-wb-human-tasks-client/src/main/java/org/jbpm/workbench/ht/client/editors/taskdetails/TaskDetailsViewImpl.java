@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.client.util.DateUtils;
+import org.jbpm.workbench.common.client.util.SlaStatusConverter;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.uberfire.client.views.pfly.widgets.DateRangePicker;
 import org.uberfire.client.views.pfly.widgets.DateRangePickerOptions;
@@ -75,6 +76,10 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     public Paragraph processIdText;
 
     @Inject
+    @DataField("slaComplianceText")
+    public Paragraph slaComplianceText;
+
+    @Inject
     @DataField
     public Button updateTaskButton;
 
@@ -105,6 +110,10 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @Inject
     @DataField
     public FormLabel processIdLabel;
+
+    @Inject
+    @DataField
+    public FormLabel slaComplianceLabel;
 
     @Inject
     @DataField("date-filters-input")
@@ -145,6 +154,8 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
         dueDateLabel.setText(constants.Due_On());
 
         taskPriorityLabel.setText(constants.Priority());
+
+        slaComplianceLabel.setText(constants.SlaCompliance());
 
         taskDescriptionLabel.setText(constants.Description());
 
@@ -226,6 +237,11 @@ public class TaskDetailsViewImpl extends Composite implements TaskDetailsPresent
     @Override
     public void setTaskStatus(final String status) {
         taskStatusText.setText(status);
+    }
+
+    @Override
+    public void setSlaCompliance(final Integer slaCompliance) {
+        slaComplianceText.setText(new SlaStatusConverter().toWidgetValue(slaCompliance));
     }
 
     @Override

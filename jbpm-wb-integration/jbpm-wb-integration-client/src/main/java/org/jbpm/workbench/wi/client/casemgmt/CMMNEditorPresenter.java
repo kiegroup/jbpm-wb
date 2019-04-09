@@ -34,8 +34,10 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.model.menu.Menus;
 
 @Dependent
-@WorkbenchEditor(identifier = "CMMNEditor", supportedTypes = {CMMNResourceType.class}, priority = Integer.MAX_VALUE)
+@WorkbenchEditor(identifier = CMMNEditorPresenter.EDITOR_ID, supportedTypes = {CMMNResourceType.class}, priority = Integer.MAX_VALUE)
 public class CMMNEditorPresenter extends KieTextEditorPresenter {
+
+    public static final String EDITOR_ID = "CMMNEditor";
 
     @Inject
     public CMMNEditorPresenter(final KieTextEditorView baseView) {
@@ -72,5 +74,10 @@ public class CMMNEditorPresenter extends KieTextEditorPresenter {
     @Override
     public AceEditorMode getAceEditorMode() {
         return AceEditorMode.XML;
+    }
+
+    @Override
+    protected String getEditorIdentifier() {
+        return EDITOR_ID;
     }
 }

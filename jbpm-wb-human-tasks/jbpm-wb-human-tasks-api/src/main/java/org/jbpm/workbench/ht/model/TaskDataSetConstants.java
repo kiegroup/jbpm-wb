@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,8 @@ public final class TaskDataSetConstants {
     public static final String COLUMN_PROCESS_INSTANCE_CORRELATION_KEY = "correlationKey";
     public static final String COLUMN_PROCESS_INSTANCE_DESCRIPTION = "processInstanceDescription";
     public static final String COLUMN_EXCLUDED_OWNER = "entity_id";
+    public static final String COLUMN_SLA_DUE_DATE = "sla_due_date";
+    public static final String COLUMN_SLA_COMPLIANCE = "slaCompliance";
 
     public static final String COLUMN_TASK_VARIABLE_TASK_ID = "taskId";
     public static final String COLUMN_TASK_VARIABLE_NAME = "name";

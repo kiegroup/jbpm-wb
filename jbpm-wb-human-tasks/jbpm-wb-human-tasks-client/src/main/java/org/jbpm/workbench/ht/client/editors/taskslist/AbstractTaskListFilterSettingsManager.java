@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,6 +76,10 @@ public abstract class AbstractTaskListFilterSettingsManager extends FilterSettin
                               constants.Process_Instance_Correlation_Key());
             builder.setColumn(COLUMN_PROCESS_INSTANCE_DESCRIPTION,
                               constants.Process_Instance_Description());
+            builder.setColumn(COLUMN_SLA_COMPLIANCE,
+                              constants.SlaCompliance());
+            builder.setColumn(COLUMN_SLA_DUE_DATE,
+                              constants.SlaDueDate());
         };
     }
 

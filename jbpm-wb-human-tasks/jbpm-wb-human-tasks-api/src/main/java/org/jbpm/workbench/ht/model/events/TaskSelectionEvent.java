@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,51 +33,26 @@ public class TaskSelectionEvent extends AbstractTaskEvent {
     private Integer priority;
     private Long processInstanceId;
     private String processId;
+    private Integer slaCompliance;
 
     public TaskSelectionEvent() {
     }
 
-    public TaskSelectionEvent(String serverTemplateId,
-                              String containerId,
-                              Long taskId) {
-        super(serverTemplateId,
-              containerId,
-              taskId);
+    public TaskSelectionEvent(String serverTemplateId, String containerId, Long taskId) {
+        super(serverTemplateId, containerId, taskId);
     }
 
-    public TaskSelectionEvent(String serverTemplateId,
-                              String containerId,
-                              Long taskId,
-                              String taskName,
-                              Boolean forAdmin,
-                              Boolean forLog) {
-        super(serverTemplateId,
-              containerId,
-              taskId,
-              taskName);
+    public TaskSelectionEvent(String serverTemplateId, String containerId, Long taskId, String taskName,
+                              Boolean forAdmin, Boolean forLog) {
+        super(serverTemplateId, containerId, taskId, taskName);
         this.forAdmin = forAdmin;
         this.forLog = forLog;
     }
 
-    public TaskSelectionEvent(String serverTemplateId,
-                              String containerId,
-                              Long taskId,
-                              String taskName,
-                              Boolean forAdmin,
-                              Boolean forLog,
-                              String description,
-                              Date expirationTime,
-                              String status,
-                              String actualOwner,
-                              Integer priority,
-                              Long processInstanceId,
-                              String processId) {
-        super(serverTemplateId,
-              containerId,
-              taskId,
-              taskName);
-        this.forAdmin = forAdmin;
-        this.forLog = forLog;
+    public TaskSelectionEvent(String serverTemplateId, String containerId, Long taskId, String taskName, Boolean forAdmin,
+                              Boolean forLog, String description, Date expirationTime, String status, String actualOwner,
+                              Integer priority, Long processInstanceId, String processId) {
+        this(serverTemplateId,containerId,taskId,taskName,forAdmin,forLog);
         this.description = description;
         this.expirationTime = expirationTime;
         this.status = status;
@@ -85,6 +60,13 @@ public class TaskSelectionEvent extends AbstractTaskEvent {
         this.priority = priority;
         this.processInstanceId = processInstanceId;
         this.processId = processId;
+    }
+    public TaskSelectionEvent(String serverTemplateId, String containerId, Long taskId, String taskName, Boolean forAdmin,
+                              Boolean forLog, String description, Date expirationTime, String status, String actualOwner,
+                              Integer priority, Long processInstanceId, String processId, Integer slaCompliance) {
+        this(serverTemplateId,containerId,taskId,taskName,forAdmin,forLog, description,expirationTime, status,actualOwner,
+             priority,processInstanceId, processId);
+        this.slaCompliance = slaCompliance;
     }
 
     public String getDescription() {
@@ -101,6 +83,10 @@ public class TaskSelectionEvent extends AbstractTaskEvent {
 
     public String getStatus() {
         return status;
+    }
+
+    public Integer getSlaCompliance() {
+        return slaCompliance;
     }
 
     public Integer getPriority() {
@@ -132,6 +118,7 @@ public class TaskSelectionEvent extends AbstractTaskEvent {
                 ", expirationTime=" + expirationTime +
                 ", actualOwner='" + actualOwner + '\'' +
                 ", status='" + status + '\'' +
+                ", slaCompliance='" + slaCompliance + '\'' +
                 ", priority=" + priority +
                 ", processInstanceId=" + processInstanceId +
                 ", processId='" + processId + '\'' +

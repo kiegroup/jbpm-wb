@@ -17,6 +17,7 @@ package org.jbpm.workbench.forms.client.display.process;
 
 import java.util.Arrays;
 
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import com.google.gwtmockito.WithClassesToStub;
 import org.gwtbootstrap3.client.ui.FormGroup;
@@ -67,6 +68,9 @@ public class QuickNewProcessInstancePopupTest {
 
     @Mock
     private ProcessRuntimeDataService processRuntimeDataServiceMock;
+
+    @Mock
+    public FlowPanel body;
 
     @InjectMocks
     private QuickNewProcessInstancePopup quickNewProcessInstancePopup;
@@ -152,5 +156,12 @@ public class QuickNewProcessInstancePopupTest {
                      captor.getValue().getKey().getProcessDefName());
         assertEquals(deploymentId,
                      captor.getValue().getKey().getDeploymentId());
+    }
+
+    @Test
+    public void testClosePopup() {
+        quickNewProcessInstancePopup.setFlowPanelBody(body);
+        quickNewProcessInstancePopup.closePopup();
+        verify(body).clear();
     }
 }

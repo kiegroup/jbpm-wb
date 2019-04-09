@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,25 @@
 
 package org.jbpm.workbench.pr.client.editors.instance.list;
 
+import java.util.Map;
+
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.common.client.filters.basic.AbstractBasicFiltersPresenterTest;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.api.runtime.process.ProcessInstance;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 
+import static com.google.common.collect.Maps.immutableEntry;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.verify;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class ProcessInstanceListBasicFiltersPresenterTest extends AbstractBasicFiltersPresenterTest {
@@ -58,5 +66,21 @@ public class ProcessInstanceListBasicFiltersPresenterTest extends AbstractBasicF
         inOrder.verify(getView()).addSelectFilter(eq(Constants.INSTANCE.SlaCompliance()), any(), any());
         inOrder.verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.Start_Date()), any(), any(), any());
         inOrder.verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.Last_Modification_Date()), any(), any(), any());
+    }
+
+    @Test
+    public void testSlaComplianceFilters() {
+        presenter.addSLAComplianceFilter();
+        org.jbpm.workbench.common.client.resources.i18n.Constants commonConstants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
+
+        ArgumentCaptor<Map> slaDescriptionsCaptors = ArgumentCaptor.forClass(Map.class);
+        verify(getView()).addSelectFilter(anyString(), slaDescriptionsCaptors.capture(), any());
+        final Map<String, String> slaDescriptions = slaDescriptionsCaptors.getValue();
+        assertThat(slaDescriptions).containsExactly(
+                immutableEntry(String.valueOf(ProcessInstance.SLA_NA), commonConstants.INSTANCE.SlaNA()),
+                immutableEntry(String.valueOf(ProcessInstance.SLA_PENDING), commonConstants.SlaPending()),
+                immutableEntry(String.valueOf(ProcessInstance.SLA_MET), commonConstants.SlaMet()),
+                immutableEntry(String.valueOf(ProcessInstance.SLA_VIOLATED), commonConstants.SlaViolated()),
+                immutableEntry(String.valueOf(ProcessInstance.SLA_ABORTED), commonConstants.SlaAborted()));
     }
 }
