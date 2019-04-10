@@ -114,6 +114,8 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     @DataField("alert")
     protected BlockingError alert;
 
+    private boolean isRemoveDefaultSortedColumn = false;
+
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }
@@ -539,12 +541,14 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
         if (gridPreferencesStore != null) {
             GridSortedColumnPreference gridSortedColumnPreference = gridPreferencesStore.getGridSortedColumnPreference();
             //Avoid duplicating the call push method of ColumnSortList when catch ColumnSortedEvent
-            //If repeating the call push method, there will throw 'IndexOutOfBoundsException: Row index: 0, Row size: 1'
-            if (gridSortedColumnPreference != null && columnSortList.size() <= 1) {
+            if (gridSortedColumnPreference != null && columnSortList.size() <= 1 && !isRemoveDefaultSortedColumn) {
                 Optional<ColumnMeta<T>> optional = getListGrid().getColumnMetaList().stream().filter(
                         tColumnMeta -> tColumnMeta.getColumn().getDataStoreName().equals(gridSortedColumnPreference.getDataStoreName()))
                         .findFirst();
                 if (optional.isPresent()) {
+                    if (columnSortList.get(0).getColumn().getDataStoreName().equals(gridSortedColumnPreference.getDataStoreName())) {
+                        isRemoveDefaultSortedColumn = true;
+                    }
                     Column col = optional.get().getColumn();
                     col.setDataStoreName(gridSortedColumnPreference.getDataStoreName());
                     columnSortList.push(new ColumnSortList.ColumnSortInfo(col, gridSortedColumnPreference.isAscending()));
