@@ -173,4 +173,8 @@ public interface Constants extends Messages {
     String SlaAborted();
 
     String SlaViolated();
+
+    String SetAsDefaultFilter();
+
+    String DefaultFilter();
 }

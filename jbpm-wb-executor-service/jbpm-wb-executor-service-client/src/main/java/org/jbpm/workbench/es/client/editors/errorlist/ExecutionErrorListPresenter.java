@@ -19,14 +19,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
+import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.CoreFunctionFilter;
+import org.dashbuilder.dataset.filter.CoreFunctionType;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
@@ -34,6 +40,7 @@ import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.es.client.editors.errordetails.ExecutionErrorDetailsPresenter;
 import org.jbpm.workbench.es.client.editors.events.ExecutionErrorSelectedEvent;
 import org.jbpm.workbench.es.client.i18n.Constants;
+import org.jbpm.workbench.es.client.util.ExecutionErrorTypeConverter;
 import org.jbpm.workbench.es.model.ExecutionErrorSummary;
 import org.jbpm.workbench.es.service.ExecutorService;
 import org.jbpm.workbench.es.util.ExecutionErrorType;
@@ -234,8 +241,6 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
 
     @Override
     public void setupActiveSearchFilters() {
-        boolean isDefaultFilters = true;
-
         final Optional<String> processInstanceSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
         if (processInstanceSearch.isPresent()) {
             final String processInstanceId = processInstanceSearch.get();
@@ -247,7 +252,6 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                             v -> removeActiveFilter(equalsTo(COLUMN_PROCESS_INST_ID,
                                                              v))
             );
-            isDefaultFilters = false;
         }
 
         final Optional<String> taskIdSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_TASK_ID);
@@ -261,8 +265,6 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                             v -> removeActiveFilter(equalsTo(COLUMN_ACTIVITY_ID,
                                                              v))
             );
-
-            isDefaultFilters = false;
         }
 
         final Optional<String> errorTypeSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_ERROR_TYPE);
@@ -276,8 +278,6 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                             v -> removeActiveFilter(equalsTo(COLUMN_ERROR_TYPE,
                                                              v))
             );
-
-            isDefaultFilters = false;
         }
 
         final Optional<String> isErrorAckSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_IS_ERROR_ACK);
@@ -288,7 +288,6 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                     commonConstants.Yes()
                     :
                     commonConstants.No());
-
             addActiveFilter(
                     equalsTo(COLUMN_ERROR_ACK,
                              errorAckValue),
@@ -298,26 +297,66 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                     v -> removeActiveFilter(equalsTo(COLUMN_ERROR_ACK,
                                                      v))
             );
-
-            isDefaultFilters = false;
-        }
-
-        if (isDefaultFilters) {
-            setupDefaultActiveSearchFilters();
         }
     }
 
     @Override
-    public void setupDefaultActiveSearchFilters() {
-        addActiveFilter(
-                equalsTo(COLUMN_ERROR_ACK,
-                         0),
-                constants.Acknowledged(),
-                commonConstants.No(),
-                0,
-                v -> removeActiveFilter(equalsTo(COLUMN_ERROR_ACK,
-                                                 v))
-        );
+    public boolean existActiveSearchFilters() {
+        final Optional<String> processInstanceSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
+        if (processInstanceSearch.isPresent()) {
+            return true;
+        }
+        final Optional<String> taskIdSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_TASK_ID);
+        if (taskIdSearch.isPresent()) {
+            return true;
+        }
+        final Optional<String> errorTypeSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_ERROR_TYPE);
+        if (errorTypeSearch.isPresent()) {
+            return true;
+        }
+        final Optional<String> isErrorAckSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_IS_ERROR_ACK);
+        if (isErrorAckSearch.isPresent()) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public ActiveFilterItem getActiveFilterFromColumnFilter(ColumnFilter columnFilter) {
+        if (columnFilter instanceof CoreFunctionFilter) {
+            CoreFunctionFilter coreFunctionFilter = (CoreFunctionFilter) columnFilter;
+            if (columnFilter.getColumnId().equals(COLUMN_ERROR_ACK) &&
+                    coreFunctionFilter.getType() == CoreFunctionType.EQUALS_TO) {
+                return new ActiveFilterItem<>(constants.Acknowledged(),
+                                              getStatusColumnFilterDescription(columnFilter),
+                                              null,
+                                              coreFunctionFilter.getParameters(),
+                                              v -> removeActiveFilter(columnFilter));
+            }
+            if (columnFilter.getColumnId().equals(COLUMN_ERROR_TYPE) &&
+                    (coreFunctionFilter.getType() == CoreFunctionType.IN ||
+                            coreFunctionFilter.getType() == CoreFunctionType.EQUALS_TO)) {
+                return new ActiveFilterItem<>(constants.Type(),
+                                              getTypeColumnFilterDescription(columnFilter),
+                                              null,
+                                              coreFunctionFilter.getParameters(),
+                                              v -> removeActiveFilter(columnFilter));
+            }
+        }
+        return super.getActiveFilterFromColumnFilter(columnFilter);
+    }
+
+    public String getStatusColumnFilterDescription(ColumnFilter columnFilter) {
+        List<Object> parameters = ((CoreFunctionFilter) columnFilter).getParameters();
+        final List<String> labels =
+                parameters.stream().map(s -> ("0".equals(s.toString()) ? commonConstants.No() : commonConstants.Yes())).collect(Collectors.toList());
+        return constants.Acknowledged() + ": " + String.join(", ", labels);
+    }
+
+    public String getTypeColumnFilterDescription(ColumnFilter columnFilter) {
+        List<Object> parameters = ((CoreFunctionFilter) columnFilter).getParameters();
+        final List<String> labels = parameters.stream().map(s -> ExecutionErrorTypeConverter.getErrorTypesStrMapping().get(s.toString())).collect(Collectors.toList());
+        return constants.Type() + ": " + String.join(", ", labels);
     }
 
     public void setExecutionErrorSelectedEvent(Event<ExecutionErrorSelectedEvent> executionErrorSelectedEvent) {

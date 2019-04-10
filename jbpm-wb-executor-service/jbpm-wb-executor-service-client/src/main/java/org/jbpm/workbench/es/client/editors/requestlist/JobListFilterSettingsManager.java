@@ -92,7 +92,7 @@ public class JobListFilterSettingsManager extends FilterSettingsManagerImpl {
                                      COLUMN_TIMESTAMP,
                                      builder -> builder.filter(equalsTo(COLUMN_STATUS,
                                                                         RequestStatus.RUNNING.name())),
-                                     TAB_RUNNING,
+                                     DEFAULT_FILTER_SETTINGS_KEY, //initial default active filter
                                      constants.Running(),
                                      constants.FilterRunning()),
 

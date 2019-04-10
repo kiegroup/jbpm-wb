@@ -103,7 +103,7 @@ public class TaskListFilterSettingsManager extends AbstractTaskListFilterSetting
                                          builder.group(COLUMN_TASK_ID);
                                          commonColumnSettings().accept(builder);
                                      },
-                                     TAB_ACTIVE,
+                                     DEFAULT_FILTER_SETTINGS_KEY, // initial default filter,
                                      constants.Active(),
                                      constants.FilterActive()),
 

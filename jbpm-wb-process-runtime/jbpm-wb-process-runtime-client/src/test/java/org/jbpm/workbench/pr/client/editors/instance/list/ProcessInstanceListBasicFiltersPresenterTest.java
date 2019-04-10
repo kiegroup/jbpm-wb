@@ -18,13 +18,17 @@ package org.jbpm.workbench.pr.client.editors.instance.list;
 
 import java.util.Map;
 
+import java.util.Arrays;
+
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.AbstractBasicFiltersPresenterTest;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.mockito.ArgumentCaptor;
+import org.kie.api.runtime.process.ProcessInstance;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 
@@ -35,6 +39,10 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class ProcessInstanceListBasicFiltersPresenterTest extends AbstractBasicFiltersPresenterTest {
@@ -82,5 +90,21 @@ public class ProcessInstanceListBasicFiltersPresenterTest extends AbstractBasicF
                 immutableEntry(String.valueOf(ProcessInstance.SLA_MET), commonConstants.SlaMet()),
                 immutableEntry(String.valueOf(ProcessInstance.SLA_VIOLATED), commonConstants.SlaViolated()),
                 immutableEntry(String.valueOf(ProcessInstance.SLA_ABORTED), commonConstants.SlaAborted()));
+    }
+
+    @Test
+    public void onActiveFilterAddedTest() {
+        ActiveFilterItem activeFilterItemMock = mock(ActiveFilterItem.class);
+        when(activeFilterItemMock.getKey()).thenReturn(Constants.INSTANCE.Name());
+        presenter.onActiveFilterAdded(activeFilterItemMock);
+        verify(getView(), never()).checkSelectFilter(anyString(), anyString());
+        verify(activeFilterItemMock, never()).getValue();
+
+        when(activeFilterItemMock.getKey()).thenReturn(Constants.INSTANCE.State());
+        when(activeFilterItemMock.getValue()).thenReturn(Arrays.asList(String.valueOf(ProcessInstance.STATE_ACTIVE),
+                                                                       String.valueOf(ProcessInstance.STATE_COMPLETED)));
+        presenter.onActiveFilterAdded(activeFilterItemMock);
+        verify(getView()).checkSelectFilter(Constants.INSTANCE.State(), String.valueOf(ProcessInstance.STATE_ACTIVE));
+        verify(getView()).checkSelectFilter(Constants.INSTANCE.State(), String.valueOf(ProcessInstance.STATE_COMPLETED));
     }
 }

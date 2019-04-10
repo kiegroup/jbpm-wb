@@ -187,7 +187,7 @@ public class ProcessInstanceLogPresenter extends AbstractMultiGridPresenter<Proc
         if (logsDataSetQueryHelper.getCurrentTableSettings() == null) {
             logsDataSetQueryHelper.setCurrentTableSettings(
                     filterSettingsManager.createDefaultFilterSettingsPrototype(processInstance.getProcessInstanceId()));
-            setupDefaultActiveSearchFilters();
+            setupActiveSearchFilters();
         } else {
             refreshGrid();
         }
@@ -199,7 +199,11 @@ public class ProcessInstanceLogPresenter extends AbstractMultiGridPresenter<Proc
     }
 
     @Override
-    public void setupDefaultActiveSearchFilters() {
+    public boolean existActiveSearchFilters() {
+        return true;
+    }
+
+    public void setupActiveSearchFilters() {
         processInstanceLogBasicFiltersPresenter.onClearAllActiveFiltersEvent(new ClearAllActiveFiltersEvent());
         final List<String> types = Arrays.asList(LogUtils.NODE_TYPE_START,
                                                  LogUtils.NODE_TYPE_END,

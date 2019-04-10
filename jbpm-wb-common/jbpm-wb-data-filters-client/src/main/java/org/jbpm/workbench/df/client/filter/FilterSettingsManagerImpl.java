@@ -23,12 +23,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.df.client.events.SavedFilterAddedEvent;
+
 import org.uberfire.commons.uuid.UUID;
 import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
@@ -43,13 +45,17 @@ public abstract class FilterSettingsManagerImpl implements FilterSettingsManager
     public static final String FILTER_TABLE_SETTINGS = "tableSettings";
     public static final String DEFAULT_FILTER_SETTINGS_KEY = "base";
 
-    @Inject
     protected FilterSettingsJSONMarshaller marshaller;
 
     private Caller<UserPreferencesService> preferencesService;
 
     @Inject
     private Event<SavedFilterAddedEvent> filterSavedEvent;
+
+    @Inject
+    public void setMarshaller(final FilterSettingsJSONMarshaller marshaller) {
+        this.marshaller = marshaller;
+    }
 
     @Inject
     public void setPreferencesService(final Caller<UserPreferencesService> preferencesService) {
@@ -107,7 +113,8 @@ public abstract class FilterSettingsManagerImpl implements FilterSettingsManager
                                                 saveMultiGridPreferencesStore(store,
                                                                               () -> {
                                                                                   filterSavedEvent.fire(new SavedFilterAddedEvent(new SavedFilter(filterSettings.getKey(),
-                                                                                                                                                  filterSettings.getTableName())));
+                                                                                                                                                  filterSettings.getTableName(),
+                                                                                                                                                  false)));
                                                                                   callback.accept(true);
                                                                               });
                                             });
@@ -142,15 +149,15 @@ public abstract class FilterSettingsManagerImpl implements FilterSettingsManager
             saveMultiGridPreferencesStore(store,
                                           () -> {
                                               final List<SavedFilter> filters = defaultFilters.stream().map(s -> new SavedFilter(s.getKey(),
-                                                                                                                                 s.getTableName())).collect(Collectors.toList());
+                                                                                                                                 s.getTableName(), false)).collect(Collectors.toList());
                                               if (savedFiltersConsumer != null) {
                                                   savedFiltersConsumer.accept(filters);
                                               }
                                           });
         } else {
             final List<SavedFilter> filters = store.getGridsId().stream().map(key -> new SavedFilter(key,
-                                                                                                     getSavedFilterNameFromKey(key,
-                                                                                                                               store))).collect(Collectors.toList());
+                                                                                                     getSavedFilterNameFromKey(key, store),
+                                                                                                     key.equals(store.getDefaultGridId()))).collect(Collectors.toList());
             if (savedFiltersConsumer != null) {
                 savedFiltersConsumer.accept(filters);
             }
@@ -169,8 +176,13 @@ public abstract class FilterSettingsManagerImpl implements FilterSettingsManager
                                   final Consumer<FilterSettings> filterSettingsConsumer) {
         loadMultiGridPreferencesStore(store -> {
             final HashMap<String, Object> params = store.getGridSettings(key);
-            final String json = (String) params.get(FILTER_TABLE_SETTINGS);
-            final FilterSettings settings = marshaller.fromJsonString(json);
+            final FilterSettings settings;
+            if (params != null) {
+                final String json = (String) params.get(FILTER_TABLE_SETTINGS);
+                settings = marshaller.fromJsonString(json);
+            } else {
+                settings = createFilterSettingsPrototype();
+            }
             filterSettingsConsumer.accept(settings);
         });
     }
@@ -266,5 +278,40 @@ public abstract class FilterSettingsManagerImpl implements FilterSettingsManager
         }
 
         return builder.buildSettings();
+    }
+
+    protected void initFilterSettingPreferences(MultiGridPreferencesStore store,
+                                                final Consumer<FilterSettings> initFiltersCallback) {
+        final List<FilterSettings> defaultFilters = initDefaultFilters();
+        defaultFilters.forEach(f -> addFilterToPreferencesStore(f, store));
+        store.setDefaultGridId(DEFAULT_FILTER_SETTINGS_KEY);
+
+        saveMultiGridPreferencesStore(store, () -> {
+            if (initFiltersCallback != null) {
+                getFilterSettings(store.getDefaultGridId(), filterSettings -> initFiltersCallback.accept(filterSettings));
+            }
+        });
+    }
+
+    public void defaultActiveFilterInit(final Consumer<FilterSettings> callback) {
+        loadMultiGridPreferencesStore(store -> {
+            if (store.getDefaultGridId() != null && !store.getDefaultGridId().isEmpty()) {
+                getFilterSettings(store.getDefaultGridId(), filterSettings -> callback.accept(filterSettings));
+            } else {
+                initFilterSettingPreferences(store, callback);
+            }
+        });
+    }
+
+    @Override
+    public void saveDefaultActiveFilter(String filterKey, final Command callback) {
+        loadMultiGridPreferencesStore(store -> {
+            store.setDefaultGridId(filterKey);
+            preferencesService.call(r -> {
+                if (callback != null) {
+                    callback.execute();
+                }
+            }).saveUserPreferences(store);
+        });
     }
 }

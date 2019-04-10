@@ -37,7 +37,6 @@ import org.jbpm.workbench.common.client.dataset.ErrorHandlerBuilder;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterAddEvent;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterRemoveEvent;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
@@ -562,43 +561,48 @@ public class ProcessInstanceListPresenterTest {
     }
 
     @Test
-    public void testDefaultActiveSearchFilters() {
-        presenter.setupDefaultActiveSearchFilters();
+    public void testExistActiveSearchFilters() {
+        final PlaceRequest place = mock(PlaceRequest.class);
+        presenter.onStartup(place);
 
-        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
-        verify(viewMock).addActiveFilter(captor.capture());
+        when(place.getParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID, null)).thenReturn("1");
+        assertTrue(presenter.existActiveSearchFilters());
 
-        assertEquals(1,
-                     captor.getAllValues().size());
-        assertEquals(Constants.INSTANCE.State(),
-                     captor.getValue().getKey());
-        assertEquals(Constants.INSTANCE.State() + ": " + Constants.INSTANCE.Active(),
-                     captor.getValue().getLabelValue());
-        assertEquals(ProcessInstance.STATE_ACTIVE,
-                     (captor.getValue().getValue()));
+        when(place.getParameter(SEARCH_PARAMETER_PROCESS_DEFINITION_ID, null)).thenReturn("1");
+        assertTrue(presenter.existActiveSearchFilters());
+
+        when(place.getParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID, null)).thenReturn(null);
+        when(place.getParameter(SEARCH_PARAMETER_PROCESS_DEFINITION_ID, null)).thenReturn(null);
+        assertFalse(presenter.existActiveSearchFilters());
     }
 
     @Test
-    public void testActiveSearchFilters() {
-        final PlaceRequest place = mock(PlaceRequest.class);
-        when(place.getParameter(anyString(),
-                                anyString())).thenReturn(null);
-        presenter.onStartup(place);
+    public void testActiveFilterLabelStatus() {
+        ColumnFilter testColumFilter = equalsTo(COLUMN_STATUS,
+                                                Arrays.asList(String.valueOf(ProcessInstance.STATE_ACTIVE),
+                                                              String.valueOf(ProcessInstance.STATE_COMPLETED)));
 
-        presenter.setupActiveSearchFilters();
+        ActiveFilterItem activeFilterItem = presenter.getActiveFilterFromColumnFilter(testColumFilter);
 
-        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
-        verify(viewMock).addActiveFilter(captor.capture());
-
-        assertEquals(1,
-                     captor.getAllValues().size());
-        assertEquals(Constants.INSTANCE.State(),
-                     captor.getValue().getKey());
-        assertEquals(Constants.INSTANCE.State() + ": " + Constants.INSTANCE.Active(),
-                     captor.getValue().getLabelValue());
-        assertEquals(ProcessInstance.STATE_ACTIVE,
-                     (captor.getValue().getValue()));
+        assertEquals(Constants.INSTANCE.State(), activeFilterItem.getKey());
+        assertEquals(Constants.INSTANCE.State() + ": " + Constants.INSTANCE.Active() + ", " + Constants.INSTANCE.Completed(),
+                     activeFilterItem.getLabelValue());
+        assertNotEquals(testColumFilter.toString(), activeFilterItem.getLabelValue());
     }
+
+    @Test
+    public void testActiveFilterLabelOther() {
+        ColumnFilter testColumFilter = equalsTo(COLUMN_PROCESS_ID, "evaluation");
+        ActiveFilterItem activeFilterItem = presenter.getActiveFilterFromColumnFilter(testColumFilter);
+        assertEquals(COLUMN_PROCESS_ID, activeFilterItem.getKey());
+        assertEquals(testColumFilter.toString(), activeFilterItem.getLabelValue());
+
+        testColumFilter = equalsTo(COLUMN_PROCESS_INSTANCE_ID, 1);
+        activeFilterItem = presenter.getActiveFilterFromColumnFilter(testColumFilter);
+        assertEquals(COLUMN_PROCESS_INSTANCE_ID, activeFilterItem.getKey());
+        assertEquals(testColumFilter.toString(), activeFilterItem.getLabelValue());
+    }
+
 
     @Test
     public void testActiveSearchFiltersProcessDefinitionId() {
@@ -888,7 +892,7 @@ public class ProcessInstanceListPresenterTest {
     }
 
     @Test
-    public void testFilterInitiator(){
+    public void testFilterInitiator() {
         String variableNameWithInitiator = "initiator";
         String variableValueWithInitiator = "initiator people";
 

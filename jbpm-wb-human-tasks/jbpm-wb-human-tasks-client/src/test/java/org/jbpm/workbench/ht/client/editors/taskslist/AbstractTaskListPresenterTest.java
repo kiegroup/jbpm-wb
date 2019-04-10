@@ -36,6 +36,7 @@ import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterAddEvent;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterRemoveEvent;
 import org.jbpm.workbench.common.client.list.ListTable;
+import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
@@ -43,7 +44,6 @@ import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
-import org.jbpm.workbench.ht.util.TaskStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.kie.server.controller.api.model.spec.Capability;
@@ -51,17 +51,16 @@ import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.internal.verification.Times;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
-import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static java.util.Collections.emptyList;
@@ -70,6 +69,8 @@ import static java.util.Collections.singletonList;
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.dashbuilder.dataset.filter.FilterFactory.in;
 import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID;
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_TASK_ID;
 import static org.jbpm.workbench.ht.client.util.TaskUtils.TaskType;
 import static org.jbpm.workbench.ht.client.util.TaskUtils.getStatusByType;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
@@ -125,6 +126,9 @@ public abstract class AbstractTaskListPresenterTest {
     @Mock
     protected PerspectiveActivity perspectiveActivity;
 
+    @Mock
+    private ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilder;
+
     @Spy
     protected FilterSettings filterSettings;
 
@@ -169,6 +173,7 @@ public abstract class AbstractTaskListPresenterTest {
         when(filterSettings.getKey()).thenReturn("key");
         when(filterSettings.getUUID()).thenReturn(datasetUId);
         when(perspectiveManager.getCurrentPerspective()).thenReturn(perspectiveActivity);
+        when(serverTemplateSelectorMenuBuilder.getView()).thenReturn(mock(ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorElementView.class));
 
         //Mock that actually calls the callbacks
         doAnswer(new Answer() {
@@ -196,6 +201,7 @@ public abstract class AbstractTaskListPresenterTest {
 
         when(errorHandlerBuilder.get()).thenReturn(errorHandler);
         doNothing().when(errorHandler).showErrorMessage(any());
+        getPresenter().setServerTemplateSelectorMenuBuilder(serverTemplateSelectorMenuBuilder);
     }
 
     protected abstract AbstractTaskListPresenter getPresenter();
@@ -370,24 +376,88 @@ public abstract class AbstractTaskListPresenterTest {
     }
 
     @Test
-    public void testDefaultActiveSearchFilters() {
-        when(translationServiceMock.format(TASK_STATUS_READY.getIdentifier())).thenReturn("Ready");
-        when(translationServiceMock.format(TASK_STATUS_IN_PROGRESS.getIdentifier())).thenReturn("InProgress");
-        when(translationServiceMock.format(TASK_STATUS_RESERVED.getIdentifier())).thenReturn("Reserved");
+    public void testExistActiveSearchFilters() {
+        final PlaceRequest place = mock(PlaceRequest.class);
+        when(place.getParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID, null)).thenReturn("1");
+        getPresenter().onStartup(place);
+        assertTrue(getPresenter().existActiveSearchFilters());
 
-        getPresenter().setupDefaultActiveSearchFilters();
+        when(place.getParameter(SEARCH_PARAMETER_TASK_ID, null)).thenReturn("1");
+        assertTrue(getPresenter().existActiveSearchFilters());
+
+        when(place.getParameter(SEARCH_PARAMETER_TASK_ID, null)).thenReturn(null);
+        when(place.getParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID, null)).thenReturn(null);
+        assertFalse(getPresenter().existActiveSearchFilters());
+    }
+
+    @Test
+    public void testActiveSearchFiltersProcessInstanceId() {
+        final PlaceRequest place = mock(PlaceRequest.class);
+        final String processInstanceId = "1";
+        when(place.getParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID, null)).thenReturn(processInstanceId);
+        getPresenter().onStartup(place);
+
+        getPresenter().setupActiveSearchFilters();
 
         ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
         verify(viewMock).addActiveFilter(captor.capture());
 
         final ActiveFilterItem filterItem = captor.getValue();
         assertNotNull(filterItem);
-        assertEquals(Constants.INSTANCE.Status(), filterItem.getKey());
-        assertEquals(Arrays.asList(TASK_STATUS_READY.getIdentifier(),
-                                   TASK_STATUS_IN_PROGRESS.getIdentifier(),
-                                   TASK_STATUS_RESERVED.getIdentifier()),
-                     filterItem.getValue());
-        assertEquals("Status: Ready, InProgress, Reserved", filterItem.getLabelValue());
+        assertEquals(Constants.INSTANCE.Process_Instance_Id(), filterItem.getKey());
+        assertEquals(1, filterItem.getValue());
+        assertEquals(Constants.INSTANCE.Process_Instance_Id() + ": " + processInstanceId, filterItem.getLabelValue());
+    }
+
+    @Test
+    public void testSetUpActiveSearchByTaskIdFilters() {
+        final PlaceRequest place = mock(PlaceRequest.class);
+        final String taskId = "1";
+        when(place.getParameter(SEARCH_PARAMETER_TASK_ID, null)).thenReturn(taskId);
+        getPresenter().onStartup(place);
+
+        getPresenter().setupActiveSearchFilters();
+
+        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
+        verify(viewMock).addActiveFilter(captor.capture());
+
+        final ActiveFilterItem filterItem = captor.getValue();
+        assertNotNull(filterItem);
+        assertEquals(Constants.INSTANCE.Task(), filterItem.getKey());
+        assertEquals(1, filterItem.getValue());
+        assertEquals(Constants.INSTANCE.Task() + ": " + taskId, filterItem.getLabelValue());
+    }
+
+    @Test
+    public void testActiveFilterLabelStatus() {
+        String readyTranslation = "Ready_t";
+        String reservedTranslation = "Reserved_t";
+        String inProgressTranslation = "InProgress_t";
+        final List<Comparable> status = new ArrayList<>(getStatusByType(TaskType.ACTIVE));
+        when(translationServiceMock.format("Ready")).thenReturn(readyTranslation);
+        when(translationServiceMock.format("Reserved")).thenReturn(reservedTranslation);
+        when(translationServiceMock.format("InProgress")).thenReturn(inProgressTranslation);
+
+        ColumnFilter testColumFilter = in(COLUMN_STATUS, status);
+        ActiveFilterItem activeFilterItem = getPresenter().getActiveFilterFromColumnFilter(testColumFilter);
+        assertEquals(Constants.INSTANCE.Status(), activeFilterItem.getKey());
+        assertEquals("Status: Ready_t, Reserved_t, InProgress_t", activeFilterItem.getLabelValue());
+        assertEquals(3, ((List) activeFilterItem.getValue()).size());
+        assertNotEquals(testColumFilter.toString(), activeFilterItem.getLabelValue());
+        verify(translationServiceMock, times(3)).format(anyString());
+    }
+
+    @Test
+    public void testActiveFilterLabelOther() {
+        ColumnFilter testColumFilter = equalsTo(COLUMN_PROCESS_INSTANCE_ID, 1);
+        ActiveFilterItem activeFilterItem = getPresenter().getActiveFilterFromColumnFilter(testColumFilter);
+        assertEquals(COLUMN_PROCESS_INSTANCE_ID, activeFilterItem.getKey());
+        assertEquals(testColumFilter.toString(), activeFilterItem.getLabelValue());
+
+        testColumFilter = equalsTo(COLUMN_NAME, "columnName");
+        activeFilterItem = getPresenter().getActiveFilterFromColumnFilter(testColumFilter);
+        assertEquals(COLUMN_NAME, activeFilterItem.getKey());
+        assertEquals(testColumFilter.toString(), activeFilterItem.getLabelValue());
     }
 
     @Test

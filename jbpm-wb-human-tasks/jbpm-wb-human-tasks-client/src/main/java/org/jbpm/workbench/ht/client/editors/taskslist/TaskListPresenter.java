@@ -29,6 +29,8 @@ import org.uberfire.client.annotations.WorkbenchPartTitleDecoration;
 import org.uberfire.client.annotations.WorkbenchScreen;
 import org.uberfire.workbench.model.menu.Menus;
 
+import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_DATASET;
+
 @Dependent
 @WorkbenchScreen(identifier = PerspectiveIds.TASK_LIST_SCREEN)
 public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImpl> {
@@ -81,5 +83,13 @@ public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImp
     protected Predicate<TaskSummary> getReleaseActionCondition() {
         return task -> task.getActualOwner() != null && task.getActualOwner().equals(identity.getIdentifier())
                 && super.getReleaseActionCondition().test(task);
+    }
+
+    public Predicate<String> getFilterEventPredicate() {
+        return dataSetId -> getDataSetQueryHelper() != null &&
+                getDataSetQueryHelper().getCurrentTableSettings() != null &&
+                dataSetId != null &&
+                (dataSetId.equals(getDataSetQueryHelper().getCurrentTableSettings().getUUID()) ||
+                        (HUMAN_TASKS_DATASET.equals(getDataSetQueryHelper().getCurrentTableSettings().getUUID())));
     }
 }
