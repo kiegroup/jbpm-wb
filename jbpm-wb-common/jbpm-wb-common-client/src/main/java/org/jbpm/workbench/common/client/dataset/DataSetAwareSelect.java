@@ -76,49 +76,51 @@ public class DataSetAwareSelect {
             removeOptions();
             return;
         }
-
-        try {
-            dataSetClientServices.lookupDataSet(ConsoleDataSetLookup.fromInstance(dataSetLookup,
-                                                                                  filterSettings.getServerTemplateId()),
-                                                new DataSetReadyCallback() {
-                                                    @Override
-                                                    public void callback(final DataSet dataSet) {
-                                                        select.refresh(s -> {
-                                                            s.removeAllOptions();
-                                                            for (int i = 0; i < dataSet.getRowCount(); i++) {
-                                                                final String text = (String) dataSet.getValueAt(i,
-                                                                                                                textColumnId);
-                                                                final String value = (String) dataSet.getValueAt(i,
-                                                                                                                 valueColumnId);
-                                                                if(isNullOrEmpty(text) == false && isNullOrEmpty(value) == false){
-                                                                    s.addOption(text,
-                                                                                value);
+        
+        if(dataSetLookup.getDataSetUUID().equals(event.getDataSetUUID())) {
+            try {
+                dataSetClientServices.lookupDataSet(ConsoleDataSetLookup.fromInstance(dataSetLookup,
+                                                                                      filterSettings.getServerTemplateId()),
+                                                    new DataSetReadyCallback() {
+                                                        @Override
+                                                        public void callback(final DataSet dataSet) {
+                                                            select.refresh(s -> {
+                                                                s.removeAllOptions();
+                                                                for (int i = 0; i < dataSet.getRowCount(); i++) {
+                                                                    final String text = (String) dataSet.getValueAt(i,
+                                                                                                                    textColumnId);
+                                                                    final String value = (String) dataSet.getValueAt(i,
+                                                                                                                     valueColumnId);
+                                                                    if (isNullOrEmpty(text) == false && isNullOrEmpty(value) == false) {
+                                                                        s.addOption(text,
+                                                                                    value);
+                                                                    }
                                                                 }
-                                                            }
-                                                            if(s.getOptions().getLength() > 0){
-                                                                s.enable();
-                                                            } else {
-                                                                s.disable();
-                                                            }
-                                                        });
-                                                    }
+                                                                if (s.getOptions().getLength() > 0) {
+                                                                    s.enable();
+                                                                } else {
+                                                                    s.disable();
+                                                                }
+                                                            });
+                                                        }
 
-                                                    @Override
-                                                    public void notFound() {
-                                                        removeOptions();
-                                                        errorPopup.showError(Constants.INSTANCE.DataSetNotFound(dataSetLookup.getDataSetUUID()));
-                                                    }
+                                                        @Override
+                                                        public void notFound() {
+                                                            removeOptions();
+                                                            errorPopup.showError(Constants.INSTANCE.DataSetNotFound(dataSetLookup.getDataSetUUID()));
+                                                        }
 
-                                                    @Override
-                                                    public boolean onError(ClientRuntimeError error) {
-                                                        removeOptions();
-                                                        errorPopup.showError(Constants.INSTANCE.DataSetError(dataSetLookup.getDataSetUUID(),
-                                                                                                             error.getMessage()));
-                                                        return false;
-                                                    }
-                                                });
-        } catch (Exception ex) {
-            new DefaultWorkbenchErrorCallback().error(ex);
+                                                        @Override
+                                                        public boolean onError(ClientRuntimeError error) {
+                                                            removeOptions();
+                                                            errorPopup.showError(Constants.INSTANCE.DataSetError(dataSetLookup.getDataSetUUID(),
+                                                                                                                 error.getMessage()));
+                                                            return false;
+                                                        }
+                                                    });
+            } catch (Exception ex) {
+                new DefaultWorkbenchErrorCallback().error(ex);
+            }
         }
     }
 
