@@ -196,8 +196,12 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
 
         final boolean isOryx = svg.attr(":xmlns:oryx") != null;
         badges.forEach((nodeId, count) -> {
-            final String path = "#processDiagramDiv svg [bpmn2nodeid=" + nodeId + "] " + (isOryx ? ".stencils" : "");
+            final String path = "#processDiagramDiv svg [bpmn2nodeid='" + nodeId + "'] " + (isOryx ? ".stencils" : "");
             final D3 node = d3.select(path);
+            if (((D3.Selection) node).empty()){
+                return;
+            }
+            
             D3.DOMRect bb = node.node().getBoundingClientRect();
             final D3 group = node.append("g")
                     .attr("transform", "translate( " + (bb.getWidth() / 2 - 12.5) + ", " + (bb.getHeight() + 2) + ")")
