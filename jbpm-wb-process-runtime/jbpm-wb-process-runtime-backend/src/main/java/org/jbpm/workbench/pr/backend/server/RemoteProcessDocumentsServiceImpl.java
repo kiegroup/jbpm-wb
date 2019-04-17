@@ -36,12 +36,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.paging.PageResponse;
 
+import static org.jbpm.workbench.pr.backend.server.util.VariableHelper.JBPM_DOCUMENT;
+
 @Service
 @ApplicationScoped
 public class RemoteProcessDocumentsServiceImpl implements ProcessDocumentsService {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteProcessDocumentsServiceImpl.class);
-    protected static final String JBPM_DOCUMENT = "org.jbpm.document.Document";
 
     @Inject
     private ProcessVariablesService processVariablesService;
