@@ -21,9 +21,11 @@ import java.util.function.Consumer;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import elemental2.dom.HTMLElement;
+import org.jbpm.workbench.common.client.filters.basic.ClearAllBasicFilterEvent;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.uberfire.workbench.events.NotificationEvent;
 
@@ -95,5 +97,9 @@ public class ActiveFiltersImpl implements ActiveFilters {
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text,
                                                 NotificationEvent.NotificationType.SUCCESS));
+    }
+
+    public void clearAllActiveFilters (@Observes ClearAllBasicFilterEvent event){
+            view.removeAllActiveFilters(true);
     }
 }

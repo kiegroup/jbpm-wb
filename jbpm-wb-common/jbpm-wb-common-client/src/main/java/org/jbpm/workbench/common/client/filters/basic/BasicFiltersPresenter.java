@@ -49,6 +49,9 @@ public abstract class BasicFiltersPresenter {
     @Inject
     protected Event<BasicFilterRemoveEvent> basicFilterRemoveEvent;
 
+    @Inject
+    protected Event<ClearAllBasicFilterEvent> clearAllBasicFilterEvent;
+
     @WorkbenchPartView
     public IsElement getView() {
         return view;
@@ -67,6 +70,7 @@ public abstract class BasicFiltersPresenter {
     @OnOpen
     public void onOpen(){
         view.clearAllSelectFilter();
+        clearAllBasicFilterEvent.fire(new ClearAllBasicFilterEvent());
     }
 
     public void onClearAllActiveFiltersEvent(@Observes ClearAllActiveFiltersEvent event){

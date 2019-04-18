@@ -41,6 +41,9 @@ public abstract class AbstractBasicFiltersPresenterTest {
     @Spy
     Event<BasicFilterRemoveEvent> basicFilterRemoveEvent = new EventSourceMock<>();
 
+    @Spy
+    Event<ClearAllBasicFilterEvent> clearAllBasicFilterEvent = new EventSourceMock<>();
+
     public abstract BasicFiltersPresenter getPresenter();
 
     public BasicFiltersView getView() {
@@ -51,6 +54,14 @@ public abstract class AbstractBasicFiltersPresenterTest {
     public void init() {
         doNothing().when(activeFilters).fire(any());
         doNothing().when(basicFilterRemoveEvent).fire(any());
+        doNothing().when(clearAllBasicFilterEvent).fire(any());
+    }
+
+    @Test
+    public void testOnOpen() {
+        getPresenter().onOpen();
+        verify(view).clearAllSelectFilter();
+        verify(clearAllBasicFilterEvent).fire(any());
     }
 
     @Test
