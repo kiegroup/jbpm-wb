@@ -4,14 +4,6 @@ exports[`PageDefinition renders correctly using snapshot 1`] = `
 <div
   className="form-horizontal"
 >
-  <button
-    className="btn btn-default"
-    disabled={false}
-    onClick={[Function]}
-    type="button"
-  >
-    quick fill for testing
-  </button>
   <p />
   <div>
     <div
