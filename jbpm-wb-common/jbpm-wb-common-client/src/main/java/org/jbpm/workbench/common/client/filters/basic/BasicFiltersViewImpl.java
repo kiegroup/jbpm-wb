@@ -155,19 +155,21 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
         addTextFilter(label, placeholder, false, callback);
     }
 
-    private void addTextFilter(String label, String placeholder, boolean disableFiltersInputHelp, Consumer<ActiveFilterItem<String>> callback) {
+    @Override
+    public void addTextFilter(String label, String placeholder, boolean disableFiltersInputHelp, Consumer<ActiveFilterItem<String>> callback) {
+        filtersInputHelp.setDisabled(disableFiltersInputHelp);
         if (disableFiltersInputHelp) {
-            hideFiltersInputHelp();
+            addCSSClass(filtersInputHelp, "hidden");
         }
-
+        
         createFilterOption(label);
 
         createTextInput(label,
-                    placeholder,
-                    refineSelect.getOptions().getLength() > 1,
-                    input -> input.setType("text"),
-                    v -> v,
-                    callback);
+                        placeholder,
+                        refineSelect.getOptions().getLength() > 1,
+                        input -> input.setType("text"),
+                        v -> v,
+                        callback);
     }
 
     protected void hideFiltersInputHelp() {

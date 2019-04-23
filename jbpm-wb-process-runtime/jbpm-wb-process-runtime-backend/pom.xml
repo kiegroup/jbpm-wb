@@ -138,7 +138,11 @@
       <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.kie.soup</groupId>
+      <artifactId>kie-soup-dataset-core</artifactId>
+    </dependency>
+    
   </dependencies>
 
 </project>

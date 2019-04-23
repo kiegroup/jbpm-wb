@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,16 @@ import java.util.List;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.dataset.ErrorHandlerBuilder;
 import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
+import org.jbpm.workbench.df.client.filter.FilterSettings;
+import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.workbench.forms.client.display.views.PopupFormDisplayerView;
 import org.jbpm.workbench.forms.display.api.ProcessDisplayerConfig;
@@ -82,7 +88,13 @@ public class ProcessDefinitionListPresenterTest {
     private User identity;
 
     @Mock
+    private DataSet dataSet;
+
+    @Mock
     private PerspectiveManager perspectiveManager;
+
+    @Mock
+    private DataSetQueryHelper dataSetQueryHelper;
 
     @Mock
     private PerspectiveActivity perspectiveActivity;
@@ -92,6 +104,9 @@ public class ProcessDefinitionListPresenterTest {
 
     @Mock
     ProcessDefinitionListPresenter.ProcessDefinitionListView view;
+
+    @Mock
+    private FilterSettings filterSettings;
 
     @Mock
     ExtendedPagedTable extendedPagedTable;
@@ -109,6 +124,12 @@ public class ProcessDefinitionListPresenterTest {
 
     @Mock
     DefaultWorkbenchErrorCallback errorCallback;
+
+    @Mock
+    private ManagedInstance<ErrorHandlerBuilder> errorHandlerBuilder;
+
+    @Spy
+    private ErrorHandlerBuilder errorHandler;
 
     @InjectMocks
     @Spy
@@ -142,7 +163,7 @@ public class ProcessDefinitionListPresenterTest {
         processSummary.setProcessDefName("testProcessDefName");
         processSummary.setDynamic(false);
 
-        presenter.selectProcessDefinition(processSummary);
+        presenter.selectSummaryItem(processSummary);
 
         verify(processDefSelectionEvent).fire(any(ProcessDefSelectionEvent.class));
         ArgumentCaptor<ProcessDefSelectionEvent> argument = ArgumentCaptor.forClass(ProcessDefSelectionEvent.class);
@@ -181,31 +202,19 @@ public class ProcessDefinitionListPresenterTest {
 
     @Test
     public void testGetData() {
-        when(processRuntimeDataService.getProcesses(anyString(),
-                                                    anyInt(),
-                                                    anyInt(),
-                                                    anyString(),
-                                                    anyBoolean()))
-                .thenReturn(getMockList(10))
-                .thenReturn(getMockList(1));
+        doAnswer(invocation -> {
+            ((DataSetReadyCallback) invocation.getArguments()[1]).callback(dataSet);
+            return null;
+        }).when(dataSetQueryHelper).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
 
-        Range range = new Range(0,
-                                10);
-        presenter.getData(range);
 
-        verify(presenter).updateDataOnCallback(anyList(),
-                                               eq(0),
-                                               eq(10),
-                                               eq(false));
+        dataSetQueryHelper.setCurrentTableSettings(filterSettings);
+        when(errorHandlerBuilder.get()).thenReturn(errorHandler);
+        when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettings);
+        when(presenter.getDataSetQueryHelper()).thenReturn(dataSetQueryHelper);
+        presenter.getData(new Range(0, 5));
 
-        range = new Range(10,
-                          10);
-        presenter.getData(range);
-
-        verify(presenter).updateDataOnCallback(anyList(),
-                                               eq(10),
-                                               eq(11),
-                                               eq(true));
+        verify(dataSetQueryHelper).lookupDataSet(anyInt(), any(DataSetReadyCallback.class));
     }
 
     @Test
@@ -213,10 +222,7 @@ public class ProcessDefinitionListPresenterTest {
         final Throwable throwable = mock(Throwable.class);
         assertFalse(presenter.onRuntimeDataServiceError(throwable));
 
-        verify(presenter).updateDataOnCallback(emptyList(),
-                                               0,
-                                               0,
-                                               true);
+        verify(presenter).updateDataOnCallback(emptyList(), 0, 0, true);
         verify(errorCallback).error(throwable);
         verify(view).hideBusyIndicator();
     }

@@ -346,4 +346,8 @@ public interface Constants extends Messages {
     String TimerDelayHelp();
 
     String DeploymentId();
+
+    String Default_Process_Definition_Name();
+
+    String FilterAll();
 }
