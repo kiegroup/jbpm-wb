@@ -262,4 +262,10 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
     public void setTranslationService(TranslationService translationService) {
         this.translationService = translationService;
     }
+
+    @Override
+    public Column<TaskSummary, String> getSecondSortColumn() {
+        return createTextColumn(COLUMN_NAME,
+                                task -> task.getName());
+    }
 }

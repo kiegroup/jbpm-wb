@@ -208,4 +208,10 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
                         true)
         );
     }
+
+    @Override
+    public Column<ExecutionErrorSummary, String> getSecondSortColumn() {
+        return createTextColumn(COLUMN_ERROR_ID,
+                                errorSummary -> errorSummary.getErrorId());
+    }
 }

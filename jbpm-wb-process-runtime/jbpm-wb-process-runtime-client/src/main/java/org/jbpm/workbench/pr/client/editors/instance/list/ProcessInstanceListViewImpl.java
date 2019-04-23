@@ -308,4 +308,10 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
 
         );
     }
+
+    @Override
+    public Column<ProcessInstanceSummary, String> getSecondSortColumn() {
+        return createTextColumn(COLUMN_PROCESS_NAME,
+                                process -> process.getProcessName());
+    }
 }

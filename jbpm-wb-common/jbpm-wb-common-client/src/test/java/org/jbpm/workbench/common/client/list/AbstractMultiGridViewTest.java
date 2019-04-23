@@ -297,30 +297,4 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
         assertEquals("startDate", columnSortList.get(1).getColumn().getDataStoreName());
         assertEquals(2, columnSortList.size());
     }
-
-    @Test
-    public void testReloadColumnSortListWhenItIsSameToDefalutSortedColumn() {
-
-        ListTable<T> listTable = mock(ListTable.class);
-        when(getView().getListGrid()).thenReturn(listTable);
-        GridPreferencesStore gridPreferencesStore = mock(GridPreferencesStore.class);
-        when(listTable.getGridPreferencesStore()).thenReturn(gridPreferencesStore);
-        GridSortedColumnPreference gridSortedColumnPreference = new GridSortedColumnPreference("startDate", false);
-        when(gridPreferencesStore.getGridSortedColumnPreference()).thenReturn(gridSortedColumnPreference);
-
-        ColumnSortList columnSortList = getColumnSortList("startDate", null);
-
-        when(listTable.getColumnSortList()).thenReturn(columnSortList);
-
-        ColumnMeta columnMeta = new ColumnMeta(getColumn("startDate"), "startDate");
-        when(listTable.getColumnMetaList()).thenReturn(Arrays.asList(columnMeta));
-        assertEquals(1, columnSortList.size());
-        assertEquals("startDate", columnSortList.get(0).getColumn().getDataStoreName());
-        assertEquals(true, columnSortList.get(0).isAscending());
-        getView().reloadColumnSortList();
-
-        assertEquals("startDate", columnSortList.get(0).getColumn().getDataStoreName());
-        assertEquals("startDate", columnSortList.get(1).getColumn().getDataStoreName());
-        assertEquals(false, columnSortList.get(0).isAscending());
-    }
 }

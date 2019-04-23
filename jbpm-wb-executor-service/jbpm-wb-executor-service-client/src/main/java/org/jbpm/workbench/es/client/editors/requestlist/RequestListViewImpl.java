@@ -175,6 +175,12 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
                         true));
     }
 
+    @Override
+    public Column<RequestSummary, String> getSecondSortColumn() {
+        return createTextColumn(COLUMN_PROCESS_NAME,
+                         req -> req.getProcessName());
+    }
+
     protected AnchorListItem getBulkCancel(final ExtendedPagedTable<RequestSummary> extendedPagedTable) {
         final AnchorListItem bulkAbortNavLink = GWT.create(AnchorListItem.class);
         bulkAbortNavLink.setText(constants.Bulk_Cancel_jobs());

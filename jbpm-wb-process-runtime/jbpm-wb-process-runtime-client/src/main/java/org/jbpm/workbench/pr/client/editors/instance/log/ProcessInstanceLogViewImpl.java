@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.user.cellview.client.Column;
 import org.gwtbootstrap3.client.ui.Button;
 
 import org.jboss.errai.common.client.dom.Div;
@@ -155,6 +156,11 @@ public class ProcessInstanceLogViewImpl extends AbstractMultiGridView<ProcessIns
     @Override
     public void removeAllActiveFilters() {
         filtersLogs.removeAllActiveFilters();
+    }
+
+    @Override
+    public Column<ProcessInstanceLogSummary, String> getSecondSortColumn() {
+        return null;
     }
 
     @EventHandler("load-more-logs")
