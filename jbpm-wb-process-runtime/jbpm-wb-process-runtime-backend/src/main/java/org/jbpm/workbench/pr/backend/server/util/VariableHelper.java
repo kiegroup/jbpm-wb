@@ -73,7 +73,7 @@ public class VariableHelper {
             });
         });
 
-        if(!filteredVariables.isEmpty()) {
+        if (!filteredVariables.isEmpty()) {
             filteredVariables.forEach(variable -> {
                 variablesSummary.add(new ProcessVariableSummary(variable.getVariableName(), variable.getVariableName(), variable.getProcessInstanceId(), variable.getOldValue(), variable.getValue(), variable.getDate().getTime(), ""));
             });
