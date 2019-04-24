@@ -164,6 +164,6 @@ public class ProcessInstanceLogViewImpl extends AbstractMultiGridView<ProcessIns
 
     @EventHandler("reset-filters")
     public void resetFilters(final @ForEvent("click") MouseEvent event) {
-        presenter.setupDefaultActiveSearchFilters();
+        presenter.setupActiveSearchFilters();
     }
 }

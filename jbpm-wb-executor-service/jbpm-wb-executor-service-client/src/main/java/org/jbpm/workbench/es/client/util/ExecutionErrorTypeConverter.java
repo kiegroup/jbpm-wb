@@ -16,13 +16,29 @@
 
 package org.jbpm.workbench.es.client.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jboss.errai.databinding.client.api.Converter;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.util.ExecutionErrorType;
 
 public class ExecutionErrorTypeConverter implements Converter<ExecutionErrorType, String> {
 
-    private final Constants constants = Constants.INSTANCE;
+    private static final Constants constants = Constants.INSTANCE;
+
+    public static Map<String, String> getErrorTypesStrMapping() {
+        Map<String, String> errorTypesStrMapping = new HashMap<>();
+        errorTypesStrMapping.put(ExecutionErrorType.PROCESS.getType(),
+                                 constants.Process());
+        errorTypesStrMapping.put(ExecutionErrorType.TASK.getType(),
+                                 constants.Task());
+        errorTypesStrMapping.put(ExecutionErrorType.DB.getType(),
+                                 constants.DB());
+        errorTypesStrMapping.put(ExecutionErrorType.JOB.getType(),
+                                 constants.Job());
+        return errorTypesStrMapping;
+    }
 
     @Override
     public ExecutionErrorType toModelValue(final String widgetValue) {

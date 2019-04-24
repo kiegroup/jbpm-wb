@@ -25,6 +25,8 @@ public class SavedFilter {
 
     private String name;
 
+    private boolean defaultFilter;
+
     public SavedFilter() {
     }
 
@@ -32,6 +34,13 @@ public class SavedFilter {
                        final String name) {
         this.key = key;
         this.name = name;
+    }
+
+    public SavedFilter(final String key,
+                       final String name,
+                       final boolean defaultFilter) {
+        this(key, name);
+        this.defaultFilter = defaultFilter;
     }
 
     public String getKey() {
@@ -48,6 +57,14 @@ public class SavedFilter {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isDefaultFilter() {
+        return defaultFilter;
+    }
+
+    public void setDefaultFilter(boolean defaultFilter) {
+        this.defaultFilter = defaultFilter;
     }
 
     @Override
@@ -74,6 +91,7 @@ public class SavedFilter {
         return "SavedFilter{" +
                 "key='" + key + '\'' +
                 ", name='" + name + '\'' +
+                ", defaulFilter=" + defaultFilter +
                 '}';
     }
 }

@@ -17,13 +17,14 @@
 package org.jbpm.workbench.es.client.editors.errorlist;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.BasicFiltersPresenter;
 import org.jbpm.workbench.es.client.i18n.Constants;
-import org.jbpm.workbench.es.util.ExecutionErrorType;
+import org.jbpm.workbench.es.client.util.ExecutionErrorTypeConverter;
 import org.uberfire.client.annotations.WorkbenchScreen;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
@@ -64,19 +65,9 @@ public class ExecutionErrorListBasicFiltersPresenter extends BasicFiltersPresent
                                                        f.getValue()))
         );
 
-        final Map<String, String> states = new HashMap<>();
-        states.put(ExecutionErrorType.DB.getType(),
-                   constants.DB());
-        states.put(ExecutionErrorType.TASK.getType(),
-                   constants.Task());
-        states.put(ExecutionErrorType.PROCESS.getType(),
-                   constants.Process());
-        states.put(ExecutionErrorType.JOB.getType(),
-                   constants.Job());
         view.addMultiSelectFilter(constants.Type(),
-                                  states,
-                                  f -> addSearchFilterList(COLUMN_ERROR_TYPE,
-                                                           f));
+                                  ExecutionErrorTypeConverter.getErrorTypesStrMapping(),
+                                  f -> addSearchFilterList(COLUMN_ERROR_TYPE, f));
 
         final Map<String, String> acks = new HashMap<>();
         final org.jbpm.workbench.common.client.resources.i18n.Constants constants = org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE;
@@ -103,6 +94,10 @@ public class ExecutionErrorListBasicFiltersPresenter extends BasicFiltersPresent
 
     @Override
     protected void onActiveFilterAdded(ActiveFilterItem activeFilterItem) {
+        if (activeFilterItem.getKey().equals(constants.Type()) && activeFilterItem.getValue() instanceof List) {
+            final List<String> values = (List<String>) activeFilterItem.getValue();
+            values.forEach(v -> view.checkSelectFilter(constants.Type(), v));
+        }
     }
 
 }

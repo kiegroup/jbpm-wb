@@ -16,8 +16,7 @@
 
 package org.jbpm.workbench.es.client.editors.requestlist;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.dashbuilder.dataset.DataSetLookup;
@@ -26,7 +25,7 @@ import org.dashbuilder.dataset.sort.SortOrder;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.BasicFiltersPresenter;
 import org.jbpm.workbench.es.client.i18n.Constants;
-import org.jbpm.workbench.es.util.RequestStatus;
+import org.jbpm.workbench.es.client.util.JobStatusConverter;
 import org.uberfire.client.annotations.WorkbenchScreen;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
@@ -46,22 +45,8 @@ public class JobListBasicFiltersPresenter extends BasicFiltersPresenter {
 
     @Override
     public void loadFilters() {
-        final Map<String, String> status = new HashMap<>();
-        status.put(RequestStatus.CANCELLED.name(),
-                   constants.Canceled());
-        status.put(RequestStatus.DONE.name(),
-                   constants.Completed());
-        status.put(RequestStatus.ERROR.name(),
-                   constants.Error());
-        status.put(RequestStatus.QUEUED.name(),
-                   constants.Queued());
-        status.put(RequestStatus.RETRYING.name(),
-                   constants.Retrying());
-        status.put(RequestStatus.RUNNING.name(),
-                   constants.Running());
-
         view.addMultiSelectFilter(constants.Status(),
-                                  status,
+                                  JobStatusConverter.getStatesStrMapping(),
                                   f -> addSearchFilterList(COLUMN_STATUS,
                                                            f));
 
@@ -122,10 +107,10 @@ public class JobListBasicFiltersPresenter extends BasicFiltersPresenter {
     }
 
     @Override
-    protected void onActiveFilterAdded(ActiveFilterItem activeFilterItem) {
-        if (activeFilterItem.getKey().equals(constants.Status())) {
-            view.checkSelectFilter(constants.Status(),
-                                   activeFilterItem.getValue().toString());
+    protected void onActiveFilterAdded(final ActiveFilterItem activeFilterItem) {
+        if (activeFilterItem.getKey().equals(constants.Status()) && activeFilterItem.getValue() instanceof List) {
+            final List<String> values = (List<String>) activeFilterItem.getValue();
+            values.forEach(v -> view.checkSelectFilter(constants.Status(), v));
         }
     }
 }

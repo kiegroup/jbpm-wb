@@ -16,7 +16,10 @@
 
 package org.jbpm.workbench.es.client.editors.errorlist;
 
+import java.util.Arrays;
+
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.basic.AbstractBasicFiltersPresenterTest;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.junit.Test;
@@ -65,5 +68,20 @@ public class ExecutionErrorListBasicFiltersPresenterTest extends AbstractBasicFi
                                                      any(),
                                                      any(),
                                                      any());
+    }
+
+    @Test
+    public void onActiveFilterAddedTest() {
+        ActiveFilterItem activeFilterItemMock = mock(ActiveFilterItem.class);
+        when(activeFilterItemMock.getKey()).thenReturn(Constants.INSTANCE.JobId());
+        presenter.onActiveFilterAdded(activeFilterItemMock);
+        verify(getView(), never()).checkSelectFilter(anyString(), anyString());
+        verify(activeFilterItemMock, never()).getValue();
+
+        when(activeFilterItemMock.getKey()).thenReturn(Constants.INSTANCE.Type());
+        when(activeFilterItemMock.getValue()).thenReturn(Arrays.asList(Constants.INSTANCE.Task(), Constants.INSTANCE.DB()));
+        presenter.onActiveFilterAdded(activeFilterItemMock);
+        verify(getView()).checkSelectFilter(Constants.INSTANCE.Type(), Constants.INSTANCE.Task());
+        verify(getView()).checkSelectFilter(Constants.INSTANCE.Type(), Constants.INSTANCE.DB());
     }
 }

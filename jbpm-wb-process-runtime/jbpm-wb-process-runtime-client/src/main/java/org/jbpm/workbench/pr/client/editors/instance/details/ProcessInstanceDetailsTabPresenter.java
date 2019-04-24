@@ -26,11 +26,11 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.util.SlaStatusConverter;
 import org.jbpm.workbench.pr.client.editors.instance.ProcessInstanceSummaryAware;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
+import org.jbpm.workbench.pr.client.util.ProcessInstanceStatusUtils;
 import org.jbpm.workbench.pr.model.NodeInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.UserTaskSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
-import org.kie.api.runtime.process.ProcessInstance;
 
 @Dependent
 public class ProcessInstanceDetailsTabPresenter implements ProcessInstanceSummaryAware {
@@ -76,28 +76,8 @@ public class ProcessInstanceDetailsTabPresenter implements ProcessInstanceSummar
             view.setParentProcessInstanceIdText(constants.No_Parent_Process_Instance());
         }
 
-        String statusStr = constants.Unknown();
-        switch (process.getState()) {
-            case ProcessInstance.STATE_ACTIVE:
-                statusStr = constants.Active();
-                break;
-            case ProcessInstance.STATE_ABORTED:
-                statusStr = constants.Aborted();
-                break;
-            case ProcessInstance.STATE_COMPLETED:
-                statusStr = constants.Completed();
-                break;
-            case ProcessInstance.STATE_PENDING:
-                statusStr = constants.Pending();
-                break;
-            case ProcessInstance.STATE_SUSPENDED:
-                statusStr = constants.Suspended();
-                break;
-            default:
-                break;
-        }
-        view.setStateText(statusStr);
         view.setSlaComplianceText(new SlaStatusConverter().toWidgetValue(process.getSlaCompliance()));
+        view.setStateText(ProcessInstanceStatusUtils.toWidgetValue(process.getState()));
 
         if (process.getActiveTasks() != null && !process.getActiveTasks().isEmpty()) {
             SafeHtmlBuilder safeHtmlBuilder = new SafeHtmlBuilder();

@@ -59,10 +59,12 @@ public class TaskAdminListFilterSettingsManagerTest extends AbstractTaskListFilt
     @Test
     public void testDefaultFilters() {
         Consumer<List<SavedFilter>> callback = filters -> {
-            assertEquals(1,
+            assertEquals(2,
                          filters.size());
-            assertEquals(Constants.INSTANCE.Task_Admin(),
+            assertEquals(Constants.INSTANCE.Active(),
                          filters.get(0).getName());
+            assertEquals(Constants.INSTANCE.Task_Admin(),
+                         filters.get(1).getName());
         };
 
         final MultiGridPreferencesStore store = new MultiGridPreferencesStore();

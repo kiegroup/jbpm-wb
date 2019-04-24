@@ -16,13 +16,27 @@
 
 package org.jbpm.workbench.es.client.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jboss.errai.databinding.client.api.Converter;
 import org.jbpm.workbench.es.client.i18n.Constants;
 import org.jbpm.workbench.es.util.RequestStatus;
 
 public class JobStatusConverter implements Converter<RequestStatus, String> {
 
-    private final Constants constants = Constants.INSTANCE;
+    private static final Constants constants = Constants.INSTANCE;
+
+    public static Map<String, String> getStatesStrMapping() {
+        final Map<String, String> statesStrMapping = new HashMap<>();
+        statesStrMapping.put(RequestStatus.CANCELLED.name(), constants.Canceled());
+        statesStrMapping.put(RequestStatus.DONE.name(), constants.Completed());
+        statesStrMapping.put(RequestStatus.ERROR.name(), constants.Error());
+        statesStrMapping.put(RequestStatus.QUEUED.name(), constants.Queued());
+        statesStrMapping.put(RequestStatus.RETRYING.name(), constants.Retrying());
+        statesStrMapping.put(RequestStatus.RUNNING.name(), constants.Running());
+        return statesStrMapping;
+    }
 
     @Override
     public RequestStatus toModelValue(final String widgetValue) {

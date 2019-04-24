@@ -20,10 +20,12 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Composite;
 import elemental2.dom.HTMLButtonElement;
+import elemental2.dom.HTMLElement;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
@@ -48,11 +50,23 @@ public class SavedFilterView extends Composite implements TakesValue<SavedFilter
     HTMLButtonElement remove;
 
     @Inject
+    @DataField("set-as-default")
+    HTMLButtonElement setDefaultBtn;
+
+    @Inject
+    @Named("span")
+    @DataField("set-as-default-icon")
+    HTMLElement setDefaultIcon;
+
+    @Inject
     @AutoBound
     private DataBinder<SavedFilter> dataBinder;
 
     @Inject
     private Event<SavedFilterRemoveEvent> savedFilterRemoveEvent;
+
+    @Inject
+    private Event<SavedFilterAsDefaultActiveEvent> savedFilterAsDefaultEventEvent;
 
     @Inject
     private Event<SavedFilterSelectedEvent> savedFilterSelectedEvent;
@@ -69,6 +83,7 @@ public class SavedFilterView extends Composite implements TakesValue<SavedFilter
 
     @Override
     public void setValue(final SavedFilter savedFilter) {
+        showAsSelectedFilter(savedFilter.isDefaultFilter());
         dataBinder.setModel(savedFilter);
     }
 
@@ -77,8 +92,25 @@ public class SavedFilterView extends Composite implements TakesValue<SavedFilter
         savedFilterRemoveEvent.fire(new SavedFilterRemoveEvent(getValue()));
     }
 
+    @EventHandler("set-as-default")
+    public void onSetAsDefaultFilter(@ForEvent("click") elemental2.dom.Event e) {
+        if (!getValue().isDefaultFilter()) {
+            savedFilterAsDefaultEventEvent.fire(new SavedFilterAsDefaultActiveEvent(getValue()));
+        }
+    }
+
     @EventHandler("name")
     public void onFilterSelected(@ForEvent("click") elemental2.dom.Event e) {
         savedFilterSelectedEvent.fire(new SavedFilterSelectedEvent(getValue()));
+    }
+
+    public void showAsSelectedFilter(boolean selected) {
+        if (selected) {
+            setDefaultBtn.title = Constants.INSTANCE.DefaultFilter();
+            setDefaultIcon.className = "fa fa-check-circle";
+        } else {
+            setDefaultBtn.title = Constants.INSTANCE.SetAsDefaultFilter();
+            setDefaultIcon.className = "fa fa-circle";
+        }
     }
 }

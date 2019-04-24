@@ -31,6 +31,7 @@ import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.*;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
@@ -40,6 +41,7 @@ import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.forms.client.display.process.QuickNewProcessInstancePopup;
 import org.jbpm.workbench.pr.client.editors.instance.signal.ProcessInstanceSignalPresenter;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
+import org.jbpm.workbench.pr.client.util.ProcessInstanceStatusUtils;
 import org.jbpm.workbench.pr.events.NewProcessInstanceEvent;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
@@ -418,8 +420,6 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
 
     @Override
     public void setupActiveSearchFilters() {
-        boolean hasSearchParam = false;
-
         final Optional<String> processDefinitionSearch = getSearchParameter(SEARCH_PARAMETER_PROCESS_DEFINITION_ID);
         if (processDefinitionSearch.isPresent()) {
             final String processDefinitionId = processDefinitionSearch.get();
@@ -431,7 +431,6 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                             v -> removeActiveFilter(equalsTo(COLUMN_PROCESS_ID,
                                                              v))
             );
-            hasSearchParam = true;
         }
 
         final Optional<String> processInstanceSearch = getSearchParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
@@ -445,24 +444,43 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                             v -> removeActiveFilter(equalsTo(COLUMN_PROCESS_INSTANCE_ID,
                                                              v))
             );
-            hasSearchParam = true;
-        }
-
-        if (!hasSearchParam) {
-            setupDefaultActiveSearchFilters();
         }
     }
 
     @Override
-    public void setupDefaultActiveSearchFilters() {
-        addActiveFilter(equalsTo(COLUMN_STATUS,
-                                 ProcessInstance.STATE_ACTIVE),
-                        constants.State(),
-                        constants.Active(),
-                        ProcessInstance.STATE_ACTIVE,
-                        v -> removeActiveFilter(equalsTo(COLUMN_STATUS,
-                                                         v))
-        );
+    public boolean existActiveSearchFilters() {
+        final Optional<String> processDefinitionSearch = getSearchParameter(SEARCH_PARAMETER_PROCESS_DEFINITION_ID);
+        if (processDefinitionSearch.isPresent()) {
+            return true;
+        }
+        final Optional<String> processInstanceSearch = getSearchParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
+        if (processInstanceSearch.isPresent()) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public ActiveFilterItem getActiveFilterFromColumnFilter(ColumnFilter columnFilter) {
+        if (columnFilter instanceof CoreFunctionFilter) {
+            CoreFunctionFilter coreFunctionFilter = (CoreFunctionFilter) columnFilter;
+            if (columnFilter.getColumnId().equals(COLUMN_STATUS) &&
+                    (coreFunctionFilter.getType() == CoreFunctionType.IN ||
+                            coreFunctionFilter.getType() == CoreFunctionType.EQUALS_TO)) {
+                return new ActiveFilterItem<>(constants.State(),
+                                              getStatusColumnFilterDescription(columnFilter),
+                                              null,
+                                              coreFunctionFilter.getParameters(),
+                                              v -> removeActiveFilter(columnFilter));
+            }
+        }
+        return super.getActiveFilterFromColumnFilter(columnFilter);
+    }
+
+    public String getStatusColumnFilterDescription(ColumnFilter columnFilter) {
+        List<Object> parameters = ((CoreFunctionFilter) columnFilter).getParameters();
+        final List<String> labels = parameters.stream().map(s -> ProcessInstanceStatusUtils.getStatesStrMapping().get(String.valueOf(s))).collect(Collectors.toList());
+        return constants.State() + ": " + String.join(", ", labels);
     }
 
     public void openJobsView(final String pid) {

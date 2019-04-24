@@ -78,7 +78,7 @@ public class ExecutionErrorListFilterSettingsManager extends FilterSettingsManag
                                      COLUMN_ERROR_DATE,
                                      builder -> builder.filter(equalsTo(COLUMN_ERROR_ACK,
                                                                         0)),
-                                     TAB_NEW,
+                                     DEFAULT_FILTER_SETTINGS_KEY,// initial default filter
                                      constants.New(),
                                      constants.UnacknowledgedErrors()),
 

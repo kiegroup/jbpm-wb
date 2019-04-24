@@ -18,6 +18,7 @@ package org.jbpm.workbench.common.client.filters.saved;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -73,5 +74,10 @@ public class SavedFiltersViewImpl implements IsElement {
 
     public void removeAllSavedFilters() {
         savedFilterDataBinder.getModel().clear();
+    }
+
+    public void updateSavedFiltersDefault(String defaultFilter) {
+        savedFilterDataBinder.getModel().stream()
+                .forEach(savedFilter -> savedFilter.setDefaultFilter(savedFilter.getKey().equals(defaultFilter)));
     }
 }

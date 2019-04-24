@@ -62,6 +62,23 @@ public class TaskAdminListFilterSettingsManager extends AbstractTaskListFilterSe
     @Override
     public List<FilterSettings> initDefaultFilters() {
         return Arrays.asList(
+                //Filter status Active
+                createFilterSettings(HUMAN_TASKS_WITH_ADMIN_DATASET,
+                                     COLUMN_CREATED_ON,
+                                     builder -> {
+
+                                         final List<Comparable> status = new ArrayList<>(getStatusByType(TaskType.ACTIVE));
+
+                                         builder.filter(COLUMN_STATUS,
+                                                        equalsTo(COLUMN_STATUS,
+                                                                 status));
+                                         builder.group(COLUMN_TASK_ID);
+                                         commonColumnSettings().accept(builder);
+                                     },
+                                     DEFAULT_FILTER_SETTINGS_KEY,// initial default filter,
+                                     constants.Active(),
+                                     constants.FilterActive()),
+
                 //Filter open tasks
                 createFilterSettings(HUMAN_TASKS_WITH_ADMIN_DATASET,
                                      COLUMN_CREATED_ON,
