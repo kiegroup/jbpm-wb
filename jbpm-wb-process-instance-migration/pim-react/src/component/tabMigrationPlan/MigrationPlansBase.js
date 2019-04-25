@@ -29,17 +29,13 @@ export default class MigrationPlansBase extends React.Component {
 
   retrieveAllPlans = () => {
     if (USE_MOCK_DATA) {
-      //console.log("retrieveAllPlans useing mock data: ");
       const plans = MockupData_planList;
       this.setState({ plans, filteredPlans: plans });
     } else {
       const servicesUrl = BACKEND_URL + "/plans";
-      //console.log("retrieveAllPlans servicesUrl: " + servicesUrl);
       axios.get(servicesUrl, {}).then(res => {
         const plans = res.data;
-        //console.log('retrieveAllPlans ' + JSON.stringify(plans));
         this.setState({ plans, filteredPlans: plans });
-        //console.log("retrieveAllPlans is done ");
       });
     }
   };
@@ -49,7 +45,6 @@ export default class MigrationPlansBase extends React.Component {
       showDeleteConfirmation: true,
       deletePlanId: id
     });
-    //console.log("deletePlanId " + id);
   };
 
   hideDeleteDialog = () => {
@@ -66,8 +61,6 @@ export default class MigrationPlansBase extends React.Component {
       //need to create a temp variable "self" to store this, so I can invoke this inside axios call
       const self = this;
       const serviceUrl = BACKEND_URL + "/plans/" + this.state.deletePlanId;
-      //console.log("delete url: " + serviceUrl);
-
       axios
         .delete(serviceUrl, {
           headers: {
@@ -75,7 +68,6 @@ export default class MigrationPlansBase extends React.Component {
           }
         })
         .then(function() {
-          //console.log("delete response: " + response.data);
           self.retrieveAllPlans();
           self.hideDeleteDialog();
         });
@@ -90,16 +82,11 @@ export default class MigrationPlansBase extends React.Component {
       });
       this.retrieveAllPlans();
     } else {
-      //console.log("addPlan is invoked");
       if (plan !== null && plan !== "") {
-        //console.log('submit plan' + plan);
-
         //step 1, replace all \" to "
         plan = plan.replace(/\\"/g, '"');
-        //console.log('submit plan1: ' + plan);
         //step 2, replace "{ to {
         plan = plan.replace('"{', "{");
-        //console.log("plan2: " + plan);
         //step3, replace }" to }
         plan = plan.replace('}"', "}");
       }
@@ -107,18 +94,13 @@ export default class MigrationPlansBase extends React.Component {
       //need to create a temp variable "self" to store this, so I can invoke this inside axios call
       const self = this;
       const servicsUrl = BACKEND_URL + "/plans";
-      //console.log("servicsUrl: " + servicsUrl);
       axios
         .post(servicsUrl, plan, {
           headers: {
             "Content-Type": "application/json"
-            //"Content-Type": "text/plain"
-            //"Content-Type": "application/x-www-form-urlencoded"
-            //"Content-Type": "multipart/form-data"
           }
         })
         .then(function(response) {
-          //console.log("addPlan response: " + response.data);
           self.setState({
             addPlanResponseJsonStr: JSON.stringify(response.data, null, 2)
           });
@@ -134,8 +116,6 @@ export default class MigrationPlansBase extends React.Component {
       //need to create a temp variable "self" to store this, so I can invoke this inside axios call
       const self = this;
       const serviceUrl = BACKEND_URL + "/plans/" + planId;
-      //console.log("serviceUrl: " + serviceUrl);
-      //console.log("edit plan: " + plan);
       axios
         .put(serviceUrl, plan, {
           headers: {
@@ -143,7 +123,6 @@ export default class MigrationPlansBase extends React.Component {
           }
         })
         .then(function(response) {
-          //console.log("editPlan response: " + response.data);
           self.setState({
             addPlanResponseJsonStr: JSON.stringify(response.data, null, 2)
           });
@@ -155,7 +134,6 @@ export default class MigrationPlansBase extends React.Component {
   openMigrationWizard = rowData => {
     if (USE_MOCK_DATA) {
       const instances = MockupData_runningInstances;
-      //console.log('running instances: ' + JSON.stringify(instances));
 
       this.setState({
         runningInstances: instances,
@@ -174,8 +152,6 @@ export default class MigrationPlansBase extends React.Component {
         })
         .then(res => {
           const instances = res.data;
-          //console.log('running instances: ' + JSON.stringify(instances));
-
           this.setState({
             runningInstances: instances,
             showMigrationWizard: true,

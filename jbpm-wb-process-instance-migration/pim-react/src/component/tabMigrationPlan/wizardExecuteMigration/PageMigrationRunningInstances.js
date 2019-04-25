@@ -296,8 +296,6 @@ export default class PageMigrationRunningInstances extends React.Component {
     var ids = "";
     for (i = 0; i < updatedSelectedRows.length; i++) {
       const rowId = updatedSelectedRows[i];
-      //          console.log('onSelectRow rowId: ' + rowId);
-      //          console.log('onSelectRow processInstanceId: ' + rows[rowId-1].processInstanceId);
       if (ids === "") {
         ids = "" + rows[rowId - 1].processInstanceId;
       } else {
@@ -360,7 +358,6 @@ export default class PageMigrationRunningInstances extends React.Component {
   }
   totalPages = () => {
     const { perPage } = this.state.pagination;
-    //console.log('')
     return Math.ceil(this.props.runningInstances.length / perPage);
   };
   render() {

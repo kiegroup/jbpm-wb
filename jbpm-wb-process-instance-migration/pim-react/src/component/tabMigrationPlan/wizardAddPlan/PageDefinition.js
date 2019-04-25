@@ -65,10 +65,7 @@ export default class PageDefinition extends Component {
   };
 
   retriveBothInfo = () => {
-    //console.log('this.state.sourceProcessId ' + this.state.sourceProcessId);
-    //console.log('this.state.targetProcessId ' + this.state.targetProcessId);
     if (USE_MOCK_DATA) {
-      //console.log("retriveBothInfo use mock data ");
       const mockData = Mockup_processMapping_Info;
       this.props.setInfo(mockData.sourceInfo, mockData.targetInfo);
 
@@ -118,8 +115,6 @@ export default class PageDefinition extends Component {
           }
         })
         .then(res => {
-          //console.log('retriveBothInfo response: ' + JSON.stringify(res.data, null, 2) );
-
           this.props.setInfo(res.data.sourceInfo, res.data.targetInfo);
 
           var input = document.getElementById("hiddenField_sourceContainerId");

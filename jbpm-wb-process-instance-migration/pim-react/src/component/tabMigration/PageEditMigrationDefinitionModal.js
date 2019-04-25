@@ -26,7 +26,6 @@ export default class PageEditMigrationDefinitionModal extends React.Component {
   }
 
   convertFormDataToJson() {
-    //console.log('ExecuteMigration convertFormDataToJson is triggered. ');
     const execution = {
       type: "ASYNC"
     };
@@ -86,17 +85,13 @@ export default class PageEditMigrationDefinitionModal extends React.Component {
 
   submit = () => {
     if (USE_MOCK_DATA) {
-      //console.log("editMigration use mock data: ");
       this.hideEditDialog();
-      //this.retriveMigrationDefinitions();
     } else {
       //need to create a temp variable "self" to store this, so I can invoke this inside axios call
       const self = this;
       const serviceUrl = BACKEND_URL + "/migrations/" + this.state.id;
-      //console.log('editMigration url: ' + serviceUrl);
 
       const migrationDefinitionJsonStr = this.convertFormDataToJson();
-      //console.log('migrationDefinitionJsonStr' + migrationDefinitionJsonStr);
       axios
         .put(serviceUrl, migrationDefinitionJsonStr, {
           headers: {
@@ -104,10 +99,7 @@ export default class PageEditMigrationDefinitionModal extends React.Component {
           }
         })
         .then(() => {
-          //const results = res.data;
-          //console.log("editMigration " + JSON.stringify(results));
           self.hideEditDialog();
-          // self.retriveMigrationDefinitions();
         });
     }
   };
@@ -115,7 +107,6 @@ export default class PageEditMigrationDefinitionModal extends React.Component {
   submit2 = () => {
     var input = document.getElementById("planEditArea");
     var value = input.value;
-    //console.log("planEditArea value: " + value);
 
     //could be addPlan or editPlan, the planId is only needed for editPlan
     this.props.updatePlan(value, this.props.planId);
@@ -155,7 +146,6 @@ export default class PageEditMigrationDefinitionModal extends React.Component {
         <PageMigrationScheduler
           setCallbackUrl={this.setCallbackUrl}
           setScheduleStartTime={this.setScheduleStartTime}
-          callbackUrl={this.state.callbackUrl}
         />
       </div>
     );

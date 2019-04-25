@@ -70,7 +70,6 @@ export default class MainPagewithPfTab extends Component {
   }
 
   handleChange = option => {
-    //console.log("new kieServerIds: " + option);
     const newTitle = "KIE Server Name:" + option;
     this.setState({ title: newTitle });
     this.setState({ kieServerIds: option });

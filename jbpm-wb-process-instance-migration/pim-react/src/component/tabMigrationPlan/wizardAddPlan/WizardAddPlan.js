@@ -82,7 +82,6 @@ export default class WizardAddPlan extends WizardBase {
   };
 
   handleAddPlanFormChange = e => {
-    //console.log("handleAddPlanFormChange");
     if (e.target.name == "name") {
       this.setState({ name: e.target.value });
     } else if (e.target.name == "description") {
@@ -99,7 +98,6 @@ export default class WizardAddPlan extends WizardBase {
   };
 
   convertFormDataToJson() {
-    //console.log("AddPlan convertFormDataToJson is triggered. ");
     const formData = {
       name: this.state.name,
       description: this.state.description,

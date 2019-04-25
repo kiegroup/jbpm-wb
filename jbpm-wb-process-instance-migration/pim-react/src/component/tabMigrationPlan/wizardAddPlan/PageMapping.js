@@ -26,7 +26,6 @@ export default class PageMapping extends Component {
   //This is used in add plan wizard (for edit plan) to load the inital data to form fields
   //  componentDidMount(){
   //      var mappingField =  document.getElementById("nodeMappingField");
-  //      console.log('PageMapping componentDidMount mappingField ' + mappingField);
   //     mappingField.value=JSON.stringify(this.props.mappings);
   //  }
   componentDidUpdate() {
@@ -41,14 +40,12 @@ export default class PageMapping extends Component {
   }
 
   handleSourceDiagramButtonClick = () => {
-    //console.log(" sourceDiagramshown " + this.state.sourceDiagramshown);
     this.setState({
       sourceDiagramshown: !this.state.sourceDiagramshown
     });
   };
 
   handleTargetDiagramButtonClick = () => {
-    //console.log("targetDiagramshown " + this.state.targetDiagramshown);
     this.setState({
       targetDiagramshown: !this.state.targetDiagramshown
     });
@@ -93,7 +90,6 @@ export default class PageMapping extends Component {
         '"' +
         this.state.targetNodeStr +
         '"';
-      //console.log("currentNodeMapping1 ", currentNodeMapping);
 
       var input = document.getElementById("nodeMappingField");
       var currentInputValue = input.value;

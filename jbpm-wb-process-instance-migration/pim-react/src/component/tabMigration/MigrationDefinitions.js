@@ -46,21 +46,17 @@ export default class MigrationDefinitions extends Component {
       showLogDialog: true
     });
     if (USE_MOCK_DATA) {
-      //console.log("retriveMigrationLogs use mock data: ");
       this.setState({
         migrationLogs: MockupData_Migrations_Logs
       });
     } else {
       const servicesUrl =
         BACKEND_URL + "/migrations/" + rowData.id + "/results";
-      //console.log('retriveMigrationLogs url: ' + servicesUrl);
       axios.get(servicesUrl, {}).then(res => {
         const results = res.data;
-        //console.log("retriveMigrationLogs " + JSON.stringify(results));
         this.setState({
           migrationLogs: results
         });
-        //console.log("retriveMigrationLogs is done ");
       });
     }
   };
@@ -80,7 +76,6 @@ export default class MigrationDefinitions extends Component {
 
   deleteMigration = () => {
     if (USE_MOCK_DATA) {
-      //console.log("deleteMigration use mock data: ");
       this.hideDeleteDialog();
       this.retriveMigrationDefinitions();
     } else {
@@ -88,10 +83,7 @@ export default class MigrationDefinitions extends Component {
       const self = this;
       const servicesUrl =
         BACKEND_URL + "/migrations/" + this.state.deleteMigrationId;
-      //console.log("deleteMigration url: " + servicesUrl);
       axios.delete(servicesUrl, {}).then(() => {
-        //const results = res.data;
-        //console.log("deleteMigration " + JSON.stringify(results));
         self.hideDeleteDialog();
         self.retriveMigrationDefinitions();
       });
@@ -106,7 +98,6 @@ export default class MigrationDefinitions extends Component {
       input.value != "" &&
       !validator.isNumeric(input.value)
     ) {
-      //console.log("Error: migration id should be numeric");
       this.setState({
         validationMessage: "Error: migration id should be numeric"
       });
@@ -124,7 +115,6 @@ export default class MigrationDefinitions extends Component {
         validationMessage: ""
       });
       if (USE_MOCK_DATA) {
-        //console.log("retriveMigrationDefinitions use mock data: ");
         const migrationsDefinitions = MockupData_Migrations_Definitions;
         this.setState({
           migrationsDefinitions
@@ -149,7 +139,6 @@ export default class MigrationDefinitions extends Component {
                 migrationsDefinitions = [migrationsDefinitions];
               }
             }
-            //console.log("response: " + JSON.stringify(migrationsDefinitions));
             this.setState({
               migrationsDefinitions
             });

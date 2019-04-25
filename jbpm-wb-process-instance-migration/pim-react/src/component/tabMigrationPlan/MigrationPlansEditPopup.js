@@ -22,7 +22,6 @@ export default class MigrationPlansEditPopup extends React.Component {
     if (this.props.actionName == "Import Plan") {
       var input = document.getElementById("planEditArea");
       var value = input.value;
-      //console.log("planEditArea value: " + value);
 
       //could be addPlan or editPlan, the planId is only needed for editPlan
       this.props.updatePlan(value, this.props.planId);

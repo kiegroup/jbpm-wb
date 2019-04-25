@@ -8,7 +8,7 @@ exports[`PageDefinitionSearchTable renders correctly using snapshot 1`] = `
     <label
       className="col-sm-2 control-label"
     >
-      Source 
+      Source
        ContainerID
     </label>
     <div
@@ -28,7 +28,7 @@ exports[`PageDefinitionSearchTable renders correctly using snapshot 1`] = `
     <label
       className="col-sm-2 control-label"
     >
-      Source 
+      Source
        ProcessId
     </label>
     <div

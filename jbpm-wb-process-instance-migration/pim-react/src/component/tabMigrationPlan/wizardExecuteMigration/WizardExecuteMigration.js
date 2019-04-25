@@ -45,7 +45,6 @@ export default class WizardExecuteMigration extends WizardBase {
 
   onSubmitMigrationPlan = () => {
     if (USE_MOCK_DATA) {
-      //console.log("onSubmitMigrationPlan, using mock data: ");
       this.setState({
         pimServiceResponseJsonStr: JSON.stringify(
           MockupData_PIM_response,
@@ -56,14 +55,11 @@ export default class WizardExecuteMigration extends WizardBase {
       this.onNextButtonClick();
     } else {
       const plan = this.state.migrationDefinitionJsonStr;
-      //console.log("onSubmitMigrationPlan: " + plan);
 
       //need to create a temp variable "self" to store this, so I can invoke this inside axios call
       const self = this;
 
       const serviceUrl = BACKEND_URL + "/migrations";
-      //console.log("onSubmitMigrationPlan: " + serviceUrl);
-      //console.log("onSubmitMigrationPlan plan: " + plan);
       axios
         .post(serviceUrl, plan, {
           headers: {
@@ -71,7 +67,6 @@ export default class WizardExecuteMigration extends WizardBase {
           }
         })
         .then(function(response) {
-          //console.log("onSubmitMigrationPlan response: " + JSON.stringify(response.data));
           self.setState({
             pimServiceResponseJsonStr: JSON.stringify(response.data, null, 2)
           });
@@ -81,7 +76,6 @@ export default class WizardExecuteMigration extends WizardBase {
   };
 
   convertFormDataToJson() {
-    //console.log('ExecuteMigration convertFormDataToJson is triggered. ');
     const execution = {
       type: "ASYNC"
     };
@@ -118,14 +112,12 @@ export default class WizardExecuteMigration extends WizardBase {
   }
 
   setRunngingInstancesIds = ids => {
-    //console.log('set RunngingInstancesIds' + ids);
     this.setState({
       runningInstanceIds: ids
     });
   };
 
   setScheduleStartTime = startTime => {
-    //console.log('setScheduleStartTime' + startTime);
     this.setState({
       scheduleStartTime: startTime
     });
@@ -135,7 +127,6 @@ export default class WizardExecuteMigration extends WizardBase {
     this.setState({
       callbackUrl: url
     });
-    //console.log('this.state.callbackUrl: ' + this.state.callbackUrl);
   };
 
   render() {

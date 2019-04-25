@@ -31,7 +31,6 @@ export default class MigrationPlans extends MigrationPlansBase {
 
   closeMigrationWizard = () => {
     this.setState({ showMigrationWizard: false });
-    //TODO: this.retriveAllPlans();
   };
 
   openAddPlanWizard = () => {
@@ -41,7 +40,6 @@ export default class MigrationPlans extends MigrationPlansBase {
   };
 
   openAddPlanWizardwithInitialData = rowData => {
-    //console.log("openAddPlanWizardwithInitialData name: " + rowData.name);
     this.resetAllStates();
     this.setState({ showPlanWizard: true });
     this.refs.WizardAddPlanChild.initialWizardStates(rowData);
@@ -53,8 +51,6 @@ export default class MigrationPlans extends MigrationPlansBase {
   };
 
   onFilterChange = planFilter => {
-    //console.log("onFilterChange: " + planFilter);
-
     let filteredPlans = this.state.plans;
     filteredPlans = filteredPlans.filter(plan => {
       let sourceContainterId = plan.sourceContainerId.toLowerCase();
