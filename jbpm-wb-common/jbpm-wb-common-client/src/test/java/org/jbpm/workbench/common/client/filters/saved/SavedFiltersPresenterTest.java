@@ -89,8 +89,8 @@ public class SavedFiltersPresenterTest {
 
     @Test
     public void testMenus() {
-        assertEquals(1,
-                     presenter.getMenus().getItems().size());
+        presenter.getMenus(menus -> assertEquals(1,
+                                                 menus.getItems().size()));
     }
 
     @Test

@@ -15,6 +15,7 @@
  */
 package org.jbpm.workbench.pr.client.editors.instance.details;
 
+import java.util.function.Consumer;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -236,14 +237,14 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
     }
 
     @WorkbenchMenu
-    public Menus buildMenu() {
-        return MenuFactory
-                .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
-                .newTopLevelCustomMenu(signalProcessInstanceAction)
-                .endMenu()
-                .newTopLevelCustomMenu(abortProcessInstanceAction)
-                .endMenu()
-                .build();
+    public void buildMenu(final Consumer<Menus> menusConsumer) {
+        menusConsumer.accept(MenuFactory
+                                     .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
+                                     .newTopLevelCustomMenu(signalProcessInstanceAction)
+                                     .endMenu()
+                                     .newTopLevelCustomMenu(abortProcessInstanceAction)
+                                     .endMenu()
+                                     .build());
     }
 
     public void variableListRefreshGrid() {

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -227,12 +228,12 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
     }
 
     @WorkbenchMenu
-    public Menus getMenus() {
-        return MenuFactory
-                .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
-                .newTopLevelCustomMenu(new PrimaryActionMenuBuilder(constants.New_Job(),
-                                                                    getNewJobCommand())).endMenu()
-                .build();
+    public void getMenus(final Consumer<Menus> menusConsumer) {
+        menusConsumer.accept(MenuFactory
+                                     .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
+                                     .newTopLevelCustomMenu(new PrimaryActionMenuBuilder(constants.New_Job(),
+                                                                                         getNewJobCommand())).endMenu()
+                                     .build());
     }
 
     @Override

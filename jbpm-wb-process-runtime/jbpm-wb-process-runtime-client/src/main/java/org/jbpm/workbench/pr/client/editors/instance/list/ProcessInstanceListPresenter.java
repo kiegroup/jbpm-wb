@@ -16,6 +16,7 @@
 package org.jbpm.workbench.pr.client.editors.instance.list;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -365,21 +366,21 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     }
 
     @WorkbenchMenu
-    public Menus getMenus() {
-        return MenuFactory
-                .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
-                .newTopLevelCustomMenu(new PrimaryActionMenuBuilder(constants.New_Process_Instance(),
-                                                                    () -> {
-                                                                        final String selectedServerTemplate = getSelectedServerTemplate();
-                                                                        if (selectedServerTemplate != null && !selectedServerTemplate.isEmpty()) {
-                                                                            newProcessInstancePopup.show(selectedServerTemplate);
-                                                                        } else {
-                                                                            view.displayNotification(constants.SelectServerTemplate());
-                                                                        }
-                                                                    }
-                ))
-                .endMenu()
-                .build();
+    public void getMenus(final Consumer<Menus> menusConsumer) {
+        menusConsumer.accept(MenuFactory
+                                     .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
+                                     .newTopLevelCustomMenu(new PrimaryActionMenuBuilder(constants.New_Process_Instance(),
+                                                                                         () -> {
+                                                                                             final String selectedServerTemplate = getSelectedServerTemplate();
+                                                                                             if (selectedServerTemplate != null && !selectedServerTemplate.isEmpty()) {
+                                                                                                 newProcessInstancePopup.show(selectedServerTemplate);
+                                                                                             } else {
+                                                                                                 view.displayNotification(constants.SelectServerTemplate());
+                                                                                             }
+                                                                                         }
+                                     ))
+                                     .endMenu()
+                                     .build());
     }
 
     public void signalProcessInstance(final ProcessInstanceSummary processInstance) {

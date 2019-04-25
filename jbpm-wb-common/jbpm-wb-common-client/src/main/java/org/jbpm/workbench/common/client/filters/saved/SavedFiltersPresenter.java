@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.common.client.filters.saved;
 
+import java.util.function.Consumer;
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -59,10 +60,10 @@ public class SavedFiltersPresenter implements RestoreDefaultFiltersMenuBuilder.S
     }
 
     @WorkbenchMenu
-    public Menus getMenus() {
-        return MenuFactory
-                .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()
-                .build();
+    public void getMenus(final Consumer<Menus> menusConsumer) {
+        menusConsumer.accept(MenuFactory
+                                     .newTopLevelCustomMenu(new RestoreDefaultFiltersMenuBuilder(this)).endMenu()
+                                     .build());
     }
 
     public void setFilterSettingsManager(final FilterSettingsManager filterSettingsManager) {

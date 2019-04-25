@@ -19,6 +19,7 @@ import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_P
 import static org.kie.workbench.common.workbench.client.PerspectiveIds.PROCESS_INSTANCES;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import javax.enterprise.context.Dependent;
@@ -188,11 +189,11 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     }
 
     @WorkbenchMenu
-    public Menus buildMenu() {
-        return MenuFactory
-                .newTopLevelCustomMenu(new RefreshMenuBuilder(this))
-                .endMenu()
-                .build();
+    public void buildMenu(final Consumer<Menus> menusConsumer) {
+        menusConsumer.accept(MenuFactory
+                                     .newTopLevelCustomMenu(new RefreshMenuBuilder(this))
+                                     .endMenu()
+                                     .build());
     }
 
     protected void selectProcessDefinition(final ProcessSummary processSummary) {

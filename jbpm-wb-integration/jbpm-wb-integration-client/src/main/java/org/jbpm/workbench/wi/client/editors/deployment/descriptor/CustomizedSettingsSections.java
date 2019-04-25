@@ -24,6 +24,7 @@ import javax.inject.Inject;
 
 import org.jbpm.workbench.wi.client.workitem.project.ProjectServiceTasksPresenter;
 import org.kie.workbench.common.screens.library.client.settings.sections.SettingsSections;
+import org.kie.workbench.common.screens.library.client.settings.sections.branchmanagement.BranchManagementPresenter;
 import org.kie.workbench.common.screens.library.client.settings.sections.dependencies.DependenciesPresenter;
 import org.kie.workbench.common.screens.library.client.settings.sections.externaldataobjects.ExternalDataObjectsPresenter;
 import org.kie.workbench.common.screens.library.client.settings.sections.generalsettings.GeneralSettingsPresenter;
@@ -44,6 +45,7 @@ public class CustomizedSettingsSections implements SettingsSections {
     private final DeploymentsSectionPresenter deploymentsSettingsSection;
     private final PersistencePresenter persistenceSettingsSection;
     private final ProjectServiceTasksPresenter serviceTasksSection;
+    private final BranchManagementPresenter branchManagementPresenter;
 
     @Inject
     public CustomizedSettingsSections(final GeneralSettingsPresenter generalSettingsSection,
@@ -53,7 +55,8 @@ public class CustomizedSettingsSections implements SettingsSections {
                                       final ValidationPresenter validationSettingsSection,
                                       final DeploymentsSectionPresenter deploymentsSettingsSection,
                                       final PersistencePresenter persistenceSettingsSection,
-                                      final ProjectServiceTasksPresenter serviceTasksSection) {
+                                      final ProjectServiceTasksPresenter serviceTasksSection,
+                                      final BranchManagementPresenter branchManagementPresenter) {
 
         this.generalSettingsSection = generalSettingsSection;
         this.dependenciesSettingsSection = dependenciesSettingsSection;
@@ -63,6 +66,7 @@ public class CustomizedSettingsSections implements SettingsSections {
         this.deploymentsSettingsSection = deploymentsSettingsSection;
         this.persistenceSettingsSection = persistenceSettingsSection;
         this.serviceTasksSection = serviceTasksSection;
+        this.branchManagementPresenter = branchManagementPresenter;
     }
 
     @Override
@@ -75,7 +79,8 @@ public class CustomizedSettingsSections implements SettingsSections {
                 validationSettingsSection,
                 serviceTasksSection,
                 deploymentsSettingsSection,
-                persistenceSettingsSection
+                persistenceSettingsSection,
+                branchManagementPresenter
         );
     }
 }
