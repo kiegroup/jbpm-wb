@@ -54,14 +54,16 @@ import org.kie.server.client.UserTaskServicesClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.jbpm.workbench.forms.display.backend.conversion.TaskDataConverterUtil.convert;
+
 @Service
 @ApplicationScoped
 public class FormServiceEntryPointImpl extends AbstractKieServerService implements FormServiceEntryPoint {
 
-    private static final Logger logger = LoggerFactory.getLogger(FormServiceEntryPointImpl.class);  
-    
+    private static final Logger logger = LoggerFactory.getLogger(FormServiceEntryPointImpl.class);
+
     private boolean kieServerFormRenderer = KieServerUtils.isKieServerRendererEnabled();
-    
+
     private final FormProvider<? extends FormRenderingSettings> defaultFormProvider;
     private Set<FormProvider<? extends FormRenderingSettings>> providers = new TreeSet<>((o1, o2) -> o1.getPriority() - o2.getPriority());
 
@@ -85,23 +87,22 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
         }
     }
 
-
     @Override
     public FormRenderingSettings getFormDisplayProcess(String serverTemplateId,
                                                        String domainId,
                                                        String processId,
-                                                       boolean isDynamic) { 
+                                                       boolean isDynamic) {
         if (kieServerFormRenderer) {
             return getKieServerFormDisplayProcess(serverTemplateId, domainId, processId, isDynamic);
         } else {
             return getEmbeddedFormDisplayProcess(serverTemplateId, domainId, processId);
         }
     }
-    
+
     /*
      * KieServer based form rendering
      */
-    
+
     protected FormRenderingSettings getKieServerFormDisplayProcess(String serverTemplateId,
                                                                    String domainId,
                                                                    String processId,
@@ -126,7 +127,7 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
 
         return null;
     }
-    
+
     protected FormRenderingSettings getKieServerFormDisplayTask(String serverTemplateId,
                                                                 String domainId,
                                                                 long taskId) {
@@ -144,15 +145,15 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
 
         return null;
     }
-    
-    
+
+
     /*
      * Embedded form rendering
      */
 
     protected FormRenderingSettings getEmbeddedFormDisplayTask(String serverTemplateId,
-                                                    String domainId,
-                                                    long taskId) {
+                                                               String domainId,
+                                                               long taskId) {
         String registrationKey = serverTemplateId + "@" + domainId + "@" + System.currentTimeMillis();
 
         DocumentServicesClient documentClient = getClient(serverTemplateId,
@@ -204,11 +205,11 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
         taskInstance.setTaskOutputDefinitions(outputDefinitions.getTaskOutputs());
 
         // prepare render context
-        Map<String, Object> inputs = processData(documentClient,
-                                                 task.getInputData());
+        Map<String, Object> inputs = processData(documentClient, task.getInputData());
 
-        Map<String, Object> outputs = processData(documentClient,
-                                                  task.getOutputData());
+        convert(inputDefinitions.getTaskInputs(), inputs);
+
+        Map<String, Object> outputs = processData(documentClient, task.getOutputData());
 
         if (outputs != null && !outputs.isEmpty()) {
             taskInstance.setOutputIncluded(true);
@@ -233,7 +234,7 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
                 }
             }
         } catch (KieServicesHttpException e) {
-            if(Response.Status.UNAUTHORIZED.getStatusCode() == e.getHttpCode() || Response.Status.FORBIDDEN.getStatusCode() == e.getHttpCode()) {
+            if (Response.Status.UNAUTHORIZED.getStatusCode() == e.getHttpCode() || Response.Status.FORBIDDEN.getStatusCode() == e.getHttpCode()) {
                 throw new TaskFormPermissionDeniedException();
             }
         } catch (Exception e) {
@@ -246,10 +247,10 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
                                      outputs,
                                      kieServicesClient);
     }
-    
+
     protected FormRenderingSettings getEmbeddedFormDisplayProcess(String serverTemplateId,
-                                                       String domainId,
-                                                       String processId) {
+                                                                  String domainId,
+                                                                  String processId) {
 
         ProcessServicesClient processClient = getClient(serverTemplateId,
                                                         domainId,
@@ -307,7 +308,7 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
                                         processData,
                                         kieServicesClient);
     }
-    
+
     private FormRenderingSettings renderDefaultTaskForm(String serverTemplateId,
                                                         TaskDefinition taskInstance,
                                                         Map<String, Object> inputs,
@@ -321,7 +322,7 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
                                                                     new ContentMarshallerContext(null,
                                                                                                  kieServicesClient.getClassLoader())));
     }
-    
+
     private FormRenderingSettings renderDefaultProcessForm(String serverTemplateId,
                                                            org.jbpm.workbench.forms.service.providing.model.ProcessDefinition processDesc,
                                                            Map<String, String> processData,
@@ -356,7 +357,7 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
 
         return data;
     }
-    
+
     /*
      * For test purpose only
      */
