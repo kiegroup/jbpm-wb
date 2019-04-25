@@ -33,6 +33,7 @@ import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
@@ -52,6 +53,7 @@ import org.uberfire.workbench.model.menu.Menus;
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.common.client.util.DataSetUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.COLUMN_STATUS;
 
 public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresenter.TaskListView> extends AbstractMultiGridPresenter<TaskSummary, V> {
 
@@ -337,7 +339,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     public void onTaskCompletedEvent(@Observes TaskCompletedEvent event) {
         //Need to filter events only for a related task that was selected.
-        if(isSameTaskFromEvent().test(event)){
+        if (isSameTaskFromEvent().test(event)) {
             refreshGrid();
         }
     }
@@ -383,29 +385,44 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                         v -> removeActiveFilter(equalsTo(COLUMN_TASK_ID,
                                                          v))
                 );
-            } else {
-                super.setupActiveSearchFilters();
             }
         }
     }
 
     @Override
-    public void setupDefaultActiveSearchFilters() {
-        final List<String> status = Arrays.asList(TaskStatus.TASK_STATUS_READY.getIdentifier(),
-                                                  TaskStatus.TASK_STATUS_IN_PROGRESS.getIdentifier(),
-                                                  TaskStatus.TASK_STATUS_RESERVED.getIdentifier());
-        final List<String> statusLabels = Arrays.asList(translationService.format(TaskStatus.TASK_STATUS_READY.getIdentifier()),
-                                                        translationService.format(TaskStatus.TASK_STATUS_IN_PROGRESS.getIdentifier()),
-                                                        translationService.format(TaskStatus.TASK_STATUS_RESERVED.getIdentifier()));
-        addActiveFilter(in(COLUMN_STATUS,
-                           status),
-                        constants.Status(),
-                        String.join(", ",
-                                    statusLabels),
-                        status,
-                        v -> removeActiveFilter(in(COLUMN_STATUS,
-                                                   status))
-        );
+    public boolean existActiveSearchFilters() {
+        final Optional<String> processInstIdSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
+        if (processInstIdSearch.isPresent()) {
+            return true;
+        }
+        final Optional<String> taskIdSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_TASK_ID);
+        if (taskIdSearch.isPresent()) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public ActiveFilterItem getActiveFilterFromColumnFilter(ColumnFilter columnFilter) {
+        if (columnFilter instanceof CoreFunctionFilter) {
+            CoreFunctionFilter coreFunctionFilter = (CoreFunctionFilter) columnFilter;
+            if (columnFilter.getColumnId().equals(COLUMN_STATUS) &&
+                    (coreFunctionFilter.getType() == CoreFunctionType.IN ||
+                            coreFunctionFilter.getType() == CoreFunctionType.EQUALS_TO)) {
+                return new ActiveFilterItem<>(constants.Status(),
+                                              getStatusColumnFilterDescription(columnFilter),
+                                              null,
+                                              coreFunctionFilter.getParameters(),
+                                              v -> removeActiveFilter(columnFilter));
+            }
+        }
+        return super.getActiveFilterFromColumnFilter(columnFilter);
+    }
+
+    public String getStatusColumnFilterDescription(ColumnFilter columnFilter) {
+        List<Object> parameters = ((CoreFunctionFilter) columnFilter).getParameters();
+        final List<String> labels = parameters.stream().map(s -> translationService.format(s.toString())).collect(Collectors.toList());
+        return constants.Status() + ": " + String.join(", ", labels);
     }
 
     public void openProcessInstanceView(final String processInstanceId) {

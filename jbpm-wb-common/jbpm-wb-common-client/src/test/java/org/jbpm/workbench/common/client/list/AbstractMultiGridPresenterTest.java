@@ -1,0 +1,162 @@
+/*
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.jbpm.workbench.common.client.list;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+
+import javax.enterprise.event.Event;
+
+import com.google.gwt.view.client.AsyncDataProvider;
+import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.dashbuilder.dataset.DataSetLookup;
+import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
+import org.jbpm.workbench.common.client.filters.active.ClearAllActiveFiltersEvent;
+import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
+import org.jbpm.workbench.df.client.filter.FilterSettings;
+import org.jbpm.workbench.df.client.filter.FilterSettingsManager;
+import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
+import org.uberfire.mocks.EventSourceMock;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith(GwtMockitoTestRunner.class)
+public class AbstractMultiGridPresenterTest {
+
+    @Mock
+    FilterSettingsManager filterSettingsManager;
+
+    @Mock
+    FilterSettings filterSettingsMock;
+
+    @Mock
+    UberfireBreadcrumbs breadcrumbsMock;
+
+    @Mock
+    ListView listView;
+
+    @Mock
+    ServerTemplateSelectorMenuBuilder serverTemplateSelectorMenuBuilderMock;
+
+    @Mock
+    ServerTemplateSelectorMenuBuilder.ServerTemplateSelectorElementView serverTemplateSelectorElementViewMock;
+
+    @Mock
+    protected DataSetQueryHelper dataSetQueryHelper;
+
+    @Spy
+    Event<ClearAllActiveFiltersEvent> clearAllActiveFiltersEvent = new EventSourceMock<>();
+
+    @Spy
+    AbstractMultiGridPresenter presenter;
+
+    @Mock
+    AbstractMultiGridView view;
+
+    @Before
+    public void setupMocks() {
+        when(serverTemplateSelectorMenuBuilderMock.getView()).thenReturn(serverTemplateSelectorElementViewMock);
+        when(presenter.getListView()).thenReturn(listView);
+
+        presenter.setView(view);
+        presenter.setUberfireBreadcrumbs(breadcrumbsMock);
+        presenter.setServerTemplateSelectorMenuBuilder(serverTemplateSelectorMenuBuilderMock);
+        presenter.setFilterSettingsManager(filterSettingsManager);
+        presenter.setDataSetQueryHelper(dataSetQueryHelper);
+        presenter.setClearAllActiveFiltersEvent(clearAllActiveFiltersEvent);
+
+        doNothing().when(clearAllActiveFiltersEvent).fire(any());
+    }
+
+    @Test
+    public void onOpenActiveSearchTest() {
+        when(presenter.existActiveSearchFilters()).thenReturn(true);
+        when(filterSettingsManager.createDefaultFilterSettingsPrototype()).thenReturn(filterSettingsMock);
+        when(filterSettingsMock.getKey()).thenReturn("key");
+
+        presenter.onOpen();
+
+        ArgumentCaptor<Consumer> activeSearchConsumerCaptor = ArgumentCaptor.forClass(Consumer.class);
+        verify(clearAllActiveFiltersEvent).fire(any());
+        verify(view).loadListTable(eq("key"), activeSearchConsumerCaptor.capture());
+        verify(dataSetQueryHelper).setCurrentTableSettings(filterSettingsMock);
+        verify(clearAllActiveFiltersEvent).fire(any());
+    }
+
+    @Test
+    public void onOpenWithActiveSeachTest() {
+        String defaultFilterKey = "defaultFilterKey";
+
+        when(presenter.existActiveSearchFilters()).thenReturn(false);
+        when(filterSettingsMock.getKey()).thenReturn(defaultFilterKey);
+
+        presenter.onOpen();
+
+        ArgumentCaptor<Consumer> defaultFilterConsumerCaptor = ArgumentCaptor.forClass(Consumer.class);
+        verify(filterSettingsManager).defaultActiveFilterInit(defaultFilterConsumerCaptor.capture());
+        defaultFilterConsumerCaptor.getValue().accept(filterSettingsMock);
+        verify(view).removeAllActiveFilters();
+        verify(dataSetQueryHelper).setCurrentTableSettings(filterSettingsMock);
+        verify(view).loadListTable(eq(defaultFilterKey), any());
+    }
+
+    @Test
+    public void addActiveFiltersTest() {
+        String defaultFilterKey = "defaultFilterKey";
+        DataSetLookup dataSetLookupMock = mock(DataSetLookup.class);
+        DataSetFilter dataSetFilterMock = mock(DataSetFilter.class);
+        final ColumnFilter columnFilter = mock(ColumnFilter.class);
+        final ColumnFilter columnFilter2 = mock(ColumnFilter.class);
+
+        AsyncDataProvider dataProviderMock = mock(AsyncDataProvider.class);
+        ListTable listTableMock = mock(ListTable.class);
+
+        when(presenter.existActiveSearchFilters()).thenReturn(false);
+        when(filterSettingsMock.getKey()).thenReturn(defaultFilterKey);
+        when(filterSettingsMock.getDataSetLookup()).thenReturn(dataSetLookupMock);
+        when(dataSetLookupMock.getFirstFilterOp()).thenReturn(dataSetFilterMock);
+        when(dataSetFilterMock.getColumnFilterList()).thenReturn(Arrays.asList(columnFilter, columnFilter2));
+
+        presenter.setDataProvider(dataProviderMock);
+        presenter.addActiveFilters(filterSettingsMock);
+
+        verify(view).removeAllActiveFilters();
+        verify(dataSetQueryHelper).setCurrentTableSettings(filterSettingsMock);
+        ArgumentCaptor<Consumer> listTableConsumerCaptor = ArgumentCaptor.forClass(Consumer.class);
+        verify(view).loadListTable(eq(defaultFilterKey), listTableConsumerCaptor.capture());
+        listTableConsumerCaptor.getValue().accept(listTableMock);
+        verify(presenter).getActiveFilterFromColumnFilter(columnFilter);
+        verify(presenter).getActiveFilterFromColumnFilter(columnFilter2);
+        verify(view, times(2)).addActiveFilter(any(ActiveFilterItem.class));
+        verify(presenter).addDataDisplay(listTableMock);
+    }
+}

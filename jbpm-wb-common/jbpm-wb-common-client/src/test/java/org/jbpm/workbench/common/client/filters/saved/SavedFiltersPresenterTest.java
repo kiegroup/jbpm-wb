@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.uberfire.mvp.Command;
 
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.*;
@@ -48,8 +49,7 @@ public class SavedFiltersPresenterTest {
 
     @Test
     public void testLoadSavedFilters() {
-        final SavedFilter filter = new SavedFilter("key",
-                                                   "name");
+        final SavedFilter filter = new SavedFilter("key", "name");
         doAnswer(invocation -> {
             Consumer<List<SavedFilter>> filters = (Consumer<List<SavedFilter>>) invocation.getArguments()[0];
             filters.accept(singletonList(filter));
@@ -63,8 +63,7 @@ public class SavedFiltersPresenterTest {
 
     @Test
     public void testRemoveSavedFilters() {
-        final SavedFilter filter = new SavedFilter("key",
-                                                   "name");
+        final SavedFilter filter = new SavedFilter("key", "name");
 
         presenter.removeSavedFilter(filter);
 
@@ -82,8 +81,7 @@ public class SavedFiltersPresenterTest {
 
     @Test
     public void testOnSaveFilter() {
-        final SavedFilter filter = new SavedFilter("key",
-                                                   "name");
+        final SavedFilter filter = new SavedFilter("key", "name");
         presenter.onSaveFilter(new SavedFilterAddedEvent(filter));
 
         verify(view).addSavedFilter(filter);
@@ -93,5 +91,21 @@ public class SavedFiltersPresenterTest {
     public void testMenus() {
         assertEquals(1,
                      presenter.getMenus().getItems().size());
+    }
+
+    @Test
+    public void testOnSaveDefaultActiveFilter() {
+        String defaultFilterKey = "filterKey";
+        final SavedFilter filter = new SavedFilter(defaultFilterKey, "name");
+        doAnswer(invocation -> {
+            Command callback = (Command) invocation.getArguments()[1];
+            callback.execute();
+            return null;
+        }).when(filterSettingsManager).saveDefaultActiveFilter(anyString(), any());
+
+        presenter.onSaveDefaultActiveFilter(new SavedFilterAsDefaultActiveEvent(filter));
+
+        verify(filterSettingsManager).saveDefaultActiveFilter(eq(filter.getKey()), any());
+        verify(view).updateSavedFiltersDefault(defaultFilterKey);
     }
 }

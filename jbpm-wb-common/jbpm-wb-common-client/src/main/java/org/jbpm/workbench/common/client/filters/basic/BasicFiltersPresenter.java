@@ -17,6 +17,7 @@
 package org.jbpm.workbench.common.client.filters.basic;
 
 import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -32,7 +33,6 @@ import org.jbpm.workbench.common.client.filters.saved.SavedFilterSelectedEvent;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
-import org.uberfire.lifecycle.OnOpen;
 
 import static org.dashbuilder.dataset.filter.FilterFactory.in;
 
@@ -64,12 +64,7 @@ public abstract class BasicFiltersPresenter {
         loadFilters();
     }
 
-    @OnOpen
-    public void onOpen(){
-        view.clearAllSelectFilter();
-    }
-
-    public void onClearAllActiveFiltersEvent(@Observes ClearAllActiveFiltersEvent event){
+    public void onClearAllActiveFiltersEvent(@Observes ClearAllActiveFiltersEvent event) {
         view.clearAllSelectFilter();
     }
 
@@ -109,7 +104,6 @@ public abstract class BasicFiltersPresenter {
                                                                filter,
                                                                columnFilter));
     }
-
 
     protected abstract void onActiveFilterAdded(final ActiveFilterItem activeFilterItem);
 

@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -28,8 +30,12 @@ import javax.inject.Inject;
 
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
+import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.CoreFunctionFilter;
+import org.dashbuilder.dataset.filter.CoreFunctionType;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.PerspectiveIds;
+import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
 import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.PrimaryActionMenuBuilder;
@@ -39,6 +45,7 @@ import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
 import org.jbpm.workbench.es.client.editors.events.JobSelectedEvent;
 import org.jbpm.workbench.es.client.editors.quicknewjob.NewJobPresenter;
 import org.jbpm.workbench.es.client.i18n.Constants;
+import org.jbpm.workbench.es.client.util.JobStatusConverter;
 import org.jbpm.workbench.es.model.RequestSummary;
 import org.jbpm.workbench.es.model.events.RequestChangedEvent;
 import org.jbpm.workbench.es.service.ExecutorService;
@@ -266,25 +273,47 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                                 constants.JobId(),
                                 jobId,
                                 Integer.valueOf(jobId),
-                                v -> removeActiveFilter(equalsTo(COLUMN_STATUS,
-                                                                 v))
+                                v -> removeActiveFilter(equalsTo(COLUMN_ID, v))
                 );
-            } else {
-                setupDefaultActiveSearchFilters();
             }
         }
     }
 
     @Override
-    public void setupDefaultActiveSearchFilters() {
-        addActiveFilter(equalsTo(COLUMN_STATUS,
-                                 RequestStatus.RUNNING.name()),
-                        constants.Status(),
-                        constants.Running(),
-                        RequestStatus.RUNNING.name(),
-                        v -> removeActiveFilter(equalsTo(COLUMN_STATUS,
-                                                         v))
-        );
+    public boolean existActiveSearchFilters() {
+        final Optional<String> processInstIdSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID);
+        if (processInstIdSearch.isPresent()) {
+            return true;
+        }
+        final Optional<String> jobSearch = getSearchParameter(PerspectiveIds.SEARCH_PARAMETER_JOB_ID);
+        if (jobSearch.isPresent()) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public ActiveFilterItem getActiveFilterFromColumnFilter(ColumnFilter columnFilter) {
+        if (columnFilter instanceof CoreFunctionFilter) {
+            CoreFunctionFilter coreFunctionFilter = (CoreFunctionFilter) columnFilter;
+            if (columnFilter.getColumnId().equals(COLUMN_STATUS) &&
+                    (coreFunctionFilter.getType() == CoreFunctionType.IN ||
+                            coreFunctionFilter.getType() == CoreFunctionType.EQUALS_TO)) {
+                return new ActiveFilterItem<>(constants.Status(),
+                                              getStatusColumnFilterDescription(columnFilter),
+                                              null,
+                                              coreFunctionFilter.getParameters(),
+                                              v -> removeActiveFilter(columnFilter));
+            }
+        }
+        return super.getActiveFilterFromColumnFilter(columnFilter);
+    }
+
+    public String getStatusColumnFilterDescription(ColumnFilter columnFilter) {
+        List<Object> parameters = ((CoreFunctionFilter) columnFilter).getParameters();
+        final List<String> labels =
+                parameters.stream().map(s -> JobStatusConverter.getStatesStrMapping().get(s.toString())).collect(Collectors.toList());
+        return constants.Status() + ": " + String.join(", ", labels);
     }
 
     public void openProcessInstanceView(final String processInstanceId) {

@@ -63,7 +63,11 @@ import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.security.ResourceRef;
 import org.uberfire.security.authz.AuthorizationManager;
 
+import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_ERROR_TYPE;
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_IS_ERROR_ACK;
 import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID;
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_TASK_ID;
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.kie.workbench.common.workbench.client.PerspectiveIds.*;
@@ -285,42 +289,64 @@ public class ExecutionErrorListPresenterTest {
     }
 
     @Test
-    public void testDefaultActiveSearchFilters() {
-        presenter.setupDefaultActiveSearchFilters();
+    public void testExistActiveSearchFilters() {
+        final PlaceRequest place = mock(PlaceRequest.class);
+        presenter.onStartup(place);
 
-        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
-        verify(viewMock).addActiveFilter(captor.capture());
+        when(place.getParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID, null)).thenReturn("1");
+        assertTrue(presenter.existActiveSearchFilters());
 
-        final ActiveFilterItem filterItem = captor.getValue();
-        assertNotNull(filterItem);
-        assertEquals(Constants.INSTANCE.Acknowledged(),
-                     filterItem.getKey());
-        assertEquals(0,
-                     filterItem.getValue());
-        assertEquals(Constants.INSTANCE.Acknowledged() + ": " + commonConstants.No(),
-                     filterItem.getLabelValue());
+        when(place.getParameter(SEARCH_PARAMETER_TASK_ID, null)).thenReturn("1");
+        assertTrue(presenter.existActiveSearchFilters());
+
+        when(place.getParameter(SEARCH_PARAMETER_ERROR_TYPE, null)).thenReturn(Constants.INSTANCE.DB());
+        assertTrue(presenter.existActiveSearchFilters());
+
+        when(place.getParameter(SEARCH_PARAMETER_IS_ERROR_ACK, null)).thenReturn("0");
+        assertTrue(presenter.existActiveSearchFilters());
+
+        when(place.getParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID, null)).thenReturn(null);
+        when(place.getParameter(SEARCH_PARAMETER_TASK_ID, null)).thenReturn(null);
+        when(place.getParameter(SEARCH_PARAMETER_ERROR_TYPE, null)).thenReturn(null);
+        when(place.getParameter(SEARCH_PARAMETER_IS_ERROR_ACK, null)).thenReturn(null);
+        assertFalse(presenter.existActiveSearchFilters());
     }
 
     @Test
-    public void testActiveSearchFilters() {
-        final PlaceRequest place = mock(PlaceRequest.class);
-        when(place.getParameter(anyString(),
-                                anyString())).thenReturn(null);
-        presenter.onStartup(place);
+    public void testActiveFilterLabelAck() {
+        ColumnFilter testColumFilter = equalsTo(COLUMN_ERROR_ACK, 0);
 
-        presenter.setupActiveSearchFilters();
+        ActiveFilterItem activeFilterItem = presenter.getActiveFilterFromColumnFilter(testColumFilter);
 
-        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
-        verify(viewMock).addActiveFilter(captor.capture());
+        assertEquals(Constants.INSTANCE.Acknowledged(), activeFilterItem.getKey());
+        assertEquals("Acknowledged: No", activeFilterItem.getLabelValue());
+        assertNotEquals(testColumFilter.toString(), activeFilterItem.getLabelValue());
+    }
 
-        final ActiveFilterItem filterItem = captor.getValue();
-        assertNotNull(filterItem);
-        assertEquals(Constants.INSTANCE.Acknowledged(),
-                     filterItem.getKey());
-        assertEquals(0,
-                     filterItem.getValue());
-        assertEquals(Constants.INSTANCE.Acknowledged() + ": " + commonConstants.No(),
-                     filterItem.getLabelValue());
+    @Test
+    public void testActiveFilterLabelType() {
+        ColumnFilter testColumFilter = equalsTo(COLUMN_ERROR_TYPE,
+                                                Arrays.asList(ExecutionErrorType.JOB.getType(),
+                                                              ExecutionErrorType.DB.getType()));
+
+        ActiveFilterItem activeFilterItem = presenter.getActiveFilterFromColumnFilter(testColumFilter);
+
+        assertEquals(Constants.INSTANCE.Type(), activeFilterItem.getKey());
+        assertEquals("Type: Job, DB", activeFilterItem.getLabelValue());
+        assertNotEquals(testColumFilter.toString(), activeFilterItem.getLabelValue());
+    }
+
+    @Test
+    public void testActiveFilterLabelOther() {
+        ColumnFilter testColumFilter = equalsTo(COLUMN_PROCESS_INST_ID, 1);
+        ActiveFilterItem activeFilterItem = presenter.getActiveFilterFromColumnFilter(testColumFilter);
+        assertEquals(COLUMN_PROCESS_INST_ID, activeFilterItem.getKey());
+        assertEquals(testColumFilter.toString(), activeFilterItem.getLabelValue());
+
+        testColumFilter = equalsTo(COLUMN_JOB_ID, 1);
+        activeFilterItem = presenter.getActiveFilterFromColumnFilter(testColumFilter);
+        assertEquals(COLUMN_JOB_ID, activeFilterItem.getKey());
+        assertEquals(testColumFilter.toString(), activeFilterItem.getLabelValue());
     }
 
     @Test

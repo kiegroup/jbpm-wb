@@ -63,6 +63,9 @@ import org.uberfire.mvp.Commands;
 import org.uberfire.mvp.PlaceRequest;
 
 import static java.util.Collections.*;
+import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_JOB_ID;
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_INSTANCE_ID;
 import static org.jbpm.workbench.es.client.editors.util.JobUtils.createRequestSummary;
 import static org.jbpm.workbench.es.model.RequestDataSetConstants.*;
 import static org.junit.Assert.*;
@@ -299,27 +302,26 @@ public class RequestListPresenterTest {
     }
 
     @Test
-    public void testDefaultActiveSearchFilters() {
-        presenter.setupDefaultActiveSearchFilters();
+    public void testExistActiveSearchFilters() {
+        final PlaceRequest place = mock(PlaceRequest.class);
+        presenter.onStartup(place);
 
-        ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
-        verify(viewMock).addActiveFilter(captor.capture());
+        when(place.getParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID, null)).thenReturn("1");
+        assertTrue(presenter.existActiveSearchFilters());
 
-        assertEquals(1,
-                     captor.getAllValues().size());
-        assertEquals(Constants.INSTANCE.Status(),
-                     captor.getValue().getKey());
-        assertEquals(Constants.INSTANCE.Status() + ": " + Constants.INSTANCE.Running(),
-                     captor.getValue().getLabelValue());
-        assertEquals(RequestStatus.RUNNING.name(),
-                     (captor.getValue().getValue()));
+        when(place.getParameter(SEARCH_PARAMETER_JOB_ID, null)).thenReturn("1");
+        assertTrue(presenter.existActiveSearchFilters());
+
+        when(place.getParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID, null)).thenReturn(null);
+        when(place.getParameter(SEARCH_PARAMETER_JOB_ID, null)).thenReturn(null);
+        assertFalse(presenter.existActiveSearchFilters());
     }
 
     @Test
-    public void testActiveSearchFilters() {
+    public void testDefaultActiveSearchFiltersWithProcessId() {
         final PlaceRequest place = mock(PlaceRequest.class);
-        when(place.getParameter(anyString(),
-                                anyString())).thenReturn(null);
+        final String processInstanceId = "1";
+        when(place.getParameter(SEARCH_PARAMETER_PROCESS_INSTANCE_ID, null)).thenReturn(processInstanceId);
         presenter.onStartup(place);
 
         presenter.setupActiveSearchFilters();
@@ -327,14 +329,36 @@ public class RequestListPresenterTest {
         ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
         verify(viewMock).addActiveFilter(captor.capture());
 
-        assertEquals(1,
-                     captor.getAllValues().size());
-        assertEquals(Constants.INSTANCE.Status(),
-                     captor.getValue().getKey());
-        assertEquals(Constants.INSTANCE.Status() + ": " + Constants.INSTANCE.Running(),
-                     captor.getValue().getLabelValue());
-        assertEquals(RequestStatus.RUNNING.name(),
-                     (captor.getValue().getValue()));
+        assertEquals(1, captor.getAllValues().size());
+        assertEquals(Constants.INSTANCE.Process_Instance_Id(), captor.getValue().getKey());
+        assertEquals(Constants.INSTANCE.Process_Instance_Id() + ": " + processInstanceId, captor.getValue().getLabelValue());
+        assertEquals(Integer.valueOf(processInstanceId), (captor.getValue().getValue()));
+    }
+
+    @Test
+    public void testActiveFilterLabelStatus() {
+        ColumnFilter testColumFilter = equalsTo(COLUMN_STATUS,
+                                                Arrays.asList(RequestStatus.CANCELLED.name(),
+                                                              RequestStatus.RUNNING.name()));
+
+        ActiveFilterItem activeFilterItem = presenter.getActiveFilterFromColumnFilter(testColumFilter);
+
+        assertEquals(Constants.INSTANCE.Status(), activeFilterItem.getKey());
+        assertEquals("Status: Canceled, Running", activeFilterItem.getLabelValue());
+        assertNotEquals(testColumFilter.toString(), activeFilterItem.getLabelValue());
+    }
+
+    @Test
+    public void testActiveFilterLabelOther() {
+        ColumnFilter testColumFilter = equalsTo(COLUMN_PROCESS_INSTANCE_ID, 1);
+        ActiveFilterItem activeFilterItem = presenter.getActiveFilterFromColumnFilter(testColumFilter);
+        assertEquals(COLUMN_PROCESS_INSTANCE_ID, activeFilterItem.getKey());
+        assertEquals(testColumFilter.toString(), activeFilterItem.getLabelValue());
+
+        testColumFilter = equalsTo(COLUMN_BUSINESSKEY, "key");
+        activeFilterItem = presenter.getActiveFilterFromColumnFilter(testColumFilter);
+        assertEquals(COLUMN_BUSINESSKEY, activeFilterItem.getKey());
+        assertEquals(testColumFilter.toString(), activeFilterItem.getLabelValue());
     }
 
     @Test
@@ -620,6 +644,4 @@ public class RequestListPresenterTest {
         verify(viewMock).displayNotification(Constants.INSTANCE.RequestRequeued(jobId_2));
         verify(viewMock).displayNotification(Constants.INSTANCE.Job_Can_Not_Be_Requeued(jobId_3));
     }
-
-
 }

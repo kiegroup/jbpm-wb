@@ -21,7 +21,9 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
 import javax.annotation.PostConstruct;
+import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
@@ -33,6 +35,7 @@ import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.common.client.dataset.ErrorHandlerBuilder;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
+import org.jbpm.workbench.common.client.filters.active.ClearAllActiveFiltersEvent;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterAddEvent;
 import org.jbpm.workbench.common.client.filters.basic.BasicFilterRemoveEvent;
 import org.jbpm.workbench.common.client.filters.saved.SavedFilterSelectedEvent;
@@ -64,6 +67,8 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
     @Inject
     protected DefaultWorkbenchErrorCallback errorCallback;
 
+    protected Event<ClearAllActiveFiltersEvent> clearAllActiveFiltersEvent;
+
     protected ManagedInstance<ErrorHandlerBuilder> errorHandlerBuilder;
 
     @Inject
@@ -79,6 +84,11 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
     @Inject
     public void setDataSetQueryHelper(final DataSetQueryHelper dataSetQueryHelper) {
         this.dataSetQueryHelper = dataSetQueryHelper;
+    }
+
+    @Inject
+    public void setClearAllActiveFiltersEvent(Event<ClearAllActiveFiltersEvent> clearAllActiveFiltersEvent) {
+        this.clearAllActiveFiltersEvent = clearAllActiveFiltersEvent;
     }
 
     public void setFilterSettingsManager(final FilterSettingsManager filterSettingsManager) {
@@ -104,11 +114,9 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
         this.view = view;
     }
 
-    public void setupActiveSearchFilters() {
-        setupDefaultActiveSearchFilters();
-    }
+    public abstract void setupActiveSearchFilters();
 
-    public abstract void setupDefaultActiveSearchFilters();
+    public abstract boolean existActiveSearchFilters();
 
     @PostConstruct
     public void init() {
@@ -121,11 +129,16 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
     @OnOpen
     public void onOpen() {
         super.onOpen();
-        setFilterSettings(filterSettingsManager.createDefaultFilterSettingsPrototype(),
-                          table -> {
-                              setupActiveSearchFilters();
-                              addDataDisplay(table);
-                          });
+        if (existActiveSearchFilters()) {
+            clearAllActiveFiltersEvent.fire(new ClearAllActiveFiltersEvent());
+            setFilterSettings(filterSettingsManager.createDefaultFilterSettingsPrototype(),
+                              table -> {
+                                  setupActiveSearchFilters();
+                                  addDataDisplay(table);
+                              });
+        } else {
+            filterSettingsManager.defaultActiveFilterInit(filterSettings -> addActiveFilters(filterSettings));
+        }
     }
 
     public Predicate<String> getFilterEventPredicate() {
@@ -161,6 +174,14 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
                            readyCallback);
     }
 
+    public ActiveFilterItem getActiveFilterFromColumnFilter(ColumnFilter columnFilter) {
+        return new ActiveFilterItem<>(columnFilter.getColumnId(),
+                                      columnFilter.toString(),
+                                      null,
+                                      null,
+                                      v -> removeActiveFilter(columnFilter));
+    }
+
     protected void addActiveFilters(final FilterSettings filter) {
         view.removeAllActiveFilters();
         setFilterSettings(filter,
@@ -168,11 +189,7 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
                               if (filter.getDataSetLookup().getFirstFilterOp() != null) {
                                   List<ColumnFilter> filters = filter.getDataSetLookup().getFirstFilterOp().getColumnFilterList();
                                   filters.forEach(column -> {
-                                      final ActiveFilterItem activeFilter = new ActiveFilterItem<>(column.getColumnId(),
-                                                                                                   column.toString(),
-                                                                                                   null,
-                                                                                                   null,
-                                                                                                   v -> removeActiveFilter(column));
+                                      final ActiveFilterItem activeFilter = getActiveFilterFromColumnFilter(column);
                                       view.addActiveFilter(activeFilter);
                                   });
                               }
@@ -195,8 +212,8 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
             getDataSetQueryHelper().setCurrentTableSettings(currentTableSettings);
             getDataSetQueryHelper().setDataSetHandler(currentTableSettings);
             getDataSetQueryHelper().lookupDataSet(visibleRange.getStart(),
-                                             getDataSetReadyCallback(visibleRange.getStart(),
-                                                                     currentTableSettings));
+                                                  getDataSetReadyCallback(visibleRange.getStart(),
+                                                                          currentTableSettings));
         } catch (Exception e) {
             errorCallback.error(e);
             setEmptyResults();

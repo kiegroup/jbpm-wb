@@ -105,4 +105,10 @@ public class SavedFiltersPresenter implements RestoreDefaultFiltersMenuBuilder.S
                                                                                  Commands.DO_NOTHING);
         yesNoCancelPopup.show();
     }
+
+    public void onSaveDefaultActiveFilter(@Observes final SavedFilterAsDefaultActiveEvent event) {
+        filterSettingsManager.saveDefaultActiveFilter(event.getSavedFilter().getKey(),
+                                                      () -> view.updateSavedFiltersDefault(event.getSavedFilter().getKey())
+        );
+    }
 }

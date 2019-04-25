@@ -19,6 +19,8 @@ package org.jbpm.workbench.df.client.filter;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.uberfire.mvp.Command;
+
 public interface FilterSettingsManager {
 
     void loadSavedFilters(Consumer<List<SavedFilter>> savedFiltersConsumer);
@@ -40,4 +42,8 @@ public interface FilterSettingsManager {
     default FilterSettings getVariablesFilterSettings(List<Long> ids) {
         return null;
     }
+
+    void defaultActiveFilterInit(Consumer<FilterSettings> callback);
+
+    void saveDefaultActiveFilter(String filterKey, Command callback);
 }

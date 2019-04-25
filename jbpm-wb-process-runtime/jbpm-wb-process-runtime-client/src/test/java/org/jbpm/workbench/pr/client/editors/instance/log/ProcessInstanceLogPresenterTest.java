@@ -413,7 +413,7 @@ public class ProcessInstanceLogPresenterTest {
 
     @Test
     public void testDefaultActiveSearchFilters() {
-        presenter.setupDefaultActiveSearchFilters();
+        presenter.setupActiveSearchFilters();
 
         ArgumentCaptor<ActiveFilterItem> captor = ArgumentCaptor.forClass(ActiveFilterItem.class);
         verify(view,
