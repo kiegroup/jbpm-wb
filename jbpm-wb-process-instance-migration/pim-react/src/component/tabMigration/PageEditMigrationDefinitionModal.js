@@ -18,8 +18,8 @@ export default class PageEditMigrationDefinitionModal extends React.Component {
       planId: this.props.rowData.definition.planId,
       processInstanceIds: this.props.rowData.definition.processInstanceIds,
       kieserverId: this.props.rowData.definition.kieserverId,
-      scheduleStartTime: this.props.rowData.definition.execution
-        .scheduleStartTime,
+      scheduledStartTime: this.props.rowData.definition.execution
+        .scheduledStartTime,
       callbackUrl: this.props.rowData.definition.execution.callbackUrl,
       showEditDialog: false
     };
@@ -31,10 +31,10 @@ export default class PageEditMigrationDefinitionModal extends React.Component {
     };
 
     if (
-      this.state.scheduleStartTime !== null &&
-      this.state.scheduleStartTime !== ""
+      this.state.scheduledStartTime !== null &&
+      this.state.scheduledStartTime !== ""
     ) {
-      execution.scheduledStartTime = this.state.scheduleStartTime;
+      execution.scheduledStartTime = this.state.scheduledStartTime;
     }
     if (this.state.callbackUrl !== null && this.state.callbackUrl !== "") {
       execution.callbackUrl = this.state.callbackUrl;
@@ -49,7 +49,6 @@ export default class PageEditMigrationDefinitionModal extends React.Component {
 
     var jsonStr = JSON.stringify(formData, null, 2);
 
-    //Remove the " " from running instances because it's not a string
     if (jsonStr !== null && jsonStr !== "") {
       //replace "[ to [
       jsonStr = jsonStr.replace('"[', "[");
@@ -69,7 +68,7 @@ export default class PageEditMigrationDefinitionModal extends React.Component {
 
   setScheduleStartTime = startTime => {
     this.setState({
-      scheduleStartTime: startTime
+      scheduledStartTime: startTime
     });
   };
 

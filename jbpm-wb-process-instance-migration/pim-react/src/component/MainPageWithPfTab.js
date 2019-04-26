@@ -17,7 +17,7 @@ import { MockupData_KIE_SERVER_ID } from "./common/MockupData";
 import { USE_MOCK_DATA } from "./common/PimConstants";
 import { BACKEND_URL } from "./common/PimConstants";
 
-export default class MainPagewithPfTab extends Component {
+export default class MainPageWithPfTab extends Component {
   constructor(props) {
     super(props);
 

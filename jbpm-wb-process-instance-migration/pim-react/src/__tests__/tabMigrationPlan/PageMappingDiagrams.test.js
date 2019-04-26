@@ -15,8 +15,8 @@ test("PageMappingDiagrams renders correctly using snapshot", () => {
         targetPreviousSelector=""
         sourceDiagramButtonClick={myMock}
         targetDiagramButtonClick={myMock}
-        sourceDiagramshown="false"
-        targetDiagramshown="false"
+        sourceDiagramShown="false"
+        targetDiagramShown="false"
         sourceInfo={mockData.sourceInfo}
         targetInfo={mockData.targetInfo}
       />

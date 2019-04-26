@@ -11,7 +11,7 @@ test("MigrationPlansTable renders correctly using snapshot", () => {
       <MigrationPlansTable
         openMigrationWizard={myMock}
         openAddPlanWizard={myMock}
-        openAddPlanWizardwithInitialData={myMock}
+        openAddPlanWizardWithInitialData={myMock}
         showDeleteDialog={myMock}
         filteredPlans={mockData}
         updatePlan={myMock}

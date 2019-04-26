@@ -32,7 +32,7 @@ export default class MigrationDefinitions extends Component {
   }
 
   componentDidMount() {
-    this.retriveMigrationDefinitions();
+    this.retrieveMigrationDefinitions();
   }
 
   hideDetailDialog = () => {
@@ -41,7 +41,7 @@ export default class MigrationDefinitions extends Component {
     });
   };
 
-  retriveMigrationLogs = rowData => {
+  retrieveMigrationLogs = rowData => {
     this.setState({
       showLogDialog: true
     });
@@ -77,7 +77,7 @@ export default class MigrationDefinitions extends Component {
   deleteMigration = () => {
     if (USE_MOCK_DATA) {
       this.hideDeleteDialog();
-      this.retriveMigrationDefinitions();
+      this.retrieveMigrationDefinitions();
     } else {
       //need to create a temp variable "self" to store this, so I can invoke this inside axios call
       const self = this;
@@ -85,12 +85,12 @@ export default class MigrationDefinitions extends Component {
         BACKEND_URL + "/migrations/" + this.state.deleteMigrationId;
       axios.delete(servicesUrl, {}).then(() => {
         self.hideDeleteDialog();
-        self.retriveMigrationDefinitions();
+        self.retrieveMigrationDefinitions();
       });
     }
   };
 
-  retriveMigrationDefinitions = event => {
+  retrieveMigrationDefinitions = event => {
     const input = document.getElementById("id_migrationsDefinitions_input1");
     if (
       input != null &&
@@ -98,6 +98,7 @@ export default class MigrationDefinitions extends Component {
       input.value != "" &&
       !validator.isNumeric(input.value)
     ) {
+      //during user input, need to check for migration id should be numeric
       this.setState({
         validationMessage: "Error: migration id should be numeric"
       });
@@ -106,11 +107,13 @@ export default class MigrationDefinitions extends Component {
       event.currentTarget.id == "id_migrationDefinition_search_button" &&
       (input == null || input.value == "")
     ) {
+      //search button is pressed, need to judge migration id can't be empty
       this.setState({
         validationMessage:
           "Error: To do a search, the migration id can't be empty"
       });
     } else {
+      //all good, so no need to outpt validation error message
       this.setState({
         validationMessage: ""
       });
@@ -120,6 +123,7 @@ export default class MigrationDefinitions extends Component {
           migrationsDefinitions
         });
       } else {
+        //search the migration record
         if (input != null) {
           let serviceUrl = BACKEND_URL + "/migrations/" + input.value;
           if (
@@ -185,7 +189,7 @@ export default class MigrationDefinitions extends Component {
               <DisplayStatus
                 key="0"
                 rowData={rowData}
-                retriveMigrationLogs={this.retriveMigrationLogs}
+                retrieveMigrationLogs={this.retrieveMigrationLogs}
               />
             ]
           ]
@@ -320,7 +324,7 @@ export default class MigrationDefinitions extends Component {
       } else {
         return (
           <Table.Cell key="0">
-            <a href="#" onClick={() => props.retriveMigrationLogs(rowData)}>
+            <a href="#" onClick={() => props.retrieveMigrationLogs(rowData)}>
               {rowData.status}
             </a>
           </Table.Cell>
@@ -371,7 +375,7 @@ export default class MigrationDefinitions extends Component {
             />
             <button
               type="button"
-              onClick={this.retriveMigrationDefinitions}
+              onClick={this.retrieveMigrationDefinitions}
               id="id_migrationDefinition_search_button"
             >
               <span className="fa fa-search" />
@@ -382,7 +386,7 @@ export default class MigrationDefinitions extends Component {
               <OverlayTrigger overlay={tooltipRefresh} placement={"bottom"}>
                 <button
                   type="button"
-                  onClick={this.retriveMigrationDefinitions}
+                  onClick={this.retrieveMigrationDefinitions}
                   id="id_migrationDefinition_refresh_button"
                 >
                   <span className="fa fa-refresh" />

@@ -23,7 +23,7 @@ export default class WizardExecuteMigration extends WizardBase {
       activeStepIndex: 0,
       activeSubStepIndex: 0,
       runningInstanceIds: "",
-      scheduleStartTime: "",
+      scheduledStartTime: "",
       migrationDefinitionJsonStr: "",
       callbackUrl: "",
       pimServiceResponseJsonStr: ""
@@ -36,7 +36,7 @@ export default class WizardExecuteMigration extends WizardBase {
       activeStepIndex: 0,
       activeSubStepIndex: 0,
       runningInstanceIds: "",
-      scheduleStartTime: "",
+      scheduledStartTime: "",
       migrationDefinitionJsonStr: "",
       callbackUrl: "",
       pimServiceResponseJsonStr: ""
@@ -81,10 +81,10 @@ export default class WizardExecuteMigration extends WizardBase {
     };
 
     if (
-      this.state.scheduleStartTime !== null &&
-      this.state.scheduleStartTime !== ""
+      this.state.scheduledStartTime !== null &&
+      this.state.scheduledStartTime !== ""
     ) {
-      execution.scheduledStartTime = this.state.scheduleStartTime;
+      execution.scheduledStartTime = this.state.scheduledStartTime;
     }
     if (this.state.callbackUrl !== null && this.state.callbackUrl !== "") {
       execution.callbackUrl = this.state.callbackUrl;
@@ -119,7 +119,7 @@ export default class WizardExecuteMigration extends WizardBase {
 
   setScheduleStartTime = startTime => {
     this.setState({
-      scheduleStartTime: startTime
+      scheduledStartTime: startTime
     });
   };
 

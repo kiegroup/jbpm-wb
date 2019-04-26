@@ -64,7 +64,7 @@ export default class PageDefinition extends Component {
     this.setState({ targetContainerId: value });
   };
 
-  retriveBothInfo = () => {
+  retrieveBothInfo = () => {
     if (USE_MOCK_DATA) {
       const mockData = Mockup_processMapping_Info;
       this.props.setInfo(mockData.sourceInfo, mockData.targetInfo);
@@ -187,7 +187,7 @@ export default class PageDefinition extends Component {
           initProcessId={this.props.initProcessId}
         />
 
-        <Button bsStyle="default" onClick={() => this.retriveBothInfo()}>
+        <Button bsStyle="default" onClick={() => this.retrieveBothInfo()}>
           Retrieve definition from backend
         </Button>
 

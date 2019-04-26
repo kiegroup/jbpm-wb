@@ -14,8 +14,8 @@ export default class PageMapping extends Component {
     this.state = {
       sourceNodeStr: "",
       targetNodeStr: "",
-      sourceDiagramshown: false,
-      targetDiagramshown: false,
+      sourceDiagramShown: false,
+      targetDiagramShown: false,
       sourceCurrentSelector: "_Dummy123",
       sourcePreviousSelector: "_Dummy123",
       targetCurrentSelector: "_Dummy123",
@@ -41,13 +41,13 @@ export default class PageMapping extends Component {
 
   handleSourceDiagramButtonClick = () => {
     this.setState({
-      sourceDiagramshown: !this.state.sourceDiagramshown
+      sourceDiagramShown: !this.state.sourceDiagramShown
     });
   };
 
   handleTargetDiagramButtonClick = () => {
     this.setState({
-      targetDiagramshown: !this.state.targetDiagramshown
+      targetDiagramShown: !this.state.targetDiagramShown
     });
   };
 
@@ -59,8 +59,8 @@ export default class PageMapping extends Component {
       sourceNodeStr: option,
       sourcePreviousSelector: tmpPreviousSelector,
       sourceCurrentSelector: tmpCurrentSelector,
-      sourceDiagramshown: true,
-      targetDiagramshown: false
+      sourceDiagramShown: true,
+      targetDiagramShown: false
     });
   };
 
@@ -72,8 +72,8 @@ export default class PageMapping extends Component {
       targetNodeStr: option,
       targetPreviousSelector: tmpPreviousSelector,
       targetCurrentSelector: tmpCurrentSelector,
-      sourceDiagramshown: false,
-      targetDiagramshown: true
+      sourceDiagramShown: false,
+      targetDiagramShown: true
     });
   };
 
@@ -183,15 +183,15 @@ export default class PageMapping extends Component {
             targetPreviousSelector={this.state.targetPreviousSelector}
             sourceDiagramButtonClick={this.handleSourceDiagramButtonClick}
             targetDiagramButtonClick={this.handleTargetDiagramButtonClick}
-            sourceDiagramshown={this.state.sourceDiagramshown}
-            targetDiagramshown={this.state.targetDiagramshown}
+            sourceDiagramShown={this.state.sourceDiagramShown}
+            targetDiagramShown={this.state.targetDiagramShown}
             sourceInfo={this.props.sourceInfo}
             targetInfo={this.props.targetInfo}
           />
         </div>
       );
     } else {
-      //no process info retrived from backend yet, just display an empty tag to avoid error.
+      //no process info retrieved from backend yet, just display an empty tag to avoid error.
       return <div />;
     }
   }

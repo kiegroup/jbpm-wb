@@ -137,7 +137,7 @@ export default class MigrationPlansTable extends Component {
                   <Table.Button
                     bsStyle="link"
                     onClick={() =>
-                      this.props.openAddPlanWizardwithInitialData(rowData)
+                      this.props.openAddPlanWizardWithInitialData(rowData)
                     }
                   >
                     <Icon type="fa" name="edit" />

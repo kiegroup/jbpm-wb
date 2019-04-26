@@ -15,17 +15,17 @@ export default class PageMappingDiagrams extends Component {
 
   render() {
     const sourceShown = {
-      display: this.props.sourceDiagramshown ? "block" : "none"
+      display: this.props.sourceDiagramShown ? "block" : "none"
     };
 
     const targetShown = {
-      display: this.props.targetDiagramshown ? "block" : "none"
+      display: this.props.targetDiagramShown ? "block" : "none"
     };
 
-    const sourceDisplayText = this.props.sourceDiagramshown
+    const sourceDisplayText = this.props.sourceDiagramShown
       ? "Hide Source Diagram"
       : "Show Source Diagram";
-    const targetDisplayText = this.props.targetDiagramshown
+    const targetDisplayText = this.props.targetDiagramShown
       ? "Hide Target Diagram"
       : "Show Target Diagram";
 
