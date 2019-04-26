@@ -1,128 +1,128 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.jbpm</groupId>
-        <artifactId>jbpm-wb-process-instance-migration</artifactId>
-        <version>7.21.0-SNAPSHOT</version>
-    </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.jbpm</groupId>
+    <artifactId>jbpm-wb-process-instance-migration</artifactId>
+    <version>7.21.0-SNAPSHOT</version>
+  </parent>
 
-    <groupId>org.kie</groupId>
-    <artifactId>pim-react</artifactId>
-    <name>Process Instance Migration React GUI</name>
-    <packaging>pom</packaging>
+  <groupId>org.kie</groupId>
+  <artifactId>pim-react</artifactId>
+  <name>Process Instance Migration React GUI</name>
+  <packaging>pom</packaging>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.6</version>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>1.6</version>
 
-                <executions>
-                    <execution>
-                        <id>install node and npm</id>
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                        <configuration>
-                            <!-- See https://nodejs.org/en/download/ for latest node and npm (lts) versions -->
-                            <nodeVersion>v10.13.0</nodeVersion>
-                            <npmVersion>6.8.0</npmVersion>
-                        </configuration>
-                    </execution>
+        <executions>
+          <execution>
+            <id>install node and npm</id>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+            <configuration>
+              <!-- See https://nodejs.org/en/download/ for latest node and npm (lts) versions -->
+              <nodeVersion>v10.13.0</nodeVersion>
+              <npmVersion>6.8.0</npmVersion>
+            </configuration>
+          </execution>
 
-                    <execution>
-                        <id>npm install</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <!-- Optional configuration which provides for running any npm command -->
-                        <configuration>
-                            <arguments>install</arguments>
-                        </configuration>
-                    </execution>
+          <execution>
+            <id>npm install</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <!-- Optional configuration which provides for running any npm command -->
+            <configuration>
+              <arguments>install</arguments>
+            </configuration>
+          </execution>
 
-                    <execution>
-                        <id>npm run build</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>run build</arguments>
-                        </configuration>
-                    </execution>
+          <execution>
+            <id>npm run build</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>run build</arguments>
+            </configuration>
+          </execution>
 
-                    <execution>
-                        <id>run tests</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <phase>test</phase>
-                        <configuration>
-                            <arguments>test</arguments>
-                        </configuration>
-                    </execution>
+          <execution>
+            <id>run tests</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>test</phase>
+            <configuration>
+              <arguments>test</arguments>
+            </configuration>
+          </execution>
 
-                </executions>
-            </plugin>
+        </executions>
+      </plugin>
 
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>copy-javascript</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>../pim-service/src/main/webapp</outputDirectory>
-                            <overwrite>true</overwrite>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}</directory>
-                                    <includes>
-                                        <include>bundle.js</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-css</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>../pim-service/src/main/webapp/css</outputDirectory>
-                            <overwrite>true</overwrite>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}/src/css/</directory>
-                                    <includes>
-                                        <include>**/*</include>
-                                    </includes>
-                                    <excludes>
-                                        <exclude>*.map</exclude>
-                                    </excludes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>copy-javascript</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>../pim-service/src/main/webapp</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>${basedir}</directory>
+                  <includes>
+                    <include>bundle.js</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-css</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>../pim-service/src/main/webapp/css</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>${basedir}/src/css/</directory>
+                  <includes>
+                    <include>**/*</include>
+                  </includes>
+                  <excludes>
+                    <exclude>*.map</exclude>
+                  </excludes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
 
 
-        </plugins>
-    </build>
+    </plugins>
+  </build>
 
 
 </project>
