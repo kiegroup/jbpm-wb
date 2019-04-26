@@ -16,7 +16,12 @@
 
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -289,10 +294,10 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                       task.getId());
     }
 
-    public Menus getMenus() { //To be used by subclass methods annotated with @WorkbenchMenu
-        return MenuFactory
-                .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
-                .build();
+    public void getMenus(final Consumer<Menus> menusConsumer) { //To be used by subclass methods annotated with @WorkbenchMenu
+        menusConsumer.accept(MenuFactory
+                                     .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
+                                     .build());
     }
 
     @Override

@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.pr.client.editors.definition.details;
 
+import java.util.function.Consumer;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -104,11 +105,11 @@ public class ProcessDefinitionDetailsPresenter implements RefreshMenuBuilder.Sup
     }
 
     @WorkbenchMenu
-    public Menus buildMenu() {
-        return MenuFactory
-                .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
-                .newTopLevelCustomMenu(primaryActionMenuBuilder).endMenu()
-                .build();
+    public void buildMenu(final Consumer<Menus> menusConsumer) {
+        menusConsumer.accept(MenuFactory
+                                     .newTopLevelCustomMenu(new RefreshMenuBuilder(this)).endMenu()
+                                     .newTopLevelCustomMenu(primaryActionMenuBuilder).endMenu()
+                                     .build());
     }
 
     @WorkbenchPartTitle

@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.es.client.editors.requestlist;
 
+import java.util.function.Consumer;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -31,8 +32,8 @@ import static org.jbpm.workbench.common.client.PerspectiveIds.JOB_LIST_SAVED_FIL
 public class JobListSavedFiltersPresenter extends SavedFiltersPresenter {
 
     @WorkbenchMenu
-    public Menus getMenus() { //It's necessary to annotate with @WorkbenchMenu in subclass
-        return super.getMenus();
+    public void getMenus(final Consumer<Menus> menusConsumer) {
+        super.getMenus(menusConsumer);
     }
 
     @Inject

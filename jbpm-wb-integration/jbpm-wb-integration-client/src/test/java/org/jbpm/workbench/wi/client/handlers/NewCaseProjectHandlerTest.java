@@ -22,6 +22,7 @@ import javax.enterprise.inject.Instance;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
+import org.guvnor.common.services.project.client.security.ProjectController;
 import org.guvnor.common.services.project.model.WorkspaceProject;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.jboss.errai.common.client.api.Caller;
@@ -30,7 +31,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.screens.library.client.screens.project.AddProjectPopUpPresenter;
-import org.kie.workbench.common.screens.library.client.util.LibraryPermissions;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -60,7 +60,7 @@ public class NewCaseProjectHandlerTest {
     AddProjectPopUpPresenter addProjectPopUpPresenter;
 
     @Mock
-    LibraryPermissions libraryPermissions;
+    ProjectController projectController;
 
     @Mock
     WorkspaceProjectContext context;
@@ -114,7 +114,7 @@ public class NewCaseProjectHandlerTest {
     public void testCanCreateCaseProjectWhenUserHasPermissionOnCurrentOU() {
         final OrganizationalUnit currentOU = mock(OrganizationalUnit.class);
         doReturn(Optional.of(currentOU)).when(context).getActiveOrganizationalUnit();
-        doReturn(true).when(libraryPermissions).userCanCreateProject(same(currentOU));
+        doReturn(true).when(projectController).canCreateProjects(same(currentOU));
 
         assertTrue(newCaseProjectHandler.canCreate());
     }
@@ -123,7 +123,7 @@ public class NewCaseProjectHandlerTest {
     public void testCanNotCreateCaseProjectWhenUserHasNoPermissionOnCurrentOU() {
         final OrganizationalUnit currentOU = mock(OrganizationalUnit.class);
         doReturn(Optional.of(currentOU)).when(context).getActiveOrganizationalUnit();
-        doReturn(false).when(libraryPermissions).userCanCreateProject(same(currentOU));
+        doReturn(false).when(projectController).canCreateProjects(same(currentOU));
 
         assertFalse(newCaseProjectHandler.canCreate());
     }

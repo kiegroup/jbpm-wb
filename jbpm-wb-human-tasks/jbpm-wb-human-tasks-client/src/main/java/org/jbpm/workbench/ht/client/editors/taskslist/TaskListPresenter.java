@@ -15,6 +15,7 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -46,8 +47,8 @@ public class TaskListPresenter extends AbstractTaskListPresenter<TaskListViewImp
     }
 
     @WorkbenchMenu
-    public Menus getMenus() { //It's necessary to annotate with @WorkbenchMenu in subclass
-        return super.getMenus();
+    public void getMenus(final Consumer<Menus> menusConsumer) {
+        super.getMenus(menusConsumer);
     }
 
     @Override
