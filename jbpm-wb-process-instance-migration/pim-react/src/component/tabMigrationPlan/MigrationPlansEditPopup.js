@@ -18,16 +18,14 @@ export default class MigrationPlansEditPopup extends React.Component {
   };
 
   submit = () => {
-    //this component is used as "Import Plan"
     if (this.props.actionName == "Import Plan") {
+      //this component is used as "Import Plan"
       var input = document.getElementById("planEditArea");
       var value = input.value;
-
-      //could be addPlan or editPlan, the planId is only needed for editPlan
-      this.props.updatePlan(value, this.props.planId);
+      this.props.addPlan(value);
       this.props.retrieveAllPlans();
     } else {
-      //this component is used as "Export Plan"
+      //this pop-up is used as "Export Plan", so copy the plan to clipboard for Export
       input = document.getElementById("planEditArea");
       value = input.value;
       navigator.clipboard.writeText(value);

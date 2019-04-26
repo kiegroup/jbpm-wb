@@ -26,7 +26,7 @@ test("PageMappingDropdownNode renders correctly using snapshot", () => {
     .create(
       <PageMappingDropdownNode
         options={sourceNode}
-        title="Source Nodes "
+        title="Source Nodes"
         onDropdownChange={myMock}
       />
     )

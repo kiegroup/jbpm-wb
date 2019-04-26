@@ -104,7 +104,7 @@ export default class MigrationPlans extends MigrationPlansBase {
                 title="Import Migration Plan"
                 actionName="Import Plan"
                 retrieveAllPlans={this.retrieveAllPlans}
-                updatePlan={this.addPlan}
+                addPlan={this.addPlan}
               />
               &nbsp;
               <Button bsStyle="primary" onClick={this.openAddPlanWizard}>

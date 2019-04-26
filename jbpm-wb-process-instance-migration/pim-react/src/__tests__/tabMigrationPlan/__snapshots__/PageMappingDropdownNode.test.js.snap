@@ -16,7 +16,7 @@ exports[`PageMappingDropdownNode renders correctly using snapshot 1`] = `
       role="button"
       type="button"
     >
-      Source Nodes 
+      Source Nodes
        
       <span
         className="caret"
