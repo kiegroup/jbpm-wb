@@ -27,6 +27,7 @@ import com.google.gwt.core.client.Callback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
+import org.guvnor.common.services.project.client.security.ProjectController;
 import org.guvnor.common.services.project.context.WorkspaceProjectContextChangeEvent;
 import org.guvnor.common.services.project.model.Package;
 import org.guvnor.common.services.project.model.WorkspaceProject;
@@ -38,7 +39,6 @@ import org.jbpm.workbench.wi.casemgmt.service.CaseProjectService;
 import org.jbpm.workbench.wi.client.i18n.Constants;
 import org.kie.workbench.common.screens.library.api.preferences.LibraryPreferences;
 import org.kie.workbench.common.screens.library.client.screens.project.AddProjectPopUpPresenter;
-import org.kie.workbench.common.screens.library.client.util.LibraryPermissions;
 import org.kie.workbench.common.screens.projecteditor.client.resources.ProjectEditorResources;
 import org.kie.workbench.common.widgets.client.handlers.NewResourcePresenter;
 import org.kie.workbench.common.widgets.client.handlers.NewWorkspaceProjectHandler;
@@ -69,7 +69,7 @@ public class NewCaseProjectHandler implements NewWorkspaceProjectHandler {
     private WorkspaceProjectContext context;
 
     @Inject
-    private LibraryPermissions libraryPermissions;
+    private ProjectController projectController;
 
     private Instance<AddProjectPopUpPresenter> addProjectPopUpPresenterProvider;
 
@@ -120,7 +120,7 @@ public class NewCaseProjectHandler implements NewWorkspaceProjectHandler {
 
     @Override
     public boolean canCreate() {
-        return libraryPermissions.userCanCreateProject(context.getActiveOrganizationalUnit().get());
+        return projectController.canCreateProjects(context.getActiveOrganizationalUnit().get());
     }
 
     @Override

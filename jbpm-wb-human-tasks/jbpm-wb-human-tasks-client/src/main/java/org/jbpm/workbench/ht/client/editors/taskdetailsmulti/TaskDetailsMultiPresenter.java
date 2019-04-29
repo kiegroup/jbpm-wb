@@ -15,6 +15,7 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskdetailsmulti;
 
+import java.util.function.Consumer;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -195,12 +196,13 @@ public class TaskDetailsMultiPresenter extends AbstractTaskPresenter implements 
     }
 
     @WorkbenchMenu
-    public Menus buildMenu() {
-        return MenuFactory
-                .newTopLevelCustomMenu(new RefreshMenuBuilder(this))
-                .endMenu()
-                .build();
+    public void buildMenu(final Consumer<Menus> menusConsumer) {
+        menusConsumer.accept(MenuFactory
+                                     .newTopLevelCustomMenu(new RefreshMenuBuilder(this))
+                                     .endMenu()
+                                     .build());
     }
+
 
     public IsWidget getGenericFormView() {
         return taskFormPresenter.getView();

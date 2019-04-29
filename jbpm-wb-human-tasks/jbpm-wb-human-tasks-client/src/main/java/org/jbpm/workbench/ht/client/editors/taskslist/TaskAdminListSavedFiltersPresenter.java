@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
+import java.util.function.Consumer;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -31,8 +32,8 @@ import static org.jbpm.workbench.common.client.PerspectiveIds.TASK_ADMIN_LIST_SA
 public class TaskAdminListSavedFiltersPresenter extends SavedFiltersPresenter {
 
     @WorkbenchMenu
-    public Menus getMenus() { //It's necessary to annotate with @WorkbenchMenu in subclass
-        return super.getMenus();
+    public void getMenus(final Consumer<Menus> menusConsumer) {
+        super.getMenus(menusConsumer);
     }
 
     @Inject

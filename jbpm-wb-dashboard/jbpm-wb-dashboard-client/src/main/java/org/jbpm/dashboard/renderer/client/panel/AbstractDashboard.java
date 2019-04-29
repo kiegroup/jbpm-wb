@@ -16,6 +16,7 @@
 
 package org.jbpm.dashboard.renderer.client.panel;
 
+import java.util.function.Consumer;
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
@@ -167,8 +168,7 @@ public abstract class AbstractDashboard {
         }
     }
 
-    public Menus getMenus() {
-
+    public void getMenus(final Consumer<Menus> menusConsumer) {
         PrimaryActionMenuBuilder viewTableAction = new PrimaryActionMenuBuilder(i18n.viewTable(),
                                                                                 "fa-table",
                                                                                 i18n.viewTable(),
@@ -193,12 +193,12 @@ public abstract class AbstractDashboard {
         viewTableAction.setVisible(true);
         viewDashboardAction.setVisible(false);
 
-        return MenuFactory
-                .newTopLevelCustomMenu(viewTableAction)
-                .endMenu()
-                .newTopLevelCustomMenu(viewDashboardAction)
-                .endMenu()
-                .build();
+        menusConsumer.accept(MenuFactory
+                                     .newTopLevelCustomMenu(viewTableAction)
+                                     .endMenu()
+                                     .newTopLevelCustomMenu(viewDashboardAction)
+                                     .endMenu()
+                                     .build());
     }
 
     public MetricDisplayer createMetricDisplayer(DisplayerSettings settings) {

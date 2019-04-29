@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.pr.client.editors.instance.list;
 
+import java.util.function.Consumer;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -31,8 +32,8 @@ import static org.jbpm.workbench.common.client.PerspectiveIds.PROCESS_INSTANCE_L
 public class ProcessInstanceListSavedFiltersPresenter extends SavedFiltersPresenter {
 
     @WorkbenchMenu
-    public Menus getMenus() { //It's necessary to annotate with @WorkbenchMenu in subclass
-        return super.getMenus();
+    public void getMenus(final Consumer<Menus> menusConsumer) { //It's necessary to annotate with @WorkbenchMenu in subclass
+        super.getMenus(menusConsumer);
     }
 
     @Inject
