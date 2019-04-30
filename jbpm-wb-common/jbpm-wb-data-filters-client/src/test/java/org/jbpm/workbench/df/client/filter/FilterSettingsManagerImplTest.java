@@ -15,6 +15,7 @@
  */
 package org.jbpm.workbench.df.client.filter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.function.Consumer;
@@ -157,5 +158,51 @@ public class FilterSettingsManagerImplTest {
         verify(userPreferencesServiceMock).saveUserPreferences(multiGridPreferencesStore);
         verify(multiGridPreferencesStore).setDefaultGridId(newDefaultFilter);
         verify(callbackMock).execute();
+    }
+
+    @Test
+    public void testRemoveDefaultSavedFilter() {
+        String defaultFilterKey = "key";
+        String nextSavedFilterKey = "next";
+        ArrayList<String> savedFiltersIds = new ArrayList<>();
+        savedFiltersIds.addAll(Arrays.asList(nextSavedFilterKey, "filter2", "filter3"));
+
+        when(multiGridPreferencesStore.getDefaultGridId()).thenReturn(defaultFilterKey);
+        when(multiGridPreferencesStore.getGridsId()).thenReturn(savedFiltersIds);
+
+        filterSettingsManagerImpl.removeSavedFilter(multiGridPreferencesStore, defaultFilterKey);
+
+        verify(multiGridPreferencesStore).removeTab(defaultFilterKey);
+        verify(multiGridPreferencesStore).setDefaultGridId(nextSavedFilterKey);
+    }
+
+    @Test
+    public void testRemoveLastSavedFilter() {
+        String defaultFilterKey = "key";
+        ArrayList<String> savedFiltersIds = new ArrayList<>();
+
+        when(multiGridPreferencesStore.getDefaultGridId()).thenReturn(defaultFilterKey);
+        when(multiGridPreferencesStore.getGridsId()).thenReturn(savedFiltersIds);
+
+        filterSettingsManagerImpl.removeSavedFilter(multiGridPreferencesStore, defaultFilterKey);
+
+        verify(multiGridPreferencesStore).removeTab(defaultFilterKey);
+        verify(multiGridPreferencesStore).setDefaultGridId(null);
+    }
+
+    @Test
+    public void testRemoveNotDefaultSavedFilter() {
+        String defaultFilterKey = "defaultKey";
+        String key = "key";
+        ArrayList<String> savedFiltersIds = new ArrayList<>();
+        savedFiltersIds.addAll(Arrays.asList("filter1", "filter2", defaultFilterKey));
+
+        when(multiGridPreferencesStore.getDefaultGridId()).thenReturn(defaultFilterKey);
+        when(multiGridPreferencesStore.getGridsId()).thenReturn(savedFiltersIds);
+
+        filterSettingsManagerImpl.removeSavedFilter(multiGridPreferencesStore, key);
+
+        verify(multiGridPreferencesStore).removeTab(key);
+        verify(multiGridPreferencesStore, never()).setDefaultGridId(anyString());
     }
 }

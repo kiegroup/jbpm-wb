@@ -146,11 +146,13 @@ public abstract class FilterSettingsManagerImpl implements FilterSettingsManager
             final List<FilterSettings> defaultFilters = initDefaultFilters();
             defaultFilters.forEach(f -> addFilterToPreferencesStore(f,
                                                                     store));
+            store.setDefaultGridId(store.getGridsId().get(0));
             saveMultiGridPreferencesStore(store,
                                           () -> {
                                               final List<SavedFilter> filters = defaultFilters.stream().map(s -> new SavedFilter(s.getKey(),
                                                                                                                                  s.getTableName(), false)).collect(Collectors.toList());
                                               if (savedFiltersConsumer != null) {
+                                                  filters.get(0).setDefaultFilter(true);
                                                   savedFiltersConsumer.accept(filters);
                                               }
                                           });
@@ -187,6 +189,17 @@ public abstract class FilterSettingsManagerImpl implements FilterSettingsManager
         });
     }
 
+    protected void removeSavedFilter(final MultiGridPreferencesStore store, String key) {
+        store.removeTab(key);
+        if (key.equals(store.getDefaultGridId())) {
+            if (store.getGridsId().size() > 0) {
+                store.setDefaultGridId(store.getGridsId().get(0));
+            } else {
+                store.setDefaultGridId(null);
+            }
+        }
+    }
+
     @Override
     public void resetDefaultSavedFilters(final Consumer<List<SavedFilter>> savedFiltersConsumer) {
         loadMultiGridPreferencesStore(store -> {
@@ -198,18 +211,16 @@ public abstract class FilterSettingsManagerImpl implements FilterSettingsManager
     }
 
     @Override
-    public void removeSavedFilterFromPreferences(final String key) {
+    public void removeSavedFilterFromPreferences(final String key, Command command) {
         loadMultiGridPreferencesStore(store -> {
-            removeSavedFilterFromPreferences(key,
-                                             store,
-                                             null);
+            removeSavedFilterFromPreferences(key, store, command);
         });
     }
 
     protected void removeSavedFilterFromPreferences(final String key,
                                                     final MultiGridPreferencesStore store,
                                                     final Command callback) {
-        store.removeTab(key);
+        removeSavedFilter(store, key);
         preferencesService.call(r -> {
             if (callback != null) {
                 callback.execute();

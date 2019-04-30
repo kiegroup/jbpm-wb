@@ -32,7 +32,7 @@ public interface FilterSettingsManager {
     void saveFilterIntoPreferences(FilterSettings filterSettings,
                                    Consumer<Boolean> callback);
 
-    void removeSavedFilterFromPreferences(String key);
+    void removeSavedFilterFromPreferences(String key, Command callback);
 
     void getFilterSettings(String key,
                            Consumer<FilterSettings> filterSettingsConsumer);
