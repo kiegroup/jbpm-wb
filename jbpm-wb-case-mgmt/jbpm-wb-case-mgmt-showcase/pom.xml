@@ -363,6 +363,11 @@
       <artifactId>uberfire-preferences-client</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>appformer-js-bridge</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <!-- Uberfire SSH -->
     <dependency>
@@ -547,6 +552,7 @@
               <compileSourcesArtifact>org.uberfire:uberfire-preferences-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-preferences-client</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-ssh-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.uberfire:appformer-js-bridge</compileSourcesArtifact>
 
               <!-- Kie Server -->
               <compileSourcesArtifact>org.kie:kie-api</compileSourcesArtifact>

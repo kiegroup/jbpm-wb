@@ -35,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.uberfire.client.mvp.ActivityBeansCache;
 import org.uberfire.client.workbench.widgets.menu.megamenu.WorkbenchMegaMenuPresenter;
+import org.uberfire.jsbridge.client.AppFormerJsBridge;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.ConstantsAnswerMock;
 import org.uberfire.mocks.IocTestingUtils;
@@ -85,7 +86,8 @@ public class ShowcaseEntryPointTest {
                                                         adminPageHelper,
                                                         menusHelper,
                                                         menuBar,
-                                                        defaultWorkbenchErrorCallback));
+                                                        defaultWorkbenchErrorCallback,
+                                                        mock(AppFormerJsBridge.class)));
         mockMenuHelper();
         mockConstants();
         IocTestingUtils.mockIocManager(iocManager);
