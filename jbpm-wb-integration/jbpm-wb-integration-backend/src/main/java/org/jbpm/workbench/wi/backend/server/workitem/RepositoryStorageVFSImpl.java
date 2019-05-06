@@ -25,8 +25,9 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.guvnor.structure.repositories.Repository;
+import com.thoughtworks.xstream.XStream;
 import org.guvnor.structure.organizationalunit.RepoRemovedFromOrganizationalUnitEvent;
+import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryRemovedEvent;
 import org.jbpm.process.workitem.repository.service.RepoData;
 import org.jbpm.process.workitem.repository.storage.InMemoryRepositoryStorage;
@@ -38,25 +39,22 @@ import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.java.nio.file.Path;
 
-import com.thoughtworks.xstream.XStream;
-
 @Named("serviceTasksStorageVFS")
 @ApplicationScoped
 public class RepositoryStorageVFSImpl extends InMemoryRepositoryStorage<ServiceTasksConfiguration> {
 
-    
     private static final Logger logger = LoggerFactory.getLogger(RepositoryStorageVFSImpl.class);
 
     private IOService ioService;
     private FileSystem fileSystem;
 
     private XStream xs;
-        
+
     private Path storagePath;
     private Path configPath;
-    
+
     private ServiceTasksConfiguration configuration;
-    
+
     //enable proxy
     public RepositoryStorageVFSImpl() {
         xs = XStreamUtils.createTrustingXStream();
@@ -72,35 +70,23 @@ public class RepositoryStorageVFSImpl extends InMemoryRepositoryStorage<ServiceT
     @SuppressWarnings("unchecked")
     @PostConstruct
     public void init() {
-        configPath = fileSystem.getPath( "service-tasks", "remote", "service-repository-config.xml" );
+        configPath = fileSystem.getPath("service-tasks", "remote", "service-repository-config.xml");
         if (ioService.exists(configPath)) {
-            try {
-                ioService.startBatch(configPath.getFileSystem());
-                configuration = (ServiceTasksConfiguration) xs.fromXML(ioService.readAllString(configPath));
-            } finally {
-                ioService.endBatch();
-            }            
-            
+            configuration = (ServiceTasksConfiguration) xs.fromXML(ioService.readAllString(configPath));
         } else {
-            configuration = new ServiceTasksConfiguration(true, true, false);            
+            configuration = new ServiceTasksConfiguration(true, true, false);
         }
-        
-        storagePath = fileSystem.getPath( "service-tasks", "remote", "service-repository-storage.xml" );
+
+        storagePath = fileSystem.getPath("service-tasks", "remote", "service-repository-storage.xml");
         if (ioService.exists(storagePath)) {
-            try {
-                ioService.startBatch(storagePath.getFileSystem());
-                services = (List<RepoData>) xs.fromXML(ioService.readAllString(storagePath));
-            } finally {
-                ioService.endBatch();
-            }
+            services = (List<RepoData>) xs.fromXML(ioService.readAllString(storagePath));
             logger.debug("Loaded all known service tasks from the storage (size {})", services.size());
-            
         } else {
             services = new ArrayList<>();
             logger.debug("Service tasks not found in storage ");
         }
     }
-    
+
     @Override
     public List<RepoData> synchronizeServices(List<RepoData> currentServices) {
         if (!currentServices.isEmpty()) {
@@ -124,7 +110,7 @@ public class RepositoryStorageVFSImpl extends InMemoryRepositoryStorage<ServiceT
         enforceId(service);
         store(storagePath, services);
     }
-    
+
     @Override
     public void onEnabled(RepoData service) {
         store(storagePath, services);
@@ -144,46 +130,46 @@ public class RepositoryStorageVFSImpl extends InMemoryRepositoryStorage<ServiceT
     public void onUninstalled(RepoData service, String target) {
         store(storagePath, services);
     }
-    
+
     @Override
     public ServiceTasksConfiguration loadConfiguration() {
         return configuration;
     }
-    
+
     @Override
     public void storeConfiguration(ServiceTasksConfiguration configuration) {
         store(configPath, configuration);
         this.configuration = configuration;
     }
-    
-    
+
+
     public void onProjectDeleted(@Observes RepositoryRemovedEvent deletedEvent) {
-        
-        uninstallOnRepositoryRemoved(deletedEvent.getRepository());        
-    }
-    
-    public void onSpaceDeleted(@Observes RepoRemovedFromOrganizationalUnitEvent deletedEvent) {
-        
+
         uninstallOnRepositoryRemoved(deletedEvent.getRepository());
     }
-        
-    
+
+    public void onSpaceDeleted(@Observes RepoRemovedFromOrganizationalUnitEvent deletedEvent) {
+
+        uninstallOnRepositoryRemoved(deletedEvent.getRepository());
+    }
+
+
     /*
      * Helper methods
      */
 
     protected void uninstallOnRepositoryRemoved(Repository repository) {
-        String target = ServiceTaskUtils.extractTargetInfo(repository.getUri());        
+        String target = ServiceTaskUtils.extractTargetInfo(repository.getUri());
         logger.debug("{} has been removed, removing any references to it on service tasks", target);
-        
+
         services.stream()
                 .filter(service -> service.getInstalledOn().contains(target))
                 .forEach(service -> {
                     service.uninstall(target);
                     logger.debug("Service {} uninstalled from deleted target {}", service.getName(), target);
-                });  
+                });
     }
-    
+
     protected void store(Path path, Object data) {
         try {
             ioService.startBatch(fileSystem);
