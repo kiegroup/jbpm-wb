@@ -46,7 +46,7 @@ public class TaskDataConverterUtilTest {
     }
 
     @Test
-    public void testSupportedconstantValuesWithParsingErrors() {
+    public void testSupportedConstantValuesWithParsingErrors() {
         Map<String, String> definitions = new HashMap<>();
         definitions.put(DOUBLE, Double.class.getName());
         definitions.put(FLOAT, Float.class.getName());
