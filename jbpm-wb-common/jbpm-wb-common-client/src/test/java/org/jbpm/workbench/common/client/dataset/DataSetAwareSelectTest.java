@@ -39,10 +39,16 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.uberfire.client.views.pfly.widgets.Select;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DataSetAwareSelectTest {
@@ -82,11 +88,31 @@ public class DataSetAwareSelectTest {
     public void testEmptyServerTemplate() {
         filterSettings.setKey("key");
 
-        dataSetAwareSelect.onDataSetReady(new DataSetReadyEvent(filterSettings));
+        dataSetAwareSelect.onDataSetReady(new DataSetReadyEvent(filterSettings, null));
 
         verifyZeroInteractions(dataSetClientServices);
         verify(select).removeAllOptions();
     }
+
+    @Test
+    public void testLookupDataSetDifferentUUID() {
+        final String dataUUID = "dataUUID";
+        final String serverTemplateId = "test";
+        
+        filterSettings.setKey("key");
+        filterSettings.setServerTemplateId(serverTemplateId);
+                
+        final DataSetLookup lookup = mock(DataSetLookup.class);
+        when(lookup.getDataSetUUID()).thenReturn(dataUUID);
+        dataSetAwareSelect.setDataSetLookup(lookup);
+        dataSetAwareSelect.setValueColumnId(VALUE_COLUMN_ID);
+        dataSetAwareSelect.setTextColumnId(TEXT_COLUMN_ID);
+
+        dataSetAwareSelect.onDataSetReady(new DataSetReadyEvent(filterSettings, "anotherUUID"));
+
+        verifyZeroInteractions(dataSetClientServices);
+    }
+
 
     @Test
     public void testLookupDataSet() throws Exception {
@@ -109,29 +135,22 @@ public class DataSetAwareSelectTest {
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 final DataSet dataSet = mock(DataSet.class);
                 when(dataSet.getRowCount()).thenReturn(1);
-                when(dataSet.getValueAt(0,
-                                        VALUE_COLUMN_ID)).thenReturn(columnValue);
-                when(dataSet.getValueAt(0,
-                                        TEXT_COLUMN_ID)).thenReturn(columnText);
+                when(dataSet.getValueAt(0, VALUE_COLUMN_ID)).thenReturn(columnValue);
+                when(dataSet.getValueAt(0, TEXT_COLUMN_ID)).thenReturn(columnText);
                 ((DataSetReadyCallback) invocation.getArguments()[1]).callback(dataSet);
                 return null;
             }
-        }).when(dataSetClientServices).lookupDataSet(any(DataSetLookup.class),
-                                                     any(DataSetReadyCallback.class));
+        }).when(dataSetClientServices).lookupDataSet(any(DataSetLookup.class), any(DataSetReadyCallback.class));
 
-        dataSetAwareSelect.onDataSetReady(new DataSetReadyEvent(filterSettings));
+        dataSetAwareSelect.onDataSetReady(new DataSetReadyEvent(filterSettings, dataUUID));
 
         final ArgumentCaptor<DataSetLookup> captor = ArgumentCaptor.forClass(DataSetLookup.class);
-        verify(dataSetClientServices).lookupDataSet(captor.capture(),
-                                                    any(DataSetReadyCallback.class));
+        verify(dataSetClientServices).lookupDataSet(captor.capture(), any(DataSetReadyCallback.class));
         assertTrue(captor.getValue() instanceof ConsoleDataSetLookup);
         final ConsoleDataSetLookup cdsl = (ConsoleDataSetLookup) captor.getValue();
-        assertEquals(serverTemplateId,
-                     cdsl.getServerTemplateId());
-        assertEquals(dataUUID,
-                     cdsl.getDataSetUUID());
-        verify(select).addOption(columnText,
-                                 columnValue);
+        assertEquals(serverTemplateId, cdsl.getServerTemplateId());
+        assertEquals(dataUUID, cdsl.getDataSetUUID());
+        verify(select).addOption(columnText, columnValue);
         verify(select).enable();
         verify(select).removeAllOptions();
     }
@@ -157,37 +176,26 @@ public class DataSetAwareSelectTest {
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 final DataSet dataSet = mock(DataSet.class);
                 when(dataSet.getRowCount()).thenReturn(3);
-                when(dataSet.getValueAt(0,
-                                        VALUE_COLUMN_ID)).thenReturn(columnValue);
-                when(dataSet.getValueAt(0,
-                                        TEXT_COLUMN_ID)).thenReturn(columnText);
-                when(dataSet.getValueAt(1,
-                                        VALUE_COLUMN_ID)).thenReturn("");
-                when(dataSet.getValueAt(1,
-                                        TEXT_COLUMN_ID)).thenReturn("");
-                when(dataSet.getValueAt(2,
-                                        VALUE_COLUMN_ID)).thenReturn(null);
-                when(dataSet.getValueAt(2,
-                                        TEXT_COLUMN_ID)).thenReturn(null);
+                when(dataSet.getValueAt(0, VALUE_COLUMN_ID)).thenReturn(columnValue);
+                when(dataSet.getValueAt(0, TEXT_COLUMN_ID)).thenReturn(columnText);
+                when(dataSet.getValueAt(1, VALUE_COLUMN_ID)).thenReturn("");
+                when(dataSet.getValueAt(1, TEXT_COLUMN_ID)).thenReturn("");
+                when(dataSet.getValueAt(2, VALUE_COLUMN_ID)).thenReturn(null);
+                when(dataSet.getValueAt(2, TEXT_COLUMN_ID)).thenReturn(null);
                 ((DataSetReadyCallback) invocation.getArguments()[1]).callback(dataSet);
                 return null;
             }
-        }).when(dataSetClientServices).lookupDataSet(any(DataSetLookup.class),
-                                                     any(DataSetReadyCallback.class));
+        }).when(dataSetClientServices).lookupDataSet(any(DataSetLookup.class), any(DataSetReadyCallback.class));
 
-        dataSetAwareSelect.onDataSetReady(new DataSetReadyEvent(filterSettings));
+        dataSetAwareSelect.onDataSetReady(new DataSetReadyEvent(filterSettings, dataUUID));
 
         final ArgumentCaptor<DataSetLookup> captor = ArgumentCaptor.forClass(DataSetLookup.class);
-        verify(dataSetClientServices).lookupDataSet(captor.capture(),
-                                                    any(DataSetReadyCallback.class));
+        verify(dataSetClientServices).lookupDataSet(captor.capture(), any(DataSetReadyCallback.class));
         assertTrue(captor.getValue() instanceof ConsoleDataSetLookup);
         final ConsoleDataSetLookup cdsl = (ConsoleDataSetLookup) captor.getValue();
-        assertEquals(serverTemplateId,
-                     cdsl.getServerTemplateId());
-        assertEquals(dataUUID,
-                     cdsl.getDataSetUUID());
-        verify(select).addOption(columnText,
-                                 columnValue);
+        assertEquals(serverTemplateId, cdsl.getServerTemplateId());
+        assertEquals(dataUUID, cdsl.getDataSetUUID());
+        verify(select).addOption(columnText, columnValue);
         verify(select).enable();
         verify(select).removeAllOptions();
     }
@@ -212,23 +220,17 @@ public class DataSetAwareSelectTest {
                 ((DataSetReadyCallback) invocation.getArguments()[1]).callback(dataSet);
                 return null;
             }
-        }).when(dataSetClientServices).lookupDataSet(any(DataSetLookup.class),
-                                                     any(DataSetReadyCallback.class));
+        }).when(dataSetClientServices).lookupDataSet(any(DataSetLookup.class), any(DataSetReadyCallback.class));
 
-        dataSetAwareSelect.onDataSetReady(new DataSetReadyEvent(filterSettings));
+        dataSetAwareSelect.onDataSetReady(new DataSetReadyEvent(filterSettings, dataUUID));
 
         final ArgumentCaptor<DataSetLookup> captor = ArgumentCaptor.forClass(DataSetLookup.class);
-        verify(dataSetClientServices).lookupDataSet(captor.capture(),
-                                                    any(DataSetReadyCallback.class));
+        verify(dataSetClientServices).lookupDataSet(captor.capture(), any(DataSetReadyCallback.class));
         assertTrue(captor.getValue() instanceof ConsoleDataSetLookup);
         final ConsoleDataSetLookup cdsl = (ConsoleDataSetLookup) captor.getValue();
-        assertEquals(serverTemplateId,
-                     cdsl.getServerTemplateId());
-        assertEquals(dataUUID,
-                     cdsl.getDataSetUUID());
-        verify(select,
-               never()).addOption(anyString(),
-                                  anyString());
+        assertEquals(serverTemplateId, cdsl.getServerTemplateId());
+        assertEquals(dataUUID, cdsl.getDataSetUUID());
+        verify(select, never()).addOption(anyString(), anyString());
         verify(select).disable();
         verify(select).removeAllOptions();
     }

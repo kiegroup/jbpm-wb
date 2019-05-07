@@ -85,7 +85,7 @@ public class DataSetQueryHelper {
                         public void callback(DataSet dataSet) {
                             DataSetQueryHelper.this.dataSet = dataSet;
                             callback.callback(dataSet);
-                            event.fire(new DataSetReadyEvent(currentTableSetting));
+                            event.fire(new DataSetReadyEvent(currentTableSetting, dataSet.getUUID()));
                         }
 
                         public void notFound() {

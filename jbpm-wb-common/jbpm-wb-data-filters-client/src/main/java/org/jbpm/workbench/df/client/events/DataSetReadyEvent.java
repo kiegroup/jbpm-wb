@@ -21,19 +21,27 @@ import org.jbpm.workbench.df.client.filter.FilterSettings;
 public class DataSetReadyEvent {
 
     private FilterSettings filterSettings;
+    
+    private String dataSetUUID;
 
-    public DataSetReadyEvent(FilterSettings filterSettings) {
+    public DataSetReadyEvent(FilterSettings filterSettings, String dataSetUUID) {
         this.filterSettings = filterSettings;
+        this.dataSetUUID = dataSetUUID;
     }
 
     public FilterSettings getFilterSettings() {
         return filterSettings;
     }
 
+    public String getDataSetUUID() {
+        return dataSetUUID;
+    }
+
     @Override
     public String toString() {
         return "DataSetReadyEvent{" +
                 "filterSettings=" + filterSettings +
+                ", dataSetUUID='" + dataSetUUID + '\'' +
                 '}';
     }
 }
