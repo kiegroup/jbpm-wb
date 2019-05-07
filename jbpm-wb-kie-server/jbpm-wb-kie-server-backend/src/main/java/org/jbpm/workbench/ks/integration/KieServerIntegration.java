@@ -348,7 +348,7 @@ public class KieServerIntegration {
                                                                                kieServicesClientForContainer);
                     }
                 } catch (Exception e) {
-                    logger.warn("Failed ot create kie server client for container {} due to {}",
+                    logger.warn("Failed to create kie server client for container {} due to {}",
                                 containerSpec.getId(),
                                 e.getMessage());
                 }
