@@ -64,11 +64,34 @@ public class SavedFiltersPresenterTest {
     @Test
     public void testRemoveSavedFilters() {
         final SavedFilter filter = new SavedFilter("key", "name");
+        doAnswer(invocation -> {
+            Command callback = (Command) invocation.getArguments()[1];
+            callback.execute();
+            return null;
+        }).when(filterSettingsManager).removeSavedFilterFromPreferences(anyString(), any());
 
         presenter.removeSavedFilter(filter);
 
         verify(view).removeSavedFilter(filter);
-        verify(filterSettingsManager).removeSavedFilterFromPreferences(filter.getKey());
+        verify(filterSettingsManager).removeSavedFilterFromPreferences(eq(filter.getKey()), any());
+        verify(view, never()).setFirstFilterAsDefault();
+    }
+
+    @Test
+    public void testRemoveDefaultSavedFilters() {
+        final SavedFilter filter = new SavedFilter("key", "name");
+        filter.setDefaultFilter(true);
+        doAnswer(invocation -> {
+            Command callback = (Command) invocation.getArguments()[1];
+            callback.execute();
+            return null;
+        }).when(filterSettingsManager).removeSavedFilterFromPreferences(anyString(), any());
+
+        presenter.removeSavedFilter(filter);
+
+        verify(view).removeSavedFilter(filter);
+        verify(filterSettingsManager).removeSavedFilterFromPreferences(eq(filter.getKey()), any());
+        verify(view).setFirstFilterAsDefault();
     }
 
     @Test

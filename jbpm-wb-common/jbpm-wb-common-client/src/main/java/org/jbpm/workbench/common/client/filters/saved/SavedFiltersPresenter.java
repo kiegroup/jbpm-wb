@@ -17,6 +17,7 @@
 package org.jbpm.workbench.common.client.filters.saved;
 
 import java.util.function.Consumer;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -75,8 +76,13 @@ public class SavedFiltersPresenter implements RestoreDefaultFiltersMenuBuilder.S
     }
 
     protected void removeSavedFilter(final SavedFilter savedFilter) {
-        filterSettingsManager.removeSavedFilterFromPreferences(savedFilter.getKey());
-        view.removeSavedFilter(savedFilter);
+        filterSettingsManager.removeSavedFilterFromPreferences(savedFilter.getKey(),
+                                                               () -> {
+                                                                   view.removeSavedFilter(savedFilter);
+                                                                   if (savedFilter.isDefaultFilter()) {
+                                                                       view.setFirstFilterAsDefault();
+                                                                   }
+                                                               });
     }
 
     protected void onRestoreFilters() {

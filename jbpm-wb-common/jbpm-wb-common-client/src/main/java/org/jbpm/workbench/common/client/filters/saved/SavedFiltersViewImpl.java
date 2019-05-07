@@ -80,4 +80,10 @@ public class SavedFiltersViewImpl implements IsElement {
         savedFilterDataBinder.getModel().stream()
                 .forEach(savedFilter -> savedFilter.setDefaultFilter(savedFilter.getKey().equals(defaultFilter)));
     }
+
+    public void setFirstFilterAsDefault() {
+        if (savedFilterDataBinder.getModel().size() > 0) {
+            savedFilterDataBinder.getModel().get(0).setDefaultFilter(true);
+        }
+    }
 }
