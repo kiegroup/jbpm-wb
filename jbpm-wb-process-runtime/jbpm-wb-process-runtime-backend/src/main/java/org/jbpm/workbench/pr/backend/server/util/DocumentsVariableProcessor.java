@@ -27,7 +27,13 @@ import static org.jbpm.workbench.pr.backend.server.util.VariableHelper.JBPM_DOCU
 
 public class DocumentsVariableProcessor implements VariableHelper.VariableProcessor {
 
-    private String PATTERN_SUFFIX = "+\\s\\(\\d+/\\d+\\)";
+    private static final String PATTERN_SUFFIX = "+\\s\\(\\d+/\\d+\\)";
+
+    private String type;
+
+    public DocumentsVariableProcessor(String type) {
+        this.type = type;
+    }
 
     @Override
     public void process(long processInstanceId, String varName, String varType, List<VariableInstance> variables, Consumer<ProcessVariableSummary> consumer) {
@@ -45,6 +51,6 @@ public class DocumentsVariableProcessor implements VariableHelper.VariableProces
 
     @Override
     public String getSupportedType() {
-        return VariableHelper.JBPM_DOCUMENTS;
+        return type;
     }
 }
