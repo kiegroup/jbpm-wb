@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.pr.backend.server;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.stream.IntStream;
 import org.jbpm.workbench.common.model.PortableQueryFilter;
 import org.jbpm.workbench.common.model.QueryFilter;
 import org.jbpm.workbench.ks.integration.KieServerIntegration;
+import org.jbpm.workbench.pr.backend.server.util.VariableHelper;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +48,17 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RemoteProcessVariablesServiceImplTest {
+
+    private final String var1 = "var1";
+    private final String var1_value = "valueVar1";
+    private final String var2 = "var2";
+    private final String doc = "doc";
+    private final String docValue = "doc.txt####42580####2019-04-17 15:53:36####doc";
+    private final String docs = "documents";
+    private final String document1Name = "documents (1/2)";
+    private final String document1Value = "doc1.txt####42580####2019-04-17 15:53:36####doc1";
+    private final String document2Name = "documents (2/2)";
+    private final String document2Value = "doc2.txt####42580####2019-04-17 15:53:36####doc2";
 
     private final String containerId = "containerId";
     private final String serverTemplateId = "serverTemplateId";
@@ -94,15 +107,9 @@ public class RemoteProcessVariablesServiceImplTest {
 
     @Test
     public void getProcessVariablesTestWithContainerStarted() {
-        String var1 = "var1";
-        String var1_value = "valueVar1";
-        String var2 = "var2";
-
         HashMap processDefVars = new HashMap();
-        processDefVars.put(var1,
-                           "");
-        processDefVars.put(var2,
-                           "");
+        processDefVars.put(var1, "");
+        processDefVars.put(var2, "");
 
         VariablesDefinition variablesDefinition = new VariablesDefinition(processDefVars);
 
@@ -136,10 +143,75 @@ public class RemoteProcessVariablesServiceImplTest {
     }
 
     @Test
-    public void getProcessVariablesTestWithContainerStopped() {
+    public void getProcessVariablesWithDocumentsTestWithContainerStarted() {
 
-        String var1 = "var1";
-        String var1_value = "valueVar1";
+        HashMap processDefVars = new HashMap();
+        processDefVars.put(var1, "");
+        processDefVars.put(var2, "");
+        processDefVars.put(doc, VariableHelper.JBPM_DOCUMENT);
+        processDefVars.put(docs, VariableHelper.JBPM_DOCUMENTS);
+
+        VariablesDefinition variablesDefinition = new VariablesDefinition(processDefVars);
+
+        VariableInstance variableInstance = VariableInstance.builder()
+                        .name(var1)
+                        .value(var1_value)
+                        .processInstanceId(Long.valueOf(processInstanceId))
+                        .date(new Date())
+                        .build();
+
+        VariableInstance docVariableInstance = VariableInstance.builder()
+                .name(doc)
+                .value(docValue)
+                .processInstanceId(Long.valueOf(processInstanceId))
+                .date(new Date())
+                .build();
+
+        VariableInstance doc1VariableInstance = VariableInstance.builder()
+                .name(document1Name)
+                .value(document1Value)
+                .processInstanceId(Long.valueOf(processInstanceId))
+                .date(new Date())
+                .build();
+
+        VariableInstance doc2VariableInstance = VariableInstance.builder()
+                .name(document2Name)
+                .value(document2Value)
+                .processInstanceId(Long.valueOf(processInstanceId))
+                .date(new Date())
+                .build();
+
+        when(queryServicesClient.findVariablesCurrentState(any())).thenReturn(Arrays.asList(variableInstance, docVariableInstance, doc1VariableInstance, doc2VariableInstance));
+
+        when(processServicesClient.getProcessVariableDefinitions(containerId, processId)).thenReturn(variablesDefinition);
+
+        List<ProcessVariableSummary> processInstanceVariables = processVariablesService.getProcessVariables(queryFilter);
+
+        verify(processServicesClient).getProcessVariableDefinitions(containerId,
+                                                                    processId);
+        verify(queryServicesClient).findVariablesCurrentState(Long.valueOf(processInstanceId));
+
+        assertEquals(5, processInstanceVariables.size());
+
+        assertEquals(doc, processInstanceVariables.get(0).getName());
+        assertEquals(docValue, processInstanceVariables.get(0).getNewValue());
+
+        assertEquals(document1Name, processInstanceVariables.get(1).getName());
+        assertEquals(document1Value, processInstanceVariables.get(1).getNewValue());
+
+        assertEquals(document2Name, processInstanceVariables.get(2).getName());
+        assertEquals(document2Value, processInstanceVariables.get(2).getNewValue());
+
+        assertEquals(var1, processInstanceVariables.get(3).getName());
+        assertEquals(var1_value, processInstanceVariables.get(3).getNewValue());
+
+        assertEquals(var2, processInstanceVariables.get(4).getName());
+        assertEquals("", processInstanceVariables.get(4).getNewValue());
+    }
+
+
+    @Test
+    public void getProcessVariablesTestWithContainerStopped() {
 
         VariableInstance variableInstance =
                 VariableInstance.builder()
@@ -167,10 +239,7 @@ public class RemoteProcessVariablesServiceImplTest {
 
     @Test
     public void testGetData() {
-        String var1 = "var1";
-        String var1_value = "valueVar1";
-        VariablesDefinition variablesDefinition = new VariablesDefinition(singletonMap("var1",
-                                                                                       ""));
+        VariablesDefinition variablesDefinition = new VariablesDefinition(singletonMap(var1, ""));
 
         when(processServicesClient.getProcessVariableDefinitions(containerId,
                                                                  processId)).thenReturn(variablesDefinition);

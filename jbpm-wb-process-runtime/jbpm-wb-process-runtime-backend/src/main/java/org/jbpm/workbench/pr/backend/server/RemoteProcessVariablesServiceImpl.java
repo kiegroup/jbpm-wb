@@ -25,7 +25,7 @@ import javax.enterprise.context.ApplicationScoped;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.workbench.common.model.QueryFilter;
 import org.jbpm.workbench.ks.integration.AbstractKieServerService;
-import org.jbpm.workbench.pr.backend.server.model.VariableHelper;
+import org.jbpm.workbench.pr.backend.server.util.VariableHelper;
 import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
 import org.jbpm.workbench.pr.service.ProcessVariablesService;

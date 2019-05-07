@@ -24,6 +24,7 @@ import java.util.stream.IntStream;
 import org.jbpm.document.Document;
 import org.jbpm.workbench.common.model.PortableQueryFilter;
 import org.jbpm.workbench.common.model.QueryFilter;
+import org.jbpm.workbench.pr.backend.server.util.VariableHelper;
 import org.jbpm.workbench.pr.model.DocumentSummary;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
 import org.jbpm.workbench.pr.service.ProcessVariablesService;
@@ -35,9 +36,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.paging.PageResponse;
 
 import static java.util.Collections.singletonList;
-import static java.util.Collections.singletonMap;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RemoteProcessDocumentsServiceImplTest {
@@ -57,7 +60,7 @@ public class RemoteProcessDocumentsServiceImplTest {
                                           "",
                                           "docId" + Document.PROPERTIES_SEPARATOR + "1" + Document.PROPERTIES_SEPARATOR + new SimpleDateFormat(Document.DOCUMENT_DATE_PATTERN).format(new Date()) + Document.PROPERTIES_SEPARATOR + "1",
                                           0l,
-                                          RemoteProcessDocumentsServiceImpl.JBPM_DOCUMENT);
+                                          VariableHelper.JBPM_DOCUMENT);
     }
 
     @Test
@@ -72,10 +75,9 @@ public class RemoteProcessDocumentsServiceImplTest {
                                                           false,
                                                           "",
                                                           "",
-                                                          false,
-                                                          null,
-                                                          singletonMap(serverTemplateId,
-                                                                       serverTemplateId));
+                                                          false);
+
+        queryFilter.getParams().put(serverTemplateId, serverTemplateId);
 
         final PageResponse<DocumentSummary> response = processDocumentsService.getData(queryFilter);
 
@@ -94,8 +96,7 @@ public class RemoteProcessDocumentsServiceImplTest {
 
         PageResponse<ProcessVariableSummary> variablesResponse = new PageResponse<>();
         variablesResponse.setPageRowList(new ArrayList<>());
-        IntStream.range(0,
-                        totalItems).forEach(i -> variablesResponse.getPageRowList().add(newDocumentVariable()));
+        IntStream.range(0, totalItems).forEach(i -> variablesResponse.getPageRowList().add(newDocumentVariable()));
 
         when(processVariablesService.getData(any())).thenReturn(variablesResponse);
 
@@ -104,10 +105,9 @@ public class RemoteProcessDocumentsServiceImplTest {
                                                           false,
                                                           "",
                                                           "",
-                                                          false,
-                                                          null,
-                                                          singletonMap(serverTemplateId,
-                                                                       serverTemplateId));
+                                                          false);
+
+        queryFilter.getParams().put(serverTemplateId, serverTemplateId);
 
         final PageResponse<DocumentSummary> response = processDocumentsService.getData(queryFilter);
 
