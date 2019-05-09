@@ -143,13 +143,27 @@ public class RemoteProcessVariablesServiceImplTest {
     }
 
     @Test
-    public void getProcessVariablesWithDocumentsTestWithContainerStarted() {
+    public void testGetProcessVariablesWithDocumentCollectionWithContainerStarted() {
+        testDocumentCollection(VariableHelper.DOCUMENT_COLLECTION);
+    }
 
-        HashMap processDefVars = new HashMap();
+    @Test
+    public void testGetProcessVariablesWithDocumentCollectionImplWithContainerStarted() {
+        testDocumentCollection(VariableHelper.DOCUMENT_COLLECTION_IMPL);
+    }
+
+    @Test
+    public void testGetProcessVariablesWithLegacyDocumentsWithContainerStarted() {
+        testDocumentCollection(VariableHelper.LEGACY_DOCUMENTS);
+    }
+
+    public void testDocumentCollection(final String documentsCollectionType) {
+
+        HashMap<String, String> processDefVars = new HashMap<>();
         processDefVars.put(var1, "");
         processDefVars.put(var2, "");
         processDefVars.put(doc, VariableHelper.JBPM_DOCUMENT);
-        processDefVars.put(docs, VariableHelper.JBPM_DOCUMENTS);
+        processDefVars.put(docs, documentsCollectionType);
 
         VariablesDefinition variablesDefinition = new VariablesDefinition(processDefVars);
 
@@ -208,7 +222,6 @@ public class RemoteProcessVariablesServiceImplTest {
         assertEquals(var2, processInstanceVariables.get(4).getName());
         assertEquals("", processInstanceVariables.get(4).getNewValue());
     }
-
 
     @Test
     public void getProcessVariablesTestWithContainerStopped() {

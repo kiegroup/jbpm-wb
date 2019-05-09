@@ -35,16 +35,21 @@ public class VariableHelper {
     public static final Collection<String> DOCUMENT_TYPES;
 
     public static final String JBPM_DOCUMENT = "org.jbpm.document.Document";
-    public static final String JBPM_DOCUMENTS = "org.jbpm.document.Documents";
+
+    public static final String DOCUMENT_COLLECTION = "org.jbpm.document.DocumentCollection";
+    public static final String DOCUMENT_COLLECTION_IMPL = "org.jbpm.document.service.impl.DocumentCollectionImpl";
+    public static final String LEGACY_DOCUMENTS = "org.jbpm.document.Documents";
 
     private static final List<String> excludedVariables = Collections.singletonList("processId");
 
     private static final Map<String, VariableProcessor> processors = new HashMap<>();
 
     static {
-        DOCUMENT_TYPES = Arrays.asList(JBPM_DOCUMENT, JBPM_DOCUMENTS);
+        DOCUMENT_TYPES = Arrays.asList(JBPM_DOCUMENT, DOCUMENT_COLLECTION, DOCUMENT_COLLECTION_IMPL, LEGACY_DOCUMENTS);
 
-        registerProcessor(new DocumentsVariableProcessor());
+        registerProcessor(new DocumentsVariableProcessor(DOCUMENT_COLLECTION));
+        registerProcessor(new DocumentsVariableProcessor(DOCUMENT_COLLECTION_IMPL));
+        registerProcessor(new DocumentsVariableProcessor(LEGACY_DOCUMENTS));
     }
 
     public static void registerProcessor(VariableProcessor processor) {
@@ -57,7 +62,7 @@ public class VariableHelper {
                                                                String deploymentId,
                                                                String serverTemplateId) {
 
-            List<VariableInstance> filteredVariables = variables.stream()
+        List<VariableInstance> filteredVariables = variables.stream()
                 .filter(variable -> !excludedVariables.contains(variable.getVariableName()))
                 .collect(Collectors.toList());
 
