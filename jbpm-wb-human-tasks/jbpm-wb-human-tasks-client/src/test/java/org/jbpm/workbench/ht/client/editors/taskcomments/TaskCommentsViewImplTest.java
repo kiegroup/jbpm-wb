@@ -15,34 +15,24 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskcomments;
 
-import com.google.gwt.user.cellview.client.ColumnSortList;
-import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
+import org.jboss.errai.common.client.dom.Span;
+import org.jboss.errai.common.client.dom.TextArea;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
-import org.jbpm.workbench.ht.model.CommentSummary;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.uberfire.ext.widgets.common.client.tables.PagedTable;
-import com.google.gwt.user.cellview.client.Column;
+import org.uberfire.client.views.pfly.widgets.FormGroup;
+import org.uberfire.client.views.pfly.widgets.ValidationState;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class TaskCommentsViewImplTest {
-
-    @Mock
-    ListDataProvider<CommentSummary> dataProviderMock;
-
-    @Mock
-    PagedTable<CommentSummary> pagedTableMock;
 
     @InjectMocks
     private TaskCommentsViewImpl view;
@@ -50,38 +40,46 @@ public class TaskCommentsViewImplTest {
     @Mock
     private TaskCommentsPresenter presenter;
 
+    @Mock
+    private TextArea newCommentTextArea;
+
+    @Mock(name = "newCommentTextAreaHelp")
+    private Span newCommentTextAreaHelp;
+
+    @Mock
+    private FormGroup newCommentTextAreaGroup;
+
     @Before
     public void setupMocks() {
-        when(presenter.getDataProvider()).thenReturn(dataProviderMock);
-        when(pagedTableMock.getColumnSortList()).thenReturn(new ColumnSortList());
     }
 
     @Test
-    public void testDataStoreNameIsSet() {
-        doAnswer(new Answer() {
-            @Override
-            public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
-                final Column column = (Column) invocationOnMock.getArguments()[0];
-                assertNotNull(column.getDataStoreName());
-                return null;
-            }
-        }).when(pagedTableMock).addColumn(any(Column.class),
-                                          anyString());
+    public void fieldValidationErrorTest() {
 
-        view.init(presenter);
+        when(newCommentTextArea.getValue()).thenReturn("");
+        view.submitCommentAddition();
 
-        verify(pagedTableMock,
-               times(4)).addColumn(any(Column.class),
-                                   anyString());
+        final InOrder inOrder = inOrder(newCommentTextAreaHelp);
+        inOrder.verify(newCommentTextAreaHelp).setTextContent("");
+        inOrder.verify(newCommentTextAreaHelp).setTextContent(Constants.INSTANCE.CommentCannotBeEmpty());
 
-        final InOrder inOrder = inOrder(pagedTableMock);
-        inOrder.verify(pagedTableMock).addColumn(any(Column.class),
-                                                 eq(Constants.INSTANCE.Added_By()));
-        inOrder.verify(pagedTableMock).addColumn(any(Column.class),
-                                                 eq(Constants.INSTANCE.Added_At()));
-        inOrder.verify(pagedTableMock).addColumn(any(Column.class),
-                                                 eq(Constants.INSTANCE.Comment()));
-        inOrder.verify(pagedTableMock).addColumn(any(Column.class),
-                                                 eq(Constants.INSTANCE.Actions()));
+        final InOrder inOrderValidationState = inOrder(newCommentTextAreaGroup);
+        inOrderValidationState.verify(newCommentTextAreaGroup).clearValidationState();
+        inOrderValidationState.verify(newCommentTextAreaGroup).setValidationState(ValidationState.ERROR);
+
+        verify(newCommentTextArea).focus();
+        verify(presenter, never()).addTaskComment(anyString());
+    }
+
+    @Test
+    public void fieldValidationSuccessTest() {
+        String commentContent = "New comment";
+        when(newCommentTextArea.getValue()).thenReturn(commentContent);
+        view.submitCommentAddition();
+
+        verify(newCommentTextArea, never()).focus();
+        verify(newCommentTextAreaHelp).setTextContent("");
+        verify(newCommentTextAreaGroup).clearValidationState();
+        verify(presenter).addTaskComment(commentContent);
     }
 }

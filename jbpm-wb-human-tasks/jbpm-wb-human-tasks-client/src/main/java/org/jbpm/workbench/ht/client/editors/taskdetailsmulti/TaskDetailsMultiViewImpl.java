@@ -88,7 +88,7 @@ public class TaskDetailsMultiViewImpl extends Composite
 
         {
             genericFormDisplayPane = GWT.create(TabPane.class);
-            genericFormDisplayPane.add(presenter.getGenericFormView());
+            genericFormDisplayPane.add(presenter.getTaskWorkView());
 
             genericFormDisplayTab = GWT.create(TabListItem.class);
             genericFormDisplayTab.setText(constants.Work());
@@ -97,6 +97,7 @@ public class TaskDetailsMultiViewImpl extends Composite
 
             navTabs.add(genericFormDisplayTab);
             tabContent.add(genericFormDisplayPane);
+            genericFormDisplayTab.addShowHandler((final TabShowEvent event) -> presenter.taskCommentsRefresh());
         }
 
         {

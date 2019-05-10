@@ -21,10 +21,12 @@ import javax.enterprise.event.Event;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.common.preferences.ManagePreferences;
 import org.jbpm.workbench.forms.client.display.api.HumanTaskFormDisplayProvider;
 import org.jbpm.workbench.forms.client.display.views.FormDisplayerView;
 import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenter;
 import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenterTest;
+import org.jbpm.workbench.ht.client.editors.taskcomments.TaskCommentsPresenter;
 import org.jbpm.workbench.ht.client.editors.taskdetails.TaskDetailsPresenter;
 import org.jbpm.workbench.ht.client.editors.taskform.TaskFormPresenter;
 import org.jbpm.workbench.ht.model.TaskSummary;
@@ -38,9 +40,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
 import org.uberfire.client.workbench.events.ChangeTitleWidgetEvent;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.mvp.ParameterizedCommand;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -72,6 +76,12 @@ public class TaskDetailsMultiPresenterTest extends AbstractTaskPresenterTest {
     private TaskFormPresenter taskFormPresenter;
 
     @Mock
+    private TaskCommentsPresenter taskCommentsPresenter;
+
+    @Mock
+    private TaskCommentsPresenter taskWorkCommentsPresenter;
+
+    @Mock
     private TaskDetailsMultiViewImpl view;
 
     @Mock
@@ -81,6 +91,9 @@ public class TaskDetailsMultiPresenterTest extends AbstractTaskPresenterTest {
     @Mock
     @SuppressWarnings("unused")
     private TaskDetailsPresenter taskDetailsPresenter;
+
+    @Mock
+    ManagePreferences managePreferences;
 
     @InjectMocks
     private TaskDetailsMultiPresenter presenter;
@@ -222,5 +235,38 @@ public class TaskDetailsMultiPresenterTest extends AbstractTaskPresenterTest {
 
         verify(view).displayNotification(anyString());
         verifyNoMoreInteractions(taskSelectionEvent);
+    }
+
+    @Test
+    public void showTaskCommentsAtWorkTabTest() {
+        ManagePreferences showCommentsAtWorkTab = new ManagePreferences().defaultValue(new ManagePreferences());
+
+        doAnswer((InvocationOnMock inv) -> {
+            ((ParameterizedCommand<ManagePreferences>) inv.getArguments()[0]).execute(showCommentsAtWorkTab);
+            return null;
+        }).when(managePreferences).load(any(ParameterizedCommand.class),
+                                        any(ParameterizedCommand.class));
+
+        presenter.getTaskWorkView();
+
+        verify(taskFormPresenter).getView();
+        verify(taskWorkCommentsPresenter).getView();
+    }
+
+    @Test
+    public void noTaskCommentsAtWorkTabTest() {
+        ManagePreferences showCommentsAtWorkTab = new ManagePreferences().defaultValue(new ManagePreferences());
+        showCommentsAtWorkTab.setShowTaskCommentsAtWorkTab(false);
+
+        doAnswer((InvocationOnMock inv) -> {
+            ((ParameterizedCommand<ManagePreferences>) inv.getArguments()[0]).execute(showCommentsAtWorkTab);
+            return null;
+        }).when(managePreferences).load(any(ParameterizedCommand.class),
+                                        any(ParameterizedCommand.class));
+
+        presenter.getTaskWorkView();
+
+        verify(taskFormPresenter).getView();
+        verify(taskCommentsPresenter, never()).getView();
     }
 }

@@ -16,20 +16,25 @@
 package org.jbpm.workbench.ht.client.editors.taskdetailsmulti;
 
 import java.util.function.Consumer;
+
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
+import org.jbpm.workbench.common.preferences.ManagePreferences;
 import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenter;
+import org.jbpm.workbench.ht.client.editors.taskcomments.TaskCommentsPresenter;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.workbench.ht.client.editors.taskadmin.TaskAdminPresenter;
 import org.jbpm.workbench.ht.client.editors.taskassignments.TaskAssignmentsPresenter;
-import org.jbpm.workbench.ht.client.editors.taskcomments.TaskCommentsPresenter;
 import org.jbpm.workbench.ht.client.editors.taskdetails.TaskDetailsPresenter;
 import org.jbpm.workbench.ht.client.editors.taskform.TaskFormPresenter;
 import org.jbpm.workbench.ht.client.editors.tasklogs.TaskLogsPresenter;
@@ -38,6 +43,7 @@ import org.jbpm.workbench.forms.display.api.HumanTaskDisplayerConfig;
 import org.jbpm.workbench.forms.client.display.api.HumanTaskFormDisplayProvider;
 import org.jbpm.workbench.ht.model.TaskKey;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
+import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
@@ -85,7 +91,13 @@ public class TaskDetailsMultiPresenter extends AbstractTaskPresenter implements 
     private TaskCommentsPresenter taskCommentsPresenter;
 
     @Inject
+    private TaskCommentsPresenter taskWorkCommentsPresenter;
+
+    @Inject
     private TaskAdminPresenter taskAdminPresenter;
+
+    @Inject
+    protected ManagePreferences preferences;
 
     @Inject
     private Event<ChangeTitleWidgetEvent> changeTitleWidgetEvent;
@@ -114,6 +126,11 @@ public class TaskDetailsMultiPresenter extends AbstractTaskPresenter implements 
     @OnStartup
     public void onStartup(final PlaceRequest place) {
         this.place = place;
+    }
+
+    @PostConstruct
+    public void init() {
+        preferences.load();
     }
 
     public boolean isForAdmin() {
@@ -220,6 +237,19 @@ public class TaskDetailsMultiPresenter extends AbstractTaskPresenter implements 
         return taskCommentsPresenter.getView();
     }
 
+    public IsWidget getTaskWorkView() {
+        final FlowPanel vPanel = GWT.create(FlowPanel.class);
+        preferences.load(preferences -> {
+            vPanel.add(getGenericFormView());
+            if (preferences.isShowTaskCommentsAtWorkTab()) {
+                taskWorkCommentsPresenter.setPageSize(TaskCommentsPresenter.WORK_COMMENTS_PAGE_SIZE);
+                taskWorkCommentsPresenter.showCommentsHeader();
+                vPanel.add(taskWorkCommentsPresenter.getView());
+            }
+        }, error -> new DefaultWorkbenchErrorCallback().error(error));
+        return vPanel;
+    }
+
     public IsWidget getTaskAdminView() {
         return taskAdminPresenter.getView();
     }
@@ -237,7 +267,8 @@ public class TaskDetailsMultiPresenter extends AbstractTaskPresenter implements 
     }
 
     public void taskCommentsRefresh() {
-        taskCommentsPresenter.refreshComments();
+        taskWorkCommentsPresenter.refreshCommentsView();
+        taskCommentsPresenter.refreshCommentsView();
     }
 
     public void taskLogsRefresh() {

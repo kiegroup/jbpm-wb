@@ -253,6 +253,16 @@ public interface Constants extends Messages {
 
     String TaskCommentsNotAvailable(String containerId);
 
+    String LoadMoreComments();
+
+    String DeleteComment(String commentText);
+
+    String DeleteCommentTitle();
+
+    String SortByDateDesc();
+
+    String SortByDateAsc();
+
     String TaskDetailsNotAvailable();
 
     String No_Task_Logs_Found();

@@ -15,276 +15,229 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskcomments;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import javax.inject.Named;
 
-import com.google.gwt.cell.client.ActionCell;
-import com.google.gwt.cell.client.ActionCell.Delegate;
-import com.google.gwt.cell.client.Cell;
-import com.google.gwt.cell.client.CompositeCell;
-import com.google.gwt.cell.client.FieldUpdater;
-import com.google.gwt.cell.client.HasCell;
-import com.google.gwt.cell.client.TextCell;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.SimplePanel;
-import elemental2.dom.HTMLDivElement;
-import elemental2.dom.HTMLElement;
-import org.gwtbootstrap3.client.ui.Button;
-import org.gwtbootstrap3.client.ui.FormLabel;
-import org.gwtbootstrap3.client.ui.TextArea;
-import org.gwtbootstrap3.client.ui.constants.ButtonSize;
-import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
+import com.google.gwt.event.dom.client.KeyCodes;
+import org.jboss.errai.common.client.dom.Anchor;
+import org.jboss.errai.common.client.dom.Button;
+import org.jboss.errai.common.client.dom.Div;
+import org.jboss.errai.common.client.dom.Event;
+
+import org.jboss.errai.common.client.dom.HTMLElement;
+import org.jboss.errai.common.client.dom.KeyboardEvent;
+import org.jboss.errai.common.client.dom.MouseEvent;
+import org.jboss.errai.common.client.dom.Span;
+import org.jboss.errai.common.client.dom.TextArea;
+import org.jboss.errai.databinding.client.api.DataBinder;
+import org.jboss.errai.databinding.client.components.ListComponent;
+import org.jboss.errai.ui.shared.api.annotations.AutoBound;
+import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
+import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.workbench.common.client.util.DateUtils;
+
+import org.jbpm.workbench.common.client.util.AbstractView;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.CommentSummary;
-import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
-import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
-import org.uberfire.ext.widgets.common.client.tables.PagedTable;
-import org.uberfire.workbench.events.NotificationEvent;
+import org.uberfire.client.views.pfly.widgets.FormGroup;
+import org.uberfire.client.views.pfly.widgets.ValidationState;
+
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static org.jboss.errai.common.client.dom.DOMUtil.addCSSClass;
+import static org.jboss.errai.common.client.dom.DOMUtil.removeCSSClass;
 
 @Dependent
-@Templated(value = "TaskCommentsViewImpl.html")
-public class TaskCommentsViewImpl extends Composite implements TaskCommentsPresenter.TaskCommentsView {
+@Templated(value = "TaskCommentsViewImpl.html", stylesheet = "TaskCommentsViewImpl.css")
+public class TaskCommentsViewImpl extends AbstractView<TaskCommentsPresenter>
+        implements TaskCommentsPresenter.TaskCommentsView {
 
-    protected static final String COL_ADDEDBY = "addedBy";
-    protected static final String COL_ADDEDAT = "addedAt";
-    protected static final String COL_COMMENT = "comment";
-    protected static final String COL_ID_ACTIONS = "Actions";
-    private static final int COMMENTS_PER_PAGE = 10;
+    private Constants constants = Constants.INSTANCE;
 
-    @DataField
-    PagedTable<CommentSummary> commentsListGrid = new PagedTable<>(COMMENTS_PER_PAGE);
+    @Inject
+    @DataField("add-comment-div")
+    Div addCommentDiv;
+
+    @Inject
+    @DataField("comments-header-div")
+    Div commentsHeaderDiv;
+
+    @Inject
+    @DataField("load-div")
+    Div loadDiv;
+
+    @Inject
+    @DataField("load-more-comments")
+    @SuppressWarnings("PMD.UnusedPrivateField")
+    private Button loadMoreComments;
+
+    @Inject
+    @DataField("commentsDiv")
+    Div commentsContainer;
+
+    @Inject
+    @DataField("comment-creation-input")
+    TextArea newCommentTextArea;
+
+    @Inject
+    @DataField("comment-creation-help")
+    Span newCommentTextAreaHelp;
+
+    @Inject
+    @DataField("comment-creation-group")
+    FormGroup newCommentTextAreaGroup;
 
     @Inject
     @DataField
-    TextArea newTaskCommentTextArea;
+    Anchor addCommentButton;
 
     @Inject
-    @DataField
-    FormLabel newTaskCommentLabel = GWT.create(FormLabel.class);
+    @DataField("sort-alpha-asc")
+    private Button sortAlphaAsc;
 
     @Inject
-    @DataField
-    Button addCommentButton = GWT.create(Button.class);
+    @DataField("sort-alpha-desc")
+    private Button sortAlphaDesc;
 
     @Inject
-    @DataField
-    HTMLDivElement form;
+    @Bound
+    @DataField("comments-list")
+    private ListComponent<CommentSummary, TaskCommentItemView> comments;
 
     @Inject
-    @Named("span")
-    @DataField
-    HTMLElement message;
+    @AutoBound
+    private DataBinder<List<CommentSummary>> commentList;
 
     @Inject
-    @DataField
-    HTMLDivElement alert;
+    @DataField("empty-list-item")
+    private Div emptyContainer;
 
-    @Inject
-    @DataField
-    HTMLDivElement listContainer;
+    protected TaskCommentsPresenter presenter;
 
-    private Constants constants = GWT.create(Constants.class);
-
-    private TaskCommentsPresenter presenter;
-
-    @Inject
-    private Event<NotificationEvent> notification;
-
-    private ListHandler<CommentSummary> sortHandler;
-
-    @Override
-    public void clearCommentInput() {
-        newTaskCommentTextArea.setText("");
+    @PostConstruct
+    public void init() {
+        tooltip(sortAlphaAsc);
+        sortAlphaAsc.setAttribute("data-original-title", constants.SortByDateDesc());
+        tooltip(sortAlphaDesc);
+        sortAlphaDesc.setAttribute("data-original-title", constants.SortByDateAsc());
     }
 
     @Override
-    public void redrawDataGrid() {
-        commentsListGrid.refresh();
-        commentsListGrid.redraw();
+    public HTMLElement getElement() {
+        return commentsContainer;
     }
 
     @Override
-    public void init(TaskCommentsPresenter presenter) {
+    public void init(final TaskCommentsPresenter presenter) {
         this.presenter = presenter;
-        List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add(COL_COMMENT);
-        bannedColumns.add(COL_ID_ACTIONS);
+        comments.addComponentCreationHandler(v -> v.init(presenter));
+        newCommentTextArea.setOnkeypress((KeyboardEvent e) -> {
+            if ((e == null || e.getKeyCode() == KeyCodes.KEY_ENTER) && newCommentTextArea.getValue().isEmpty() == false) {
+                submitCommentAddition();
+            }
+        });
+    }
 
-        List<String> initColumns = new ArrayList<String>();
-        initColumns.add(COL_ADDEDBY);
-        initColumns.add(COL_COMMENT);
-        initColumns.add(COL_ADDEDAT);
-        initColumns.add(COL_ID_ACTIONS);
+    @Override
+    public void clearCommentInputForm() {
+        newCommentTextArea.setValue("");
+        clearErrorMessages();
+    }
 
-        commentsListGrid.setGridPreferencesStore(new GridPreferencesStore(new GridGlobalPreferences("CommentsGrid",
-                                                                                                    initColumns,
-                                                                                                    bannedColumns)));
-        commentsListGrid.setEmptyTableCaption(constants.No_Comments_For_This_Task());
-        // Attach a column sort handler to the ListDataProvider to sort the list.
-        sortHandler = new ListHandler<>(presenter.getDataProvider().getList());
-        commentsListGrid.addColumnSortHandler(sortHandler);
-        initTableColumns();
-        presenter.addDataDisplay(commentsListGrid);
+    @Override
+    public void disableNewComments() {
+        addCSSClass(addCommentDiv, "hidden");
+    }
 
-        addCommentButton.setText(constants.Add_Comment());
-        newTaskCommentLabel.setText(constants.Comment());
+    public void clearErrorMessages() {
+        newCommentTextAreaHelp.setTextContent("");
+        newCommentTextAreaGroup.clearValidationState();
+    }
+
+    @Override
+    public void resetPagination() {
+        presenter.setCurrentPage(1);
+        onSortChange(sortAlphaAsc, sortAlphaDesc, false);
+    }
+
+    private void addOrRemoveClassNameOnElement(HTMLElement element, boolean adding, String className) {
+        if (adding) {
+            addCSSClass(element, className);
+        } else {
+            removeCSSClass(element, className);
+        }
+    }
+
+    @Override
+    public void setCommentList(final List<CommentSummary> commentSummaries) {
+        this.commentList.setModel(commentSummaries);
+        addOrRemoveClassNameOnElement(emptyContainer, !commentSummaries.isEmpty(), "hidden");
+    }
+
+    @Override
+    public void hideLoadButton() {
+        loadDiv.setHidden(true);
+    }
+
+    @Override
+    public void showLoadButton() {
+        loadDiv.setHidden(false);
+    }
+
+    @Override
+    public void showCommentHeader() {
+        removeCSSClass(commentsHeaderDiv, "hidden");
     }
 
     @EventHandler("addCommentButton")
-    public void addCommentButton(ClickEvent e) {
-        presenter.addTaskComment(newTaskCommentTextArea.getText());
+    @SuppressWarnings("unsued")
+    public void addCommentButton(@ForEvent("click") final Event e) {
+        submitCommentAddition();
     }
 
-    @Override
-    public void displayNotification(String text) {
-        notification.fire(new NotificationEvent(text));
-    }
-
-    private void initTableColumns() {
-        // addedBy
-        Column<CommentSummary, String> addedByColumn = new Column<CommentSummary, String>(new TextCell()) {
-            @Override
-            public String getValue(CommentSummary c) {
-                return c.getAddedBy();
-            }
-        };
-        addedByColumn.setSortable(false);
-        addedByColumn.setDataStoreName(COL_ADDEDBY);
-        commentsListGrid.addColumn(addedByColumn,
-                                   constants.Added_By());
-
-        // date
-        Column<CommentSummary, String> addedAtColumn = new Column<CommentSummary, String>(new TextCell()) {
-            @Override
-            public String getValue(CommentSummary c) {
-                return DateUtils.getDateTimeStr(c.getAddedAt());
-            }
-        };
-        addedAtColumn.setSortable(true);
-        addedAtColumn.setDataStoreName(COL_ADDEDAT);
-        addedAtColumn.setDefaultSortAscending(true);
-        commentsListGrid.addColumn(addedAtColumn,
-                                   constants.Added_At());
-        sortHandler.setComparator(addedAtColumn,
-                                  Comparator.comparing(CommentSummary::getAddedAt).reversed());
-
-        // comment text
-        Column<CommentSummary, String> commentTextColumn = new Column<CommentSummary, String>(new TextCell()) {
-            @Override
-            public String getValue(CommentSummary object) {
-                return object.getText();
-            }
-        };
-        commentTextColumn.setSortable(false);
-        commentTextColumn.setDataStoreName(COL_COMMENT);
-        commentsListGrid.addColumn(commentTextColumn,
-                                   constants.Comment());
-
-        List<HasCell<CommentSummary, ?>> cells = new LinkedList<HasCell<CommentSummary, ?>>();
-
-        cells.add(new DeleteCommentActionHasCell(constants.Delete(),
-                                                 new Delegate<CommentSummary>() {
-                                                     @Override
-                                                     public void execute(CommentSummary comment) {
-                                                         presenter.removeTaskComment(comment.getId());
-                                                     }
-                                                 }));
-
-        CompositeCell<CommentSummary> cell = new CompositeCell<CommentSummary>(cells);
-        Column<CommentSummary, CommentSummary> actionsColumn = new Column<CommentSummary, CommentSummary>(
-                cell) {
-            @Override
-            public CommentSummary getValue(CommentSummary object) {
-                return object;
-            }
-        };
-        actionsColumn.setSortable(false);
-        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
-        commentsListGrid.addColumn(actionsColumn,
-                                   constants.Actions());
-        commentsListGrid.setColumnWidth(addedByColumn,
-                                        150,
-                                        Style.Unit.PX);
-        commentsListGrid.setColumnWidth(addedAtColumn,
-                                        150,
-                                        Style.Unit.PX);
-        commentsListGrid.setColumnWidth(actionsColumn,
-                                        120,
-                                        Style.Unit.PX);
-        commentsListGrid.getColumnSortList().push(addedAtColumn);
-    }
-
-    @Override
-    public void setErrorMessage(final String message) {
-        this.alert.classList.remove("hidden");
-        this.listContainer.classList.add("hidden");
-        this.message.textContent = message;
-    }
-
-    @Override
-    public void newCommentsEnabled(final Boolean enabled) {
-        if (enabled) {
-            form.classList.remove("hidden");
-        } else {
-            form.classList.add("hidden");
+    protected void submitCommentAddition() {
+        if (validateForm()) {
+            presenter.addTaskComment(newCommentTextArea.getValue());
         }
     }
 
-    private class DeleteCommentActionHasCell implements HasCell<CommentSummary, CommentSummary> {
+    private boolean validateForm() {
+        clearErrorMessages();
 
-        private ActionCell<CommentSummary> cell;
-
-        public DeleteCommentActionHasCell(String text,
-                                          Delegate<CommentSummary> delegate) {
-            cell = new ActionCell<CommentSummary>(text,
-                                                  delegate) {
-                @Override
-                public void render(Cell.Context context,
-                                   CommentSummary value,
-                                   SafeHtmlBuilder sb) {
-
-                    if (presenter.getDeleteCondition().test(value)) {
-                        SafeHtmlBuilder mysb = new SafeHtmlBuilder();
-                        final Button button = GWT.create(Button.class);
-                        button.setText(constants.Delete());
-                        button.setSize(ButtonSize.SMALL);
-                        button.setType(ButtonType.DANGER);
-                        mysb.appendHtmlConstant(new SimplePanel(button).getElement().getInnerHTML());
-                        sb.append(mysb.toSafeHtml());
-                    }
-                }
-            };
+        final boolean newCommentEmpty = isNullOrEmpty(newCommentTextArea.getValue());
+        if (newCommentEmpty) {
+            newCommentTextArea.focus();
+            newCommentTextAreaHelp.setTextContent(constants.CommentCannotBeEmpty());
+            newCommentTextAreaGroup.setValidationState(ValidationState.ERROR);
+            return false;
         }
+        return true;
+    }
 
-        @Override
-        public Cell<CommentSummary> getCell() {
-            return cell;
-        }
+    @EventHandler("sort-alpha-asc")
+    public void onSortAlphaAsc(final @ForEvent("click") MouseEvent event) {
+        onSortChange(sortAlphaAsc, sortAlphaDesc, false);
+    }
 
-        @Override
-        public FieldUpdater<CommentSummary, CommentSummary> getFieldUpdater() {
-            return null;
-        }
+    @EventHandler("sort-alpha-desc")
+    public void onSortAlphaDesc(final @ForEvent("click") MouseEvent event) {
+        onSortChange(sortAlphaDesc, sortAlphaAsc, true);
+    }
 
-        @Override
-        public CommentSummary getValue(CommentSummary object) {
-            return object;
-        }
+    private void onSortChange(final HTMLElement toHide,
+                              final HTMLElement toShow,
+                              final Boolean sortByAsc) {
+        addOrRemoveClassNameOnElement(toHide, true, "hidden");
+        addOrRemoveClassNameOnElement(toShow, false, "hidden");
+        presenter.sortComments(sortByAsc);
+    }
+
+    @EventHandler("load-more-comments")
+    public void loadMoreComments(final @ForEvent("click") MouseEvent event) {
+        presenter.loadMoreTaskComments();
     }
 }
