@@ -141,7 +141,7 @@ public class TaskDetailsMultiViewImplTest {
     public void initTabsTest() {
         taskDetailsMultiView.initTabs();
 
-        verify(presenter).getGenericFormView();
+        verify(presenter).getTaskWorkView();
         verify(presenter).getTaskDetailsView();
         verify(presenter).getTaskAssignmentsView();
         verify(presenter).getTaskCommentsView();

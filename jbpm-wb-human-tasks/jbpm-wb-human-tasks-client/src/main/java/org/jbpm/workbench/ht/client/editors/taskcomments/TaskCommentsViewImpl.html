@@ -1,28 +1,61 @@
-<div class="row" style="padding-top: 20px">
-    <div class="col-md-12">
-        <div class="alert alert-warning hidden" data-field="alert">
-            <span class="pficon pficon-warning-triangle-o"></span>
-            <span data-field="message"></span>
+<div data-field="commentsDiv">
+    <!-- Roles -->
+
+    <div class=" kie-card-pf-heading hidden" data-field="comments-header-div">
+        <h2 class="card-pf-title">
+            <span data-i18n-key="Comments"></span>
+        </h2>
+    </div>
+    <div class="col-xs-12 kie-card-pf-body">
+        <div class="kie-sortActions">
+            <button class="btn btn-link kie-btn-link pull-right" type="button" data-field="sort-alpha-desc" data-toggle="tooltip" data-placement="left" title="" data-original-title="Sort by date asc">
+                <span class="fa fa-sort-numeric-desc"></span>
+            </button>
+            <button class="btn btn-link kie-btn-link pull-right hidden" type="button" data-field="sort-alpha-asc" data-toggle="tooltip" data-placement="left" title="" data-original-title="Sort by date desc">
+                <span class="fa fa-sort-numeric-asc"></span>
+            </button>
         </div>
-        <div class="form-horizontal" data-field="form">
-            <fieldset>
-                <div class="form-group">
-                    <label class="control-label col-md-2" for="newTaskCommentTextArea" data-field="newTaskCommentLabel"></label>
-                    <div class="col-md-5">
-                        <textarea data-field="newTaskCommentTextArea" id="newTaskCommentTextArea" placeholder="" class="form-control"></textarea>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <button class="btn btn-primary" data-field="addCommentButton" id="addCommentButton"></button>
-                    </div>
-                </div>
-            </fieldset>
-        </div>
-        <div data-field="listContainer">
+        <!-- input for comments -->
+        <div class="list-group-item kie-list-group-item--header">
             <div class="col-md-12">
-                <div id="commentsListGrid" data-field="commentsListGrid"/>
+                <div class="col-md-11" data-field="add-comment-div">
+                    <div class="list-view-pf-main-info kie-comments__main-info">
+                        <div class="list-view-pf-left kie-comments__list-view-pf-left">
+                            <span class="pficon pficon-user list-view-pf-icon-sm"></span>
+                        </div>
+                        <div class="list-view-pf-body">
+                            <div class="list-view-pf-description kie-comments__list-view-pf-description" data-field="comment-creation-group">
+                                <div class="kie-full-width">
+                                    <textarea type="text" rows="2" class="form-control input-lg" placeholder="Add a comment." data-field="comment-creation-input"></textarea>
+                                    <span data-field="comment-creation-help" class="help-block"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-left: 10px">
+                            <a href="#" data-field="addCommentButton">
+                                <span class="fa fa-plus-circle pull-right kie-comments__add-button"></span>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
             </div>
+        </div>
+
+        <!-- list of comments -->
+        <div class="kie-scrollbox kie-scrollbox--comments" data-field="scrollbox">
+            <div class=" list-group kie-list-view--embedded" data-field="comments-list"></div>
+            <div class="card-pf-body kie-card-body--embedded" data-field="empty-list-item">
+                <div href="" class="card-pf-link-with-icon"><span class="pficon pficon-info"></span>
+                    <span data-i18n-key="No_Comments_For_This_Task"></span>
+                </div>
+            </div>
+        </div>
+        <div id="load-more" data-field="load-div" style="text-align: center;">
+            <button type="button" class="btn btn-primary" data-field="load-more-comments" data-i18n-key="LoadMoreComments"></button>
         </div>
     </div>
 </div>
+
+
+

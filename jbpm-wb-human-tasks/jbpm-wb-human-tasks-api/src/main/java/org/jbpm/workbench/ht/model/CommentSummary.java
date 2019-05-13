@@ -21,8 +21,10 @@ import java.util.Date;
 import java.util.Objects;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jboss.errai.databinding.client.api.Bindable;
 
 @Portable
+@Bindable
 public class CommentSummary implements Serializable {
 
     private Long id;

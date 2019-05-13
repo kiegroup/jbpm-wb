@@ -18,17 +18,17 @@ package org.jbpm.workbench.ht.client.editors.taskcomments;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Predicate;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.view.client.HasData;
-import com.google.gwt.view.client.ListDataProvider;
-import org.jboss.errai.bus.client.api.messaging.Message;
+
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.common.client.ui.ElementWrapperWidget;
+import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenter;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
@@ -37,115 +37,143 @@ import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
-import org.uberfire.client.mvp.UberView;
+import org.uberfire.client.mvp.UberElement;
+import org.uberfire.mvp.Command;
+
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.toList;
 
 @Dependent
 public class TaskCommentsPresenter extends AbstractTaskPresenter {
 
-    private final TaskCommentsView view;
-    private final Caller<TaskService> taskService;
-    private final ListDataProvider<CommentSummary> dataProvider = new ListDataProvider<CommentSummary>();
-    private Constants constants = Constants.INSTANCE;
-    private User identity;
-    private boolean forLog = false;
-    private boolean forAdmin = false;
+    public static final int COMMENTS_PAGE_SIZE = 10;
+    public static final int WORK_COMMENTS_PAGE_SIZE = 3;
 
-    @Inject
-    public TaskCommentsPresenter(TaskCommentsView view,
-                                 Caller<TaskService> taskService,
-                                 User identity) {
-        this.view = view;
-        this.taskService = taskService;
-        this.identity = identity;
-    }
+    protected Caller<TaskService> taskService;
+    protected Constants constants = Constants.INSTANCE;
+    protected User identity;
+    protected boolean forLog = false;
+    protected boolean forAdmin = false;
+    protected boolean sortAsc = false;
+    protected int currentPage = 1;
+    protected int pageSize = COMMENTS_PAGE_SIZE;
+
+    public TaskCommentsPresenter.TaskCommentsView view;
 
     @PostConstruct
     public void init() {
+        view = taskCommentsViewProvider.get();
         view.init(this);
     }
 
+    @Inject
+    private ManagedInstance<TaskCommentsViewImpl> taskCommentsViewProvider;
+
     public IsWidget getView() {
-        return view;
+        return ElementWrapperWidget.getWidget(view.getElement());
     }
 
-    public ListDataProvider<CommentSummary> getDataProvider() {
-        return dataProvider;
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
     }
 
-    public void refreshComments() {
-        taskService.call((List<CommentSummary> comments) -> {
-                             dataProvider.getList().clear();
-                             dataProvider.getList().addAll(comments);
-                             view.redrawDataGrid();
-                         },
-                         (Message message, Throwable throwable) -> {
-                             if (throwable.getMessage().contains("cannot find container")) {
-                                 view.setErrorMessage(constants.TaskCommentsNotAvailable(getContainerId()));
-                                 return false;
-                             } else {
-                                 return true;
-                             }
-                         }).getTaskComments(getServerTemplateId(),
-                                            getContainerId(),
-                                            getTaskId());
+    public void showCommentsHeader() {
+        view.showCommentHeader();
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public boolean isSortAsc() {
+        return sortAsc;
+    }
+
+    public void setSortAsc(boolean sortAsc) {
+        this.sortAsc = sortAsc;
+    }
+
+    private void loadTaskComments() {
+        taskService.call(
+                (List<CommentSummary> allComments) -> {
+                    if (allComments != null) {
+                        view.setCommentList(allComments.stream()
+                                                    .sorted((isSortAsc() ?
+                                                            comparing(CommentSummary::getAddedAt) :
+                                                            comparing(CommentSummary::getAddedAt).reversed()))
+                                                    .collect(toList())
+                                                    .subList(0, Math.min(allComments.size(), getPageSize() * getCurrentPage())));
+                        if (allComments.size() <= (getPageSize() * getCurrentPage())) {
+                            view.hideLoadButton();
+                        } else {
+                            view.showLoadButton();
+                        }
+                    }
+                }
+        ).getTaskComments(getServerTemplateId(),
+                          getContainerId(),
+                          getTaskId());
+    }
+
+    public void refreshCommentsView() {
+        setCurrentPage(1);
+        view.clearCommentInputForm();
+        loadTaskComments();
+    }
+
+    public void loadMoreTaskComments() {
+        setCurrentPage(getCurrentPage() + 1);
+        loadTaskComments();
+    }
+
+    public void sortComments(final boolean sortAsc) {
+        setSortAsc(sortAsc);
+
+        refreshCommentsView();
     }
 
     public void addTaskComment(final String text) {
         if (forLog) {
             return;
         }
-
-        if ("".equals(text.trim())) {
-            view.displayNotification(constants.CommentCannotBeEmpty());
-        } else {
-            addTaskComment(text,
-                           new Date());
-        }
-    }
-
-    private void addTaskComment(final String text,
-                                final Date addedOn) {
-        taskService.call(
-                new RemoteCallback<Void>() {
-                    @Override
-                    public void callback(Void response) {
-                        refreshComments();
-                        view.clearCommentInput();
-                    }
-                }
+        taskService.call((Void response) -> {
+                             refreshCommentsView();
+                             view.resetPagination();
+                         }
         ).addTaskComment(getServerTemplateId(),
                          getContainerId(),
                          getTaskId(),
                          text,
-                         addedOn);
+                         new Date());
     }
 
     public void removeTaskComment(long commentId) {
-        taskService.call(
-                new RemoteCallback<Void>() {
-                    @Override
-                    public void callback(Void response) {
-                        refreshComments();
-                        view.clearCommentInput();
-                        view.displayNotification(constants.CommentDeleted());
-                    }
-                }
+        taskService.call((Void response) -> {
+                             refreshCommentsView();
+                             displayNotification(constants.CommentDeleted());
+                         }
         ).deleteTaskComment(getServerTemplateId(),
                             getContainerId(),
                             getTaskId(),
                             commentId);
     }
 
-    public void addDataDisplay(final HasData<CommentSummary> display) {
-        dataProvider.addDataDisplay(display);
-    }
-
     public void onTaskSelectionEvent(@Observes final TaskSelectionEvent event) {
         setSelectedTask(event);
         forAdmin = event.isForAdmin();
         forLog = event.isForLog();
-        view.newCommentsEnabled(forLog == false);
-        refreshComments();
+        if (forLog) {
+            view.disableNewComments();
+        }
+        refreshCommentsView();
     }
 
     public Predicate<CommentSummary> getDeleteCondition() {
@@ -154,28 +182,51 @@ public class TaskCommentsPresenter extends AbstractTaskPresenter {
 
     public void onTaskRefreshedEvent(@Observes final TaskRefreshedEvent event) {
         if (isSameTaskFromEvent().test(event)) {
-            refreshComments();
+            refreshCommentsView();
         }
     }
 
     public void onTaskCompletedEvent(@Observes final TaskCompletedEvent event) {
         if (isSameTaskFromEvent().test(event) && forLog == false) {
             forLog = true;
-            view.newCommentsEnabled(false);
-            refreshComments();
+            view.disableNewComments();
+            refreshCommentsView();
         }
     }
 
-    public interface TaskCommentsView extends UberView<TaskCommentsPresenter> {
+    @Inject
+    public void setTaskService(final Caller<TaskService> taskService) {
+        this.taskService = taskService;
+    }
 
-        void clearCommentInput();
+    @Inject
+    public void setIdentity(User identity) {
+        this.identity = identity;
+    }
 
-        void redrawDataGrid();
+    public TaskCommentsView getTaskCommentView() {
+        return view;
+    }
 
-        void displayNotification(String text);
+    public interface TaskCommentsView extends UberElement<TaskCommentsPresenter> {
 
-        void newCommentsEnabled(Boolean enabled);
+        void disableNewComments();
 
-        void setErrorMessage(String message);
+        void clearCommentInputForm();
+
+        void setCommentList(List<CommentSummary> commentList);
+
+        void resetPagination();
+
+        void hideLoadButton();
+
+        void showLoadButton();
+
+        void showCommentHeader();
+    }
+
+    public interface CommentAction extends Command {
+
+        String label();
     }
 }

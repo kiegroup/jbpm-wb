@@ -15,14 +15,16 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskcomments;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+
+import javax.enterprise.event.Event;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.security.shared.api.identity.User;
-import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenter;
 import org.jbpm.workbench.ht.client.editors.AbstractTaskPresenterTest;
-import org.jbpm.workbench.ht.client.editors.taskcomments.TaskCommentsPresenter.TaskCommentsView;
 import org.jbpm.workbench.ht.model.CommentSummary;
 import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
@@ -31,149 +33,159 @@ import org.jbpm.workbench.ht.service.TaskService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.uberfire.mocks.CallerMock;
+import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.workbench.events.NotificationEvent;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class TaskCommentsPresenterTest extends AbstractTaskPresenterTest {
 
+    @Mock
+    private TaskCommentsPresenter.TaskCommentsView viewMock;
+
+    @InjectMocks
+    private TaskCommentsPresenter presenter;
+
+    @Override
+    public TaskCommentsPresenter getPresenter() {
+        return presenter;
+    }
+
     private static final Long TASK_ID = 1L;
     private static final Long COMMENT_ID = 1L;
 
-    private CallerMock<TaskService> callerMock;
+    private static final String COMMENT_1_TEXT = "Comment1";
+    private static final String COMMENT_2_TEXT = "Comment2";
+    private static final String COMMENT_3_TEXT = "Comment3";
+
+    protected CallerMock<TaskService> callerMock;
 
     @Mock
-    private TaskService commentsService;
-
-    @Mock
-    private TaskCommentsView view;
+    protected TaskService commentsService;
 
     @Mock
     private User identity;
 
-    //Thing under test
-    private TaskCommentsPresenter presenter;
-
-    @Override
-    public AbstractTaskPresenter getPresenter() {
-        return presenter;
-    }
+    @Spy
+    Event<NotificationEvent> notificationEventMock = new EventSourceMock<>();
 
     @Before
     public void setupMocks() {
-        //Mock that actually calls the callbacks
         callerMock = new CallerMock<>(commentsService);
 
-        presenter = new TaskCommentsPresenter(view,
-                                              callerMock,
-                                              identity);
+        getPresenter().setNotification(notificationEventMock);
+        getPresenter().setTaskService(callerMock);
+        getPresenter().setIdentity(identity);
+
+        long currentTime = new Date().getTime();
+        CommentSummary commentSummary1 = new CommentSummary(1L, COMMENT_1_TEXT, "user1", new Date(currentTime + 200000));
+        CommentSummary commentSummary2 = new CommentSummary(2L, COMMENT_2_TEXT, "user1", new Date(currentTime + 400000));
+        CommentSummary commentSummary3 = new CommentSummary(3L, COMMENT_3_TEXT, "user1", new Date(currentTime + 600000));
+
+        when(commentsService.getTaskComments(anyString(), anyString(), anyLong()))
+                .thenReturn(Arrays.asList(commentSummary1, commentSummary2, commentSummary3));
+        doNothing().when(notificationEventMock).fire(any());
     }
 
     @Test
-    public void commentsUpdatedWhenTaskSelectedOrRefreshed() {
+    public void loadCommentsOnTaskSelectedOrRefreshed() {
         String serverTemplateId = "serverTemplateId";
         String containerId = "containerId";
         boolean isForLog = false;
-        TaskSelectionEvent event = new TaskSelectionEvent(serverTemplateId,
-                                                          containerId,
-                                                          TASK_ID,
-                                                          "task",
-                                                          true,
-                                                          isForLog,
-                                                          "description",
-                                                          new Date(),
-                                                          "Ready",
-                                                          "actualOwner",
-                                                          2,
-                                                          1L,
+        TaskSelectionEvent event = new TaskSelectionEvent(serverTemplateId, containerId, TASK_ID, "task", true, isForLog,
+                                                          "description", new Date(), "Ready", "actualOwner", 2, 1L,
                                                           "processId");
-        //When task selected
-        presenter.onTaskSelectionEvent(event);
+        getPresenter().onTaskSelectionEvent(event);
 
-        //Then comments for given task loaded & comment grid refreshed
-        verify(commentsService).getTaskComments(serverTemplateId,
-                                                containerId,
-                                                TASK_ID);
-        verify(view).redrawDataGrid();
+        verify(commentsService).getTaskComments(serverTemplateId, containerId, TASK_ID);
 
-        //When task Refreshed
-        presenter.onTaskRefreshedEvent(new TaskRefreshedEvent(serverTemplateId,
-                                                              containerId,
-                                                              TASK_ID));
+        getPresenter().onTaskRefreshedEvent(new TaskRefreshedEvent(serverTemplateId, containerId, TASK_ID));
 
-        //Then comments for given task loaded & comment grid refreshed
-        verify(commentsService,
-               times(2)).getTaskComments(serverTemplateId,
-                                         containerId,
-                                         TASK_ID);
-        verify(view,
-               times(2)).redrawDataGrid();
+        verify(commentsService, times(2)).getTaskComments(serverTemplateId, containerId, TASK_ID);
     }
 
     @Test
-    public void emptyCommentNotAccepted() {
-        TaskSelectionEvent event = new TaskSelectionEvent("serverTemplateId",
-                                                          "containerId",
-                                                          1L,
-                                                          "task",
-                                                          true,
-                                                          false);
+    public void loadCommentsSortingASC() {
+        getPresenter().sortComments(true);
 
-        presenter.onTaskSelectionEvent(event);
+        ArgumentCaptor<List> comentsListASC = ArgumentCaptor.forClass(List.class);
+        verify(getPresenter().getTaskCommentView()).setCommentList(comentsListASC.capture());
 
-        //when comment input area is empty and add button is clicked
-        presenter.addTaskComment("");
-
-        //No comment is added toTaskCommentService
-        verify(commentsService,
-               never()).addTaskComment(anyString(),
-                                       anyString(),
-                                       anyLong(),
-                                       anyString(),
-                                       any(Date.class));
-        //User notified
-        verify(view).displayNotification("CommentCannotBeEmpty");
+        assertEquals(3, comentsListASC.getValue().size());
+        assertEquals(COMMENT_1_TEXT, ((CommentSummary) comentsListASC.getValue().get(0)).getText());
+        assertEquals(COMMENT_2_TEXT, ((CommentSummary) comentsListASC.getValue().get(1)).getText());
+        assertEquals(COMMENT_3_TEXT, ((CommentSummary) comentsListASC.getValue().get(2)).getText());
     }
 
     @Test
-    public void commentInputClearedAfterCommentAdded() {
+    public void loadCommentsSortingDESC() {
+        getPresenter().sortComments(false);
+
+        ArgumentCaptor<List> comentsListASC = ArgumentCaptor.forClass(List.class);
+        verify(getPresenter().getTaskCommentView()).setCommentList(comentsListASC.capture());
+
+        assertEquals(3, comentsListASC.getValue().size());
+        assertEquals(COMMENT_3_TEXT, ((CommentSummary) comentsListASC.getValue().get(0)).getText());
+        assertEquals(COMMENT_2_TEXT, ((CommentSummary) comentsListASC.getValue().get(1)).getText());
+        assertEquals(COMMENT_1_TEXT, ((CommentSummary) comentsListASC.getValue().get(2)).getText());
+    }
+
+    @Test
+    public void refreshCommentsResetsCurrentPageTest() {
+        getPresenter().setCurrentPage(3);
+
+        getPresenter().refreshCommentsView();
+
+        verify(getPresenter().getTaskCommentView()).clearCommentInputForm();
+        verify(commentsService).getTaskComments(anyString(), anyString(), anyLong());
+        assertEquals(1, getPresenter().getCurrentPage());
+    }
+
+    @Test
+    public void loadMoreCommentsIncreaseCurrentPageTest() {
+        int currentPage = 2;
+        getPresenter().setCurrentPage(currentPage);
+
+        getPresenter().loadMoreTaskComments();
+
+        verify(commentsService).getTaskComments(anyString(), anyString(), anyLong());
+        assertEquals(currentPage + 1, getPresenter().getCurrentPage());
+    }
+
+    @Test
+    public void commentInputClearedAfterCommentAddedTest() {
         String comment = "Working on it, man.";
-        presenter.addTaskComment(comment);
+        getPresenter().addTaskComment(comment);
 
-        // Comment added
-        verify(commentsService)
-                .addTaskComment(anyString(),
-                                anyString(),
-                                anyLong(),
-                                eq(comment),
-                                any(Date.class));
-        // Input cleared
-        verify(view).clearCommentInput();
+        verify(commentsService).addTaskComment(anyString(), anyString(), anyLong(), eq(comment), any(Date.class));
+        verify(getPresenter().getTaskCommentView()).clearCommentInputForm();
     }
 
     @Test
-    public void removeCommentAdded() {
-        presenter.removeTaskComment(COMMENT_ID);
+    public void removeCommentAddedTest() {
+        getPresenter().removeTaskComment(COMMENT_ID);
 
-        // Comment removed
-        verify(commentsService)
-                .deleteTaskComment(anyString(),
-                                   anyString(),
-                                   anyLong(),
-                                   eq(COMMENT_ID));
-        // Input cleared
-        verify(view).clearCommentInput();
-        verify(commentsService).getTaskComments(anyString(),
-                                                anyString(),
-                                                anyLong());
-        verify(view).redrawDataGrid();
+        verify(commentsService).deleteTaskComment(anyString(), anyString(), anyLong(), eq(COMMENT_ID));
+        verify(commentsService).getTaskComments(anyString(), anyString(), anyLong());
+        verify(getPresenter().getTaskCommentView()).clearCommentInputForm();
+        assertEquals(1, getPresenter().getCurrentPage());
     }
 
     @Test
@@ -182,26 +194,14 @@ public class TaskCommentsPresenterTest extends AbstractTaskPresenterTest {
         String containerId = "containerId";
         Long taskId = 1L;
         boolean isForLog = true;
-        TaskSelectionEvent event = new TaskSelectionEvent(serverTemplateId,
-                                                          containerId,
-                                                          taskId,
-                                                          "task",
-                                                          true,
-                                                          isForLog);
-        CommentSummary comment1 = new CommentSummary(1l,
-                                                     "commentText",
-                                                     "ByTest",
-                                                     new Date());
-        when(commentsService.getTaskComments(eq(serverTemplateId),
-                                             eq(containerId),
-                                             eq(taskId))).thenReturn(Arrays.asList(comment1));
+        TaskSelectionEvent event = new TaskSelectionEvent(serverTemplateId, containerId, taskId, "task", true, isForLog);
+        CommentSummary comment1 = new CommentSummary(1l, "commentText", "ByTest", new Date());
+        when(commentsService.getTaskComments(eq(serverTemplateId), eq(containerId), eq(taskId))).thenReturn(Arrays.asList(comment1));
 
-        presenter.onTaskSelectionEvent(event);
+        getPresenter().onTaskSelectionEvent(event);
 
-        verify(commentsService).getTaskComments(serverTemplateId,
-                                                containerId,
-                                                taskId);
-        verify(view).newCommentsEnabled(false);
+        verify(commentsService).getTaskComments(serverTemplateId, containerId, taskId);
+        verify(getPresenter().getTaskCommentView()).disableNewComments();
     }
 
     @Test
@@ -210,95 +210,123 @@ public class TaskCommentsPresenterTest extends AbstractTaskPresenterTest {
         String containerId = "containerId";
         Long taskId = 1L;
         boolean isForLog = false;
-        TaskSelectionEvent event = new TaskSelectionEvent(serverTemplateId,
-                                                          containerId,
-                                                          taskId,
-                                                          "task",
-                                                          true,
-                                                          isForLog);
+        TaskSelectionEvent event = new TaskSelectionEvent(serverTemplateId, containerId, taskId, "task", true, isForLog);
         CommentSummary comment1 = new CommentSummary(1l,
-                                                     "commentText",
-                                                     "ByTest",
-                                                     new Date());
-        when(commentsService.getTaskComments(eq(serverTemplateId),
-                                             eq(containerId),
-                                             eq(taskId))).thenReturn(Arrays.asList(comment1));
+                                                     "commentText", "ByTest", new Date());
+        when(commentsService.getTaskComments(eq(serverTemplateId), eq(containerId), eq(taskId))).thenReturn(Arrays.asList(comment1));
 
-        presenter.onTaskSelectionEvent(event);
+        getPresenter().onTaskSelectionEvent(event);
 
-        verify(commentsService).getTaskComments(serverTemplateId,
-                                                containerId,
-                                                taskId);
-        verify(view).newCommentsEnabled(true);
+        verify(commentsService).getTaskComments(serverTemplateId, containerId, taskId);
+        verify(getPresenter().getTaskCommentView(), never()).disableNewComments();
     }
 
     @Test
     public void testDeleteCommentConditionForLog() {
-        TaskSelectionEvent event = new TaskSelectionEvent("serverTemplateId",
-                                                          "containerId",
-                                                          1L,
-                                                          "task",
-                                                          true,
-                                                          true);
+        TaskSelectionEvent event = new TaskSelectionEvent("serverTemplateId", "containerId", 1L, "task", true, true);
 
-        presenter.onTaskSelectionEvent(event);
+        getPresenter().onTaskSelectionEvent(event);
 
         final String addedBy = "user1";
-        CommentSummary comment1 = new CommentSummary(1l,
-                                                     "commentText",
-                                                     addedBy,
-                                                     new Date());
+        CommentSummary comment1 = new CommentSummary(1l, "commentText", addedBy, new Date());
 
         when(identity.getIdentifier()).thenReturn(addedBy);
 
-        assertFalse(presenter.getDeleteCondition().test(comment1));
+        assertFalse(getPresenter().getDeleteCondition().test(comment1));
     }
 
     @Test
     public void testDeleteCommentConditionForAdmin() {
-        TaskSelectionEvent event = new TaskSelectionEvent("serverTemplateId",
-                                                          "containerId",
-                                                          1L,
-                                                          "task",
-                                                          true,
-                                                          false);
+        TaskSelectionEvent event = new TaskSelectionEvent("serverTemplateId", "containerId", 1L, "task", true, false);
 
-        presenter.onTaskSelectionEvent(event);
+        getPresenter().onTaskSelectionEvent(event);
 
         final String addedBy = "user1";
-        CommentSummary comment1 = new CommentSummary(1l,
-                                                     "commentText",
-                                                     addedBy,
-                                                     new Date());
+        CommentSummary comment1 = new CommentSummary(1l, "commentText", addedBy, new Date());
 
         when(identity.getIdentifier()).thenReturn("user2");
 
-        assertTrue(presenter.getDeleteCondition().test(comment1));
+        assertTrue(getPresenter().getDeleteCondition().test(comment1));
     }
 
     @Test
     public void testDeleteCommentConditionForUser() {
-        TaskSelectionEvent event = new TaskSelectionEvent("serverTemplateId",
-                                                          "containerId",
-                                                          1L,
-                                                          "task",
-                                                          false,
-                                                          false);
+        TaskSelectionEvent event = new TaskSelectionEvent("serverTemplateId", "containerId", 1L, "task", false, false);
 
-        presenter.onTaskSelectionEvent(event);
+        getPresenter().onTaskSelectionEvent(event);
 
         final String addedBy = "user1";
-        CommentSummary comment1 = new CommentSummary(1l,
-                                                     "commentText",
-                                                     addedBy,
-                                                     new Date());
+        CommentSummary comment1 = new CommentSummary(1l, "commentText", addedBy, new Date());
 
-        when(identity.getIdentifier()).thenReturn(addedBy,
-                                                  "user2");
+        when(identity.getIdentifier()).thenReturn(addedBy, "user2");
 
-        assertTrue(presenter.getDeleteCondition().test(comment1));
-
-        assertFalse(presenter.getDeleteCondition().test(comment1));
+        assertTrue(getPresenter().getDeleteCondition().test(comment1));
+        assertFalse(getPresenter().getDeleteCondition().test(comment1));
     }
+
+    @Test
+    public void completeTaskHideAddCommentTest() {
+        String serverTemplateId = "serverTemplateId";
+        String containerId = "containerId";
+        boolean isForLog = false;
+        TaskSelectionEvent event = new TaskSelectionEvent(serverTemplateId, containerId, TASK_ID, "task", true, isForLog,
+                                                          "description", new Date(), "Ready", "actualOwner", 2, 1L,
+                                                          "processId");
+        getPresenter().onTaskSelectionEvent(event);
+
+        verify(commentsService).getTaskComments(serverTemplateId, containerId, TASK_ID);
+
+        getPresenter().onTaskCompletedEvent(new TaskCompletedEvent(serverTemplateId, containerId, TASK_ID));
+
+        verify(getPresenter().getTaskCommentView()).disableNewComments();
+    }
+
+    protected void createTaskCommentsResults(int numberOfComments) {
+        List<CommentSummary> comments = new ArrayList<>();
+        long id = 1L;
+        long currentTime = new Date().getTime();
+        for (int i = 0; i < numberOfComments; i++) {
+            comments.add(new CommentSummary(id + i, "comment" + i, "user", new Date(currentTime + i * 200000)));
+        }
+        when(commentsService.getTaskComments(anyString(), anyString(), anyLong()))
+                .thenReturn(comments);
+    }
+
+    @Test
+    public void showLoadMoreButtonTest() {
+        createTaskCommentsResults(getPresenter().getPageSize() + 5);
+
+        getPresenter().refreshCommentsView();
+        ArgumentCaptor<List> comentsListASC = ArgumentCaptor.forClass(List.class);
+        verify(getPresenter().getTaskCommentView()).setCommentList(comentsListASC.capture());
+
+        assertEquals(getPresenter().getPageSize(), comentsListASC.getValue().size());
+        verify(getPresenter().getTaskCommentView()).showLoadButton();
+    }
+
+    @Test
+    public void hideLoadMoreButtonTest() {
+        createTaskCommentsResults(getPresenter().getPageSize());
+
+        getPresenter().refreshCommentsView();
+        ArgumentCaptor<List> comentsListASC = ArgumentCaptor.forClass(List.class);
+        verify(getPresenter().getTaskCommentView()).setCommentList(comentsListASC.capture());
+
+        assertEquals(getPresenter().getPageSize(), comentsListASC.getValue().size());
+        verify(getPresenter().getTaskCommentView()).hideLoadButton();
+    }
+
+    @Test
+    public void hideLoadMoreButtonLessItemsThanPageSizeTest() {
+        createTaskCommentsResults(getPresenter().getPageSize() - 2);
+
+        getPresenter().refreshCommentsView();
+        ArgumentCaptor<List> comentsListASC = ArgumentCaptor.forClass(List.class);
+        verify(getPresenter().getTaskCommentView()).setCommentList(comentsListASC.capture());
+
+        assertEquals(getPresenter().getPageSize() - 2, comentsListASC.getValue().size());
+        verify(getPresenter().getTaskCommentView()).hideLoadButton();
+    }
+
 
 }

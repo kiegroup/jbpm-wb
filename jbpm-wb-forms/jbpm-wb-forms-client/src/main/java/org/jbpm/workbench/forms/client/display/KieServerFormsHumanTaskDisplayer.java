@@ -19,6 +19,7 @@ package org.jbpm.workbench.forms.client.display;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.dom.client.IFrameElement;
 import org.jbpm.workbench.forms.client.display.task.AbstractHumanTaskFormDisplayer;
 import org.jbpm.workbench.forms.display.FormDisplayerConfig;
 import org.jbpm.workbench.forms.display.api.KieServerFormRenderingSettings;
@@ -55,8 +56,15 @@ public class KieServerFormsHumanTaskDisplayer extends AbstractHumanTaskFormDispl
     @Override
     protected void initDisplayer() {
         completeTaskCallback(this);
+        final FlowPanel div = GWT.create(FlowPanel.class);
+        div.getElement().getStyle().setPosition(Position.RELATIVE);
+        div.getElement().getStyle().setOverflow(Overflow.HIDDEN);
+
         inlineFrame.setWidth("100%");
         inlineFrame.setHeight("100%");
+        inlineFrame.addLoadHandler((loadEvent) -> {
+            div.setHeight((IFrameElement.as(inlineFrame.getElement()).getContentDocument().getBody().getClientHeight() + 91) + "px");
+        });
         inlineFrame.getElement().setPropertyBoolean("webkitallowfullscreen",
                                                     true);
         inlineFrame.getElement().setPropertyBoolean("mozallowfullscreen",
@@ -70,12 +78,8 @@ public class KieServerFormsHumanTaskDisplayer extends AbstractHumanTaskFormDispl
         inlineFrame.getElement().getStyle().setLeft(0, Unit.PX);
         
         inlineFrame.setUrl(renderingSettings.getUrl());
-        
-        FlowPanel div = GWT.create(FlowPanel.class);
-        div.getElement().getStyle().setPosition(Position.RELATIVE);
-        div.getElement().getStyle().setOverflow(Overflow.HIDDEN);
-        div.getElement().getStyle().setPaddingTop(40, Unit.PCT);
-        div.add(inlineFrame);        
+
+        div.add(inlineFrame);
         
         formContainer.add(div);
     }

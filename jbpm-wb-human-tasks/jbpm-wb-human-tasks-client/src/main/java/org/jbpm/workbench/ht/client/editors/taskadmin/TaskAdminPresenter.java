@@ -32,7 +32,6 @@ import org.jbpm.workbench.ht.model.events.TaskRefreshedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.uberfire.client.mvp.UberView;
-import org.uberfire.workbench.events.NotificationEvent;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -55,9 +54,6 @@ public class TaskAdminPresenter extends AbstractTaskPresenter {
     private Event<TaskRefreshedEvent> taskRefreshed;
 
     @Inject
-    private Event<NotificationEvent> notification;
-
-    @Inject
     public void setTaskService(final Caller<TaskService> taskService) {
         this.taskService = taskService;
     }
@@ -73,7 +69,7 @@ public class TaskAdminPresenter extends AbstractTaskPresenter {
 
     public void forwardTask(final String entity) {
         taskService.call(nothing -> {
-            notification.fire(new NotificationEvent(constants.TaskSuccessfullyForwarded()));
+            displayNotification(constants.TaskSuccessfullyForwarded());
             taskRefreshed.fire(new TaskRefreshedEvent(getServerTemplateId(),
                                                       getContainerId(),
                                                       getTaskId()));
@@ -85,7 +81,7 @@ public class TaskAdminPresenter extends AbstractTaskPresenter {
     }
 
     public void reminder() {
-        taskService.call(ts -> notification.fire(new NotificationEvent(constants.ReminderSentTo(identity.getIdentifier()))))
+        taskService.call(ts -> displayNotification(constants.ReminderSentTo(identity.getIdentifier())))
                 .executeReminderForTask(getServerTemplateId(),
                                         getContainerId(),
                                         getTaskId(),

@@ -1,0 +1,71 @@
+.kie-card-pf-heading {
+    border-bottom: 2px solid #d1d1d1;
+    border-top: 0;
+    display: flex;
+    align-items: center;
+    padding-top: 0;
+}
+
+.kie-card-pf-body {
+    padding-bottom: 50px;
+}
+
+
+.kie-list-group-item-content {
+    display: flex;
+}
+
+.kie-full-width {
+    width: 100%;
+    display: inline-block;
+}
+
+.kie-scrollbox--comments {
+    overflow: auto;
+}
+
+.kie-list-group-item--header {
+    border-bottom: 2px solid #d1d1d1;
+    border-top: 0;
+    display: flex;
+    align-items: center;
+}
+
+.kie-comments__add-button {
+    font-size: 2.0rem;
+}
+
+.kie-comments__pf-actions {
+    margin-top: -5px;
+    margin-bottom: 0;
+    margin-left: -5px;
+}
+
+.kie-comments__main-info {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.kie-item-heading__role {
+    font-weight: 400;
+}
+
+.card-pf .kie-comments-heading {
+    margin: 0 -10px 20px;
+    padding: 0 20px;
+    padding-bottom: 40px
+}
+
+.kie-comments__list-view-pf-description {
+    width: 100%;
+}
+
+.kie-comments__list-view-pf-left .pficon.kie-no-highlight,
+.kie-comments__list-view-pf-left .fa.kie-no-highlight {
+    background-color: #ededed;
+    border-color: transparent;
+}
+
+.kie-sortActions {
+    margin-bottom: 2px;
+}
