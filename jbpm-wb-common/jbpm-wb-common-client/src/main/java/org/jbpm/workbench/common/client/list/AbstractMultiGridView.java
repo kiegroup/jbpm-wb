@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -193,13 +193,16 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                 addNewTableToColumn(newListGrid);
 
                 listTable = newListGrid;
+
+                reloadColumnSortList();
+                
                 readyCallback.accept(listTable);
-            }).loadUserPreferences(key,
-                                   UserPreferencesType.GRIDPREFERENCES);
+            }).loadUserPreferences(key, UserPreferencesType.GRIDPREFERENCES);
         }, error -> new DefaultWorkbenchErrorCallback().error(error));
     }
 
     protected void addColumnSortHandler(ExtendedPagedTable listTable) {
+        listTable.getColumnSortList().setLimit(1);
         listTable.addColumnSortHandler(event -> {
             GridPreferencesStore gridPreferencesStore = listTable.getGridPreferencesStore();
             if (gridPreferencesStore != null && event.getColumnSortList().size() > 0) {
@@ -533,7 +536,26 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     }
 
     @Override
-    public ColumnSortList reloadColumnSortList() {
+    public String getSortColumn() {
+        final ColumnSortList columnSortList = getListGrid().getColumnSortList();
+        if (columnSortList != null && columnSortList.size() == 1) {
+            return columnSortList.get(0).getColumn().getDataStoreName();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Boolean isSortAscending() {
+        final ColumnSortList columnSortList = getListGrid().getColumnSortList();
+        if (columnSortList != null && columnSortList.size() == 1) {
+            return columnSortList.get(0).isAscending();
+        } else {
+            return null;
+        }
+    }
+
+    protected void reloadColumnSortList() {
         ColumnSortList columnSortList = getListGrid().getColumnSortList();
         GridPreferencesStore gridPreferencesStore = getListGrid().getGridPreferencesStore();
         if (gridPreferencesStore != null) {
@@ -546,11 +568,10 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                         .findFirst();
                 if (optional.isPresent()) {
                     Column col = optional.get().getColumn();
-                    col.setDataStoreName(gridSortedColumnPreference.getDataStoreName());
+                    columnSortList.clear();
                     columnSortList.push(new ColumnSortList.ColumnSortInfo(col, gridSortedColumnPreference.isAscending()));
                 }
             }
         }
-        return columnSortList;
     }
 }

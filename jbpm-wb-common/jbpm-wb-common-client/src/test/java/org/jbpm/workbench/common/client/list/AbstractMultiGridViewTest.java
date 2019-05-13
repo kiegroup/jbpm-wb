@@ -25,17 +25,18 @@ import java.util.function.Consumer;
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.TextCell;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.cellview.client.ColumnSortEvent;
 import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.view.client.AsyncDataProvider;
-
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.common.client.util.ConditionalKebabActionCell;
 import org.jbpm.workbench.common.model.GenericSummary;
 import org.jbpm.workbench.common.preferences.ManagePreferences;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -51,7 +52,11 @@ import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mvp.ParameterizedCommand;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
@@ -241,16 +246,15 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
         ColumnSortList columnSortList = getColumnSortList("startDate", null);
         when(listTable.getColumnSortList()).thenReturn(columnSortList);
 
-        ColumnMeta columnMeta = new ColumnMeta(getColumn("test"), "test");
-        when(listTable.getColumnMetaList()).thenReturn(Arrays.asList(columnMeta));
+        when(listTable.getColumnMetaList()).thenReturn(Arrays.asList(new ColumnMeta(getColumn("test"), "test"),
+                                                                     new ColumnMeta(getColumn("startDate"), "")));
 
         assertEquals(1, columnSortList.size());
 
         getView().reloadColumnSortList();
 
+        assertEquals(1, columnSortList.size());
         assertEquals("test", columnSortList.get(0).getColumn().getDataStoreName());
-        assertEquals("startDate", columnSortList.get(1).getColumn().getDataStoreName());
-        assertEquals(2, columnSortList.size());
     }
 
     private ColumnSortList getColumnSortList(String dataStoreName,
@@ -275,28 +279,47 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
     }
 
     @Test
-    public void testReloadColumnSortListWhenCatchColumnSortedEvent() {
+    public void testAddColumnSortHandler() {
+        ListTable<T> listTable = mock(ListTable.class);
+        when(listTable.getGridPreferencesStore()).thenReturn(gridPreferencesStore);
+        when(listTable.getColumnSortList()).thenReturn(new ColumnSortList());
 
+        doAnswer(invocation -> {
+            final ColumnSortEvent event = mock(ColumnSortEvent.class);
+            final ColumnSortList columnSortList = new ColumnSortList();
+            columnSortList.push(getColumn("test"));
+            when(event.getColumnSortList()).thenReturn(columnSortList);
+            ((ColumnSortEvent.Handler) invocation.getArguments()[0]).onColumnSort(event);
+            return null;
+        }).when(listTable).addColumnSortHandler(any());
+
+        getView().addColumnSortHandler(listTable);
+
+        ArgumentCaptor<GridSortedColumnPreference> captor = ArgumentCaptor.forClass(GridSortedColumnPreference.class);
+        verify(gridPreferencesStore).setGridSortedColumnPreference(captor.capture());
+        assertNotNull(captor.getValue());
+        assertEquals("test", captor.getValue().getDataStoreName());
+        assertEquals(true, captor.getValue().isAscending());
+    }
+
+    @Test
+    public void testGetSortColumn() {
         ListTable<T> listTable = mock(ListTable.class);
         when(getView().getListGrid()).thenReturn(listTable);
-        GridPreferencesStore gridPreferencesStore = mock(GridPreferencesStore.class);
-        when(listTable.getGridPreferencesStore()).thenReturn(gridPreferencesStore);
-        GridSortedColumnPreference gridSortedColumnPreference = new GridSortedColumnPreference("testOld", true);
-        when(gridPreferencesStore.getGridSortedColumnPreference()).thenReturn(gridSortedColumnPreference);
+        final ColumnSortList columnSortList = new ColumnSortList();
+        columnSortList.push(getColumn("test"));
+        when(listTable.getColumnSortList()).thenReturn(null, null, new ColumnSortList(), new ColumnSortList(), columnSortList, columnSortList);
 
-        ColumnSortList columnSortList = getColumnSortList("startDate", null);
-        getColumnSortList("testNew", columnSortList);
+        //sort list null
+        assertNull(getView().getSortColumn());
+        assertNull(getView().isSortAscending());
 
-        when(listTable.getColumnSortList()).thenReturn(columnSortList);
+        //sort list empty
+        assertNull(getView().getSortColumn());
+        assertNull(getView().isSortAscending());
 
-        ColumnMeta columnMeta = new ColumnMeta(getColumn("testNew"), "testNew");
-        when(listTable.getColumnMetaList()).thenReturn(Arrays.asList(columnMeta));
-        assertEquals(2, columnSortList.size());
-
-        getView().reloadColumnSortList();
-
-        assertEquals("testNew", columnSortList.get(0).getColumn().getDataStoreName());
-        assertEquals("startDate", columnSortList.get(1).getColumn().getDataStoreName());
-        assertEquals(2, columnSortList.size());
+        //sort list with column
+        assertEquals("test", getView().getSortColumn());
+        assertEquals(true, getView().isSortAscending());
     }
 }
