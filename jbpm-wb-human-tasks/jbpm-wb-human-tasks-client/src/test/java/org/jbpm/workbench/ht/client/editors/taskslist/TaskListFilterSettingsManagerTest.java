@@ -29,11 +29,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 
+import static org.jbpm.workbench.df.client.filter.FilterSettingsManagerImpl.DEFAULT_FILTER_SETTINGS_KEY;
+import static org.jbpm.workbench.ht.client.editors.taskslist.TaskListFilterSettingsManager.DATA_SET_TASK_LIST_PREFIX;
 import static org.jbpm.workbench.ht.client.editors.taskslist.TaskListFilterSettingsManager.TAB_ADMIN;
 import static org.jbpm.workbench.ht.client.editors.taskslist.TaskListFilterSettingsManager.TAB_ALL;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_WITH_USER_DATASET;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class TaskListFilterSettingsManagerTest extends AbstractTaskListFilterSettingsManagerTest {
@@ -83,19 +87,15 @@ public class TaskListFilterSettingsManagerTest extends AbstractTaskListFilterSet
     @Test
     public void testDefaultFilters() {
         Consumer<List<SavedFilter>> callback = filters -> {
-            assertEquals(3,
-                         filters.size());
-            assertEquals(Constants.INSTANCE.Active(),
-                         filters.get(0).getName());
-            assertEquals(Constants.INSTANCE.Personal(),
-                         filters.get(1).getName());
-            assertEquals(Constants.INSTANCE.Group(),
-                         filters.get(2).getName());
+            assertEquals(3, filters.size());
+            assertEquals(Constants.INSTANCE.Active(), filters.get(0).getName());
+            assertEquals(DATA_SET_TASK_LIST_PREFIX + "_" + DEFAULT_FILTER_SETTINGS_KEY, filters.get(0).getKey());
+            assertEquals(Constants.INSTANCE.Personal(), filters.get(1).getName());
+            assertEquals(Constants.INSTANCE.Group(), filters.get(2).getName());
         };
 
         final MultiGridPreferencesStore store = new MultiGridPreferencesStore();
-        manager.loadSavedFiltersFromPreferences(store,
-                                                callback);
+        manager.loadSavedFiltersFromPreferences(store, callback);
 
         verify(preferencesService).saveUserPreferences(store);
     }

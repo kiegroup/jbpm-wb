@@ -32,7 +32,7 @@ import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 @Dependent
 public class TaskAdminListFilterSettingsManager extends AbstractTaskListFilterSettingsManager {
 
-    private static final String DATA_SET_TASK_LIST_PREFIX = "DataSetTaskAdminGrid";
+    protected static final String DATA_SET_TASK_LIST_PREFIX = "DataSetTaskAdminGrid";
     protected static final String TAB_ADMIN = DATA_SET_TASK_LIST_PREFIX + "_0";
 
     @Override
@@ -75,7 +75,7 @@ public class TaskAdminListFilterSettingsManager extends AbstractTaskListFilterSe
                                          builder.group(COLUMN_TASK_ID);
                                          commonColumnSettings().accept(builder);
                                      },
-                                     DEFAULT_FILTER_SETTINGS_KEY,// initial default filter,
+                                     getDefaultFilterSettingsKey(),// initial default filter,
                                      constants.Active(),
                                      constants.FilterActive()),
 

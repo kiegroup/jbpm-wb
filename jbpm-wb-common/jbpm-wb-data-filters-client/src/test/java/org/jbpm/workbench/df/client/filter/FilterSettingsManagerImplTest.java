@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
@@ -38,6 +37,7 @@ import static org.jbpm.workbench.df.client.filter.FilterSettingsManagerImpl.DEFA
 import static org.jbpm.workbench.df.client.filter.FilterSettingsManagerImpl.FILTER_TABLE_SETTINGS;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -46,7 +46,8 @@ import static org.mockito.Mockito.when;
 @RunWith(GwtMockitoTestRunner.class)
 public class FilterSettingsManagerImplTest {
 
-    private static String gridGlobalPreferenceKey = "DS_test";
+    private static final String GRID_GLOBAL_PREFERENCE_KEY = "DS_test";
+    private static final String DEFAULT_KEY = GRID_GLOBAL_PREFERENCE_KEY + "_" + DEFAULT_FILTER_SETTINGS_KEY;
 
     protected CallerMock<UserPreferencesService> userPreferencesService;
 
@@ -71,9 +72,8 @@ public class FilterSettingsManagerImplTest {
         filterSettingsManagerImpl.setPreferencesService(userPreferencesService);
         filterSettingsManagerImpl.setMarshaller(marshaller);
 
-        when(userPreferencesServiceMock.loadUserPreferences(gridGlobalPreferenceKey,
-                                                            UserPreferencesType.MULTIGRIDPREFERENCES)).thenReturn(multiGridPreferencesStore);
-        Mockito.doReturn(gridGlobalPreferenceKey).when(filterSettingsManagerImpl).getGridGlobalPreferencesKey();
+        when(userPreferencesServiceMock.loadUserPreferences(GRID_GLOBAL_PREFERENCE_KEY, UserPreferencesType.MULTIGRIDPREFERENCES)).thenReturn(multiGridPreferencesStore);
+        doReturn(GRID_GLOBAL_PREFERENCE_KEY).when(filterSettingsManagerImpl).getGridGlobalPreferencesKey();
     }
 
     @Test
@@ -116,7 +116,7 @@ public class FilterSettingsManagerImplTest {
 
         filterSettingsManagerImpl.defaultActiveFilterInit(filterSettingsConsumer);
         verify(filterSettingsManagerImpl).initDefaultFilters();
-        verify(multiGridPreferencesStore).setDefaultGridId(DEFAULT_FILTER_SETTINGS_KEY);
+        verify(multiGridPreferencesStore).setDefaultGridId(DEFAULT_KEY);
         verify(filterSettingsManagerImpl).addFilterToPreferencesStore(filterSettingsMock1, multiGridPreferencesStore);
         verify(filterSettingsManagerImpl).addFilterToPreferencesStore(filterSettingsMock2, multiGridPreferencesStore);
 
@@ -124,9 +124,9 @@ public class FilterSettingsManagerImplTest {
         ArgumentCaptor<Consumer> consumerArgumentCaptor = ArgumentCaptor.forClass(Consumer.class);
         verify(filterSettingsManagerImpl).saveMultiGridPreferencesStore(eq(multiGridPreferencesStore), commandArgumentCaptor.capture());
 
-        when(multiGridPreferencesStore.getDefaultGridId()).thenReturn(DEFAULT_FILTER_SETTINGS_KEY);
+        when(multiGridPreferencesStore.getDefaultGridId()).thenReturn(DEFAULT_KEY);
         commandArgumentCaptor.getValue().execute();
-        verify(filterSettingsManagerImpl).getFilterSettings(eq(DEFAULT_FILTER_SETTINGS_KEY), consumerArgumentCaptor.capture());
+        verify(filterSettingsManagerImpl).getFilterSettings(eq(DEFAULT_KEY), consumerArgumentCaptor.capture());
         consumerArgumentCaptor.getValue().accept(filterSettingsMock1);
         verify(filterSettingsConsumer).accept(filterSettingsMock1);
     }
@@ -154,7 +154,7 @@ public class FilterSettingsManagerImplTest {
 
         filterSettingsManagerImpl.saveDefaultActiveFilter(newDefaultFilter, callbackMock);
 
-        verify(userPreferencesServiceMock).loadUserPreferences(gridGlobalPreferenceKey, UserPreferencesType.MULTIGRIDPREFERENCES);
+        verify(userPreferencesServiceMock).loadUserPreferences(GRID_GLOBAL_PREFERENCE_KEY, UserPreferencesType.MULTIGRIDPREFERENCES);
         verify(userPreferencesServiceMock).saveUserPreferences(multiGridPreferencesStore);
         verify(multiGridPreferencesStore).setDefaultGridId(newDefaultFilter);
         verify(callbackMock).execute();
