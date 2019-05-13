@@ -18,14 +18,29 @@ package org.jbpm.workbench.ht.client.editors;
 
 import java.util.function.Predicate;
 
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
 import org.jbpm.workbench.ht.model.events.AbstractTaskEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
+import org.uberfire.workbench.events.NotificationEvent;
 
 public abstract class AbstractTaskPresenter {
 
     private Long taskId;
     private String serverTemplateId;
     private String containerId;
+
+    private Event<NotificationEvent> notification;
+
+    @Inject
+    public void setNotification(final Event<NotificationEvent> notification) {
+        this.notification = notification;
+    }
+
+    public void displayNotification(String text) {
+        notification.fire(new NotificationEvent(text));
+    }
 
     protected Predicate<AbstractTaskEvent> isSameTaskFromEvent() {
         return e -> e.getServerTemplateId().equals(serverTemplateId) && e.getContainerId().equals(containerId) && e.getTaskId().equals(taskId);

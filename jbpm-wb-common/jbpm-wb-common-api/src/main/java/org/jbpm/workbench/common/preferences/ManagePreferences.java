@@ -38,6 +38,10 @@ public class ManagePreferences implements BasePreference<ManagePreferences> {
             formType = PropertyFormType.NATURAL_NUMBER, validators = ItemPerPageValidator.class)
     private Integer itemsPerPage;
 
+    @Property(bundleKey = "ManagePreferences.showTaskCommentsAtWorkTab", helpBundleKey = "ManagePreferences.showTaskCommentsAtWorkTab.Help",
+            formType = PropertyFormType.BOOLEAN)
+    private boolean showTaskCommentsAtWorkTab;
+
     @Property(bundleKey = "ManagePreferences.ProcessInstanceDiagramCompletedNodeColor", helpBundleKey = "ManagePreferences.ProcessInstanceDiagramCompletedNodeColor.Help",
             formType = PropertyFormType.COLOR)
     private String processInstanceDiagramCompletedNodeColor;
@@ -57,6 +61,7 @@ public class ManagePreferences implements BasePreference<ManagePreferences> {
         defaultValue.processInstanceDiagramCompletedNodeColor = COMPLETED_COLOR;
         defaultValue.processInstanceDiagramCompletedNodeBorderColor = COMPLETED_BORDER_COLOR;
         defaultValue.processInstanceDiagramActiveNodeBorderColor = ACTIVE_BORDER_COLOR;
+        defaultValue.showTaskCommentsAtWorkTab = true;
         return defaultValue;
     }
 
@@ -90,5 +95,13 @@ public class ManagePreferences implements BasePreference<ManagePreferences> {
 
     public void setProcessInstanceDiagramActiveNodeBorderColor(String processInstanceDiagramActiveNodeBorderColor) {
         this.processInstanceDiagramActiveNodeBorderColor = processInstanceDiagramActiveNodeBorderColor;
+    }
+
+    public boolean isShowTaskCommentsAtWorkTab() {
+        return showTaskCommentsAtWorkTab;
+    }
+
+    public void setShowTaskCommentsAtWorkTab(boolean showTaskCommentsAtWorkTab) {
+        this.showTaskCommentsAtWorkTab = showTaskCommentsAtWorkTab;
     }
 }
