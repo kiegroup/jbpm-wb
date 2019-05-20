@@ -28,10 +28,12 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 
+import static org.jbpm.workbench.df.client.filter.FilterSettingsManagerImpl.DEFAULT_FILTER_SETTINGS_KEY;
+import static org.jbpm.workbench.ht.client.editors.taskslist.TaskAdminListFilterSettingsManager.DATA_SET_TASK_LIST_PREFIX;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.COLUMN_ERROR_COUNT;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.HUMAN_TASKS_WITH_ADMIN_DATASET;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class TaskAdminListFilterSettingsManagerTest extends AbstractTaskListFilterSettingsManagerTest {
@@ -59,12 +61,10 @@ public class TaskAdminListFilterSettingsManagerTest extends AbstractTaskListFilt
     @Test
     public void testDefaultFilters() {
         Consumer<List<SavedFilter>> callback = filters -> {
-            assertEquals(2,
-                         filters.size());
-            assertEquals(Constants.INSTANCE.Active(),
-                         filters.get(0).getName());
-            assertEquals(Constants.INSTANCE.Task_Admin(),
-                         filters.get(1).getName());
+            assertEquals(2, filters.size());
+            assertEquals(DATA_SET_TASK_LIST_PREFIX + "_" + DEFAULT_FILTER_SETTINGS_KEY, filters.get(0).getKey());
+            assertEquals(Constants.INSTANCE.Active(), filters.get(0).getName());
+            assertEquals(Constants.INSTANCE.Task_Admin(), filters.get(1).getName());
         };
 
         final MultiGridPreferencesStore store = new MultiGridPreferencesStore();

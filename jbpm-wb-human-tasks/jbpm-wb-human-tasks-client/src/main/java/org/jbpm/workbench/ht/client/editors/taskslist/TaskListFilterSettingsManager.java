@@ -35,7 +35,7 @@ import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 @Dependent
 public class TaskListFilterSettingsManager extends AbstractTaskListFilterSettingsManager {
 
-    private static final String DATA_SET_TASK_LIST_PREFIX = "DataSetTaskListGrid";
+    protected static final String DATA_SET_TASK_LIST_PREFIX = "DataSetTaskListGrid";
     protected static final String TAB_ALL = DATA_SET_TASK_LIST_PREFIX + "_3";
     protected static final String TAB_GROUP = DATA_SET_TASK_LIST_PREFIX + "_2";
     protected static final String TAB_PERSONAL = DATA_SET_TASK_LIST_PREFIX + "_1";
@@ -103,7 +103,7 @@ public class TaskListFilterSettingsManager extends AbstractTaskListFilterSetting
                                          builder.group(COLUMN_TASK_ID);
                                          commonColumnSettings().accept(builder);
                                      },
-                                     DEFAULT_FILTER_SETTINGS_KEY, // initial default filter,
+                                     getDefaultFilterSettingsKey(), // initial default filter,
                                      constants.Active(),
                                      constants.FilterActive()),
 

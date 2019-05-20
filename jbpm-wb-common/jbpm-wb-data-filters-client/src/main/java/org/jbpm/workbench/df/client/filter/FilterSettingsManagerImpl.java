@@ -291,11 +291,10 @@ public abstract class FilterSettingsManagerImpl implements FilterSettingsManager
         return builder.buildSettings();
     }
 
-    protected void initFilterSettingPreferences(MultiGridPreferencesStore store,
-                                                final Consumer<FilterSettings> initFiltersCallback) {
+    protected void initFilterSettingPreferences(MultiGridPreferencesStore store, Consumer<FilterSettings> initFiltersCallback) {
         final List<FilterSettings> defaultFilters = initDefaultFilters();
         defaultFilters.forEach(f -> addFilterToPreferencesStore(f, store));
-        store.setDefaultGridId(DEFAULT_FILTER_SETTINGS_KEY);
+        store.setDefaultGridId(getDefaultFilterSettingsKey());
 
         saveMultiGridPreferencesStore(store, () -> {
             if (initFiltersCallback != null) {

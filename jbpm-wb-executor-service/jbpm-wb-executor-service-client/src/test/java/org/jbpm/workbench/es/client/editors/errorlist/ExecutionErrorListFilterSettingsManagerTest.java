@@ -37,6 +37,7 @@ import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.mocks.CallerMock;
 
 import static org.jbpm.workbench.df.client.filter.FilterSettingsManagerImpl.DEFAULT_FILTER_SETTINGS_KEY;
+import static org.jbpm.workbench.es.client.editors.errorlist.ExecutionErrorListFilterSettingsManager.EXECUTION_ERROR_LIST_PREFIX;
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.COLUMN_ERROR_ACK;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -67,7 +68,7 @@ public class ExecutionErrorListFilterSettingsManagerTest {
             assertEquals(2,
                          filters.size());
             assertEquals(Constants.INSTANCE.New(), filters.get(0).getName());
-            assertEquals(DEFAULT_FILTER_SETTINGS_KEY, filters.get(0).getKey());
+            assertEquals(EXECUTION_ERROR_LIST_PREFIX + "_" + DEFAULT_FILTER_SETTINGS_KEY, filters.get(0).getKey());
             assertEquals(Constants.INSTANCE.Acknowledged(), filters.get(1).getName());
         };
 
@@ -88,6 +89,6 @@ public class ExecutionErrorListFilterSettingsManagerTest {
                      columnFilter.getColumnId());
         assertTrue(columnFilter instanceof CoreFunctionFilter);
         assertTrue(((CoreFunctionFilter) columnFilter).getParameters().get(0) instanceof Integer);
-        assertEquals(DEFAULT_FILTER_SETTINGS_KEY, settings.get(0).getKey());
+        assertEquals( EXECUTION_ERROR_LIST_PREFIX + "_" + DEFAULT_FILTER_SETTINGS_KEY, settings.get(0).getKey());
     }
 }

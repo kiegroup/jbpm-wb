@@ -44,9 +44,18 @@ import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.mocks.CallerMock;
 
 import static java.util.Collections.singletonList;
-import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.jbpm.workbench.df.client.filter.FilterSettingsManagerImpl.DEFAULT_FILTER_SETTINGS_KEY;
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX;
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.PROCESS_INSTANCE_ID;
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.PROCESS_NAME;
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.VARIABLE_ID;
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.VARIABLE_NAME;
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.VARIABLE_VALUE;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class ProcessInstanceListFilterSettingsManagerTest {
@@ -71,19 +80,15 @@ public class ProcessInstanceListFilterSettingsManagerTest {
     @Test
     public void testDefaultFilters() {
         Consumer<List<SavedFilter>> callback = filters -> {
-            assertEquals(3,
-                         filters.size());
-            assertEquals(Constants.INSTANCE.Active(),
-                         filters.get(0).getName());
-            assertEquals(Constants.INSTANCE.Completed(),
-                         filters.get(1).getName());
-            assertEquals(Constants.INSTANCE.Aborted(),
-                         filters.get(2).getName());
+            assertEquals(3, filters.size());
+            assertEquals(Constants.INSTANCE.Active(), filters.get(0).getName());
+            assertEquals(PROCESS_INSTANCES_WITH_VARIABLES_INCLUDED_LIST_PREFIX + "_" + DEFAULT_FILTER_SETTINGS_KEY, filters.get(0).getKey());
+            assertEquals(Constants.INSTANCE.Completed(), filters.get(1).getName());
+            assertEquals(Constants.INSTANCE.Aborted(), filters.get(2).getName());
         };
 
         final MultiGridPreferencesStore store = new MultiGridPreferencesStore();
-        manager.loadSavedFiltersFromPreferences(store,
-                                                callback);
+        manager.loadSavedFiltersFromPreferences(store, callback);
 
         verify(userPreferencesService).saveUserPreferences(store);
     }

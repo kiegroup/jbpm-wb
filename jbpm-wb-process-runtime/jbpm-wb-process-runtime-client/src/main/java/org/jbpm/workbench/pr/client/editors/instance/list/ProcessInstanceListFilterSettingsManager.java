@@ -60,7 +60,7 @@ public class ProcessInstanceListFilterSettingsManager extends FilterSettingsMana
                                      COLUMN_START,
                                      builder -> builder.filter(equalsTo(COLUMN_STATUS,
                                                                         ProcessInstance.STATE_ACTIVE)),
-                                     DEFAULT_FILTER_SETTINGS_KEY, //initialDefaultFilter
+                                     getDefaultFilterSettingsKey(), //initialDefaultFilter
                                      constants.Active(),
                                      constants.FilterActive()),
 
