@@ -6,45 +6,41 @@
             <span data-i18n-key="Comments"></span>
         </h2>
     </div>
-    <div class="col-xs-12 kie-card-pf-body">
-        <div class="kie-sortActions">
-            <button class="btn btn-link kie-btn-link pull-right" type="button" data-field="sort-alpha-desc" data-toggle="tooltip" data-placement="left" title="" data-original-title="Sort by date asc">
+    <div class="col-md-8 kie-card-pf-body">
+        <div>
+            <button class="btn btn-link pull-right" type="button" data-field="sort-alpha-desc" data-toggle="tooltip" data-placement="left" title="" data-original-title="Sort by date asc">
                 <span class="fa fa-sort-numeric-desc"></span>
             </button>
-            <button class="btn btn-link kie-btn-link pull-right hidden" type="button" data-field="sort-alpha-asc" data-toggle="tooltip" data-placement="left" title="" data-original-title="Sort by date desc">
+            <button class="btn btn-link pull-right hidden" type="button" data-field="sort-alpha-asc" data-toggle="tooltip" data-placement="left" title="" data-original-title="Sort by date desc">
                 <span class="fa fa-sort-numeric-asc"></span>
             </button>
         </div>
         <!-- input for comments -->
-        <div class="list-group-item kie-list-group-item--header">
-            <div class="col-md-12">
-                <div class="col-md-11" data-field="add-comment-div">
-                    <div class="list-view-pf-main-info kie-comments__main-info">
-                        <div class="list-view-pf-left kie-comments__list-view-pf-left">
-                            <span class="pficon pficon-user list-view-pf-icon-sm"></span>
-                        </div>
-                        <div class="list-view-pf-body">
-                            <div class="list-view-pf-description kie-comments__list-view-pf-description" data-field="comment-creation-group">
-                                <div class="kie-full-width">
-                                    <textarea type="text" rows="2" class="form-control input-lg" placeholder="Add a comment." data-field="comment-creation-input"></textarea>
-                                    <span data-field="comment-creation-help" class="help-block"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="margin-left: 10px">
-                            <a href="#" data-field="addCommentButton">
-                                <span class="fa fa-plus-circle pull-right kie-comments__add-button"></span>
-                            </a>
+        <div class="kie-inputcomment-area" data-field="add-comment-div">
+            <div class="list-view-pf-main-info kie-comments__main-info">
+                <div class="list-view-pf-left kie-comments__list-view-pf-left">
+                    <span class="pficon pficon-user list-view-pf-icon-sm"></span>
+                </div>
+                <div class="list-view-pf-body">
+                    <div class="list-view-pf-description" data-field="comment-creation-group">
+                        <div class="kie-full-width">
+                            <textarea type="text" rows="2" class="form-control input-lg" placeholder="Add a comment." data-field="comment-creation-input"></textarea>
+                            <span data-field="comment-creation-help" class="help-block"></span>
                         </div>
                     </div>
-
+                </div>
+                <div style="margin-right: -20px;">
+                    <a href="#" data-field="addCommentButton">
+                        <span class="fa fa-plus-circle pull-right kie-comments__add-button"></span>
+                    </a>
                 </div>
             </div>
         </div>
+        <div class="kie-list-group-item--header"></div>
 
         <!-- list of comments -->
-        <div class="kie-scrollbox kie-scrollbox--comments" data-field="scrollbox">
-            <div class=" list-group kie-list-view--embedded" data-field="comments-list"></div>
+        <div class="kie-scrollbox--comments" data-field="scrollbox">
+            <div class=" list-group " data-field="comments-list"></div>
             <div class="card-pf-body kie-card-body--embedded" data-field="empty-list-item">
                 <div href="" class="card-pf-link-with-icon"><span class="pficon pficon-info"></span>
                     <span data-i18n-key="No_Comments_For_This_Task"></span>
@@ -55,6 +51,7 @@
             <button type="button" class="btn btn-primary" data-field="load-more-comments" data-i18n-key="LoadMoreComments"></button>
         </div>
     </div>
+
 </div>
 
 

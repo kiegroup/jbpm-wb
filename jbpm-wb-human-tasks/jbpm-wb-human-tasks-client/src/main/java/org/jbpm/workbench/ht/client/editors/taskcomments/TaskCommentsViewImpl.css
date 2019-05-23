@@ -4,15 +4,24 @@
     display: flex;
     align-items: center;
     padding-top: 0;
+    padding-left: 15px;
+    margin-left: -10px;
 }
 
 .kie-card-pf-body {
     padding-bottom: 50px;
 }
 
+.kie-inputcomment-area {
+    padding-top: 10px;
+    margin-bottom: -20px;
+    padding-left: 10px;
+}
 
-.kie-list-group-item-content {
-    display: flex;
+.kie-comments__list-view-pf-left .pficon.kie-no-highlight,
+.kie-comments__list-view-pf-left .fa.kie-no-highlight {
+    background-color: #ededed;
+    border-color: transparent;
 }
 
 .kie-full-width {
@@ -20,19 +29,25 @@
     display: inline-block;
 }
 
-.kie-scrollbox--comments {
-    overflow: auto;
+.kie-comments__add-button {
+    font-size: 2.0rem;
 }
 
 .kie-list-group-item--header {
-    border-bottom: 2px solid #d1d1d1;
+    border-bottom: 1px solid #d1d1d1;
     border-top: 0;
     display: flex;
-    align-items: center;
+    margin-left: -4px;
+    margin-top: 26px;
 }
 
-.kie-comments__add-button {
-    font-size: 2.0rem;
+.kie-scrollbox--comments {
+    overflow: auto;
+    margin-left: -5px;
+}
+
+.kie-card-body--embedded {
+    padding-left: 30px;
 }
 
 .kie-comments__pf-actions {
@@ -44,28 +59,7 @@
 .kie-comments__main-info {
     padding-top: 0;
     padding-bottom: 0;
+    padding-left: 5px;
+    padding-right: 15px;
 }
 
-.kie-item-heading__role {
-    font-weight: 400;
-}
-
-.card-pf .kie-comments-heading {
-    margin: 0 -10px 20px;
-    padding: 0 20px;
-    padding-bottom: 40px
-}
-
-.kie-comments__list-view-pf-description {
-    width: 100%;
-}
-
-.kie-comments__list-view-pf-left .pficon.kie-no-highlight,
-.kie-comments__list-view-pf-left .fa.kie-no-highlight {
-    background-color: #ededed;
-    border-color: transparent;
-}
-
-.kie-sortActions {
-    margin-bottom: 2px;
-}
