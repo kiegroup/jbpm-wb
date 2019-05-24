@@ -73,7 +73,10 @@ public class ProjectServiceTaskItemPresenter extends ListItemPresenter<ServiceTa
         view.setServiceTaskId(serviceTask.getId());
         view.setServiceTaskParameters(serviceTask.getParameters());
         view.setServiceTaskReferenceLink(serviceTask.getReferenceLink());
-        view.setInstalled(serviceTask.getInstalledOn().contains(parentPresenter.getInstallTarget()));
+
+        boolean containsTarget = serviceTask.getInstalledOn().contains(parentPresenter.getInstallTarget());
+        boolean containsBranch = serviceTask.getInstalledOnBranch().contains(parentPresenter.getBranchName());
+        view.setInstalled(containsTarget && containsBranch);
 
         return this;
     }

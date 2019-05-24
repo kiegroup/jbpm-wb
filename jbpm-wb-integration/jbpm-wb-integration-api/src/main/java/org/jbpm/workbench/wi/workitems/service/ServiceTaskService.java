@@ -27,15 +27,17 @@ public interface ServiceTaskService {
 
     List<ServiceTaskSummary> getServiceTasks();
     
-    List<ServiceTaskSummary> getEnabledServiceTasks();
+    List<ServiceTaskSummary> getEnabledServiceTasks(String branchName);
     
     void enableServiceTask(String id);
     
     void disableServiceTask(String id);
     
-    void installServiceTask(String id, String target, List<String> parameters);
+    void installServiceTask(String id, String target, List<String> parameters, String branchName);
     
-    void uninstallServiceTask(String id, String target);
+    void uninstallServiceTask(String id, String target, String branchName);
+
+    void updateInstalledServiceTasks(String newBranchName, String fromBranchName);
     
     ServiceTasksConfiguration getConfiguration();
 

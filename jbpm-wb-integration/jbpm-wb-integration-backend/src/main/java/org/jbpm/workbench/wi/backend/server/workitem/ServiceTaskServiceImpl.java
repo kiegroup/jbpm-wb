@@ -80,17 +80,17 @@ public class ServiceTaskServiceImpl implements ServiceTaskService {
     @Override
     public List<ServiceTaskSummary> getServiceTasks() {
         return repoService.getServices().stream()
-                .map(repoData -> new ServiceTaskSummary(repoData.getId(), "fa fa-cogs", repoData.getName(), repoData.getDescription(), repoData.getActiontitle(), repoData.isEnabled(), repoData.getInstalledOn(), extractAuthParameters(repoData), repoData.getAuthreferencesite()))
+                .map(repoData -> new ServiceTaskSummary(repoData.getId(), "fa fa-cogs", repoData.getName(), repoData.getDescription(), repoData.getActiontitle(), repoData.isEnabled(), repoData.getInstalledOn(), extractAuthParameters(repoData), repoData.getAuthreferencesite(), repoData.getInstalledOnBranch()))
                 .sorted((service, service2) -> service.getName().compareTo(service2.getName()))
                 .collect(Collectors.toList());
         
     }
     
     @Override
-    public List<ServiceTaskSummary> getEnabledServiceTasks() {
+    public List<ServiceTaskSummary> getEnabledServiceTasks(String branchName) {
         return repoService.getServices().stream()
                 .filter(service -> service.isEnabled())
-                .map(repoData -> new ServiceTaskSummary(repoData.getId(), "fa fa-cogs", repoData.getName(), repoData.getDescription(), repoData.getActiontitle(), repoData.isEnabled(), repoData.getInstalledOn(), extractAuthParameters(repoData), repoData.getAuthreferencesite()))
+                .map(repoData -> new ServiceTaskSummary(repoData.getId(), "fa fa-cogs", repoData.getName(), repoData.getDescription(), repoData.getActiontitle(), repoData.isEnabled(), repoData.getInstalledOn(), extractAuthParameters(repoData), repoData.getAuthreferencesite(), repoData.getInstalledOnBranch()))
                 .sorted((service, service2) -> service.getName().compareTo(service2.getName()))
                 .collect(Collectors.toList());
         
@@ -108,13 +108,13 @@ public class ServiceTaskServiceImpl implements ServiceTaskService {
     }
 
     @Override
-    public void installServiceTask(String id, String target, List<String> parameters) {        
-        repoService.installService(id, target, parameters);
+    public void installServiceTask(String id, String target, List<String> parameters, String branchName) {
+        repoService.installService(id, target, parameters, branchName);
     }
 
     @Override
-    public void uninstallServiceTask(String id, String target) {
-        repoService.uninstallService(id, target);
+    public void uninstallServiceTask(String id, String target, String branchName) {
+        repoService.uninstallService(id, target, branchName);
         
     }
 
@@ -216,7 +216,11 @@ public class ServiceTaskServiceImpl implements ServiceTaskService {
             throw new RuntimeException(e);
         } 
     }
-    
+
+    @Override
+    public void updateInstalledServiceTasks(String newBranchName, String fromBranchName) {
+        repoService.updateInstalled(newBranchName, fromBranchName);
+    }
     
     /*
      * Helper methods
