@@ -37,13 +37,15 @@ public class ServiceTaskSummary {
 
     private Set<String> installedOn;
 
+    private Set<String> installedOnBranch;
+
     private List<String> parameters;
 
     public ServiceTaskSummary() {
 
     }
 
-    public ServiceTaskSummary(String id, String icon, String name, String description, String additionalInfo, Boolean enabled, Set<String> installedOn, List<String> parameters, String referenceLink) {
+    public ServiceTaskSummary(String id, String icon, String name, String description, String additionalInfo, Boolean enabled, Set<String> installedOn, List<String> parameters, String referenceLink, Set<String> installedOnBranch) {
         this.id = id;
         this.icon = icon;
         this.name = name;
@@ -53,6 +55,7 @@ public class ServiceTaskSummary {
         this.installedOn = installedOn;
         this.parameters = parameters;
         this.referenceLink = referenceLink;
+        this.installedOnBranch = installedOnBranch;
     }
 
     public String getId() {
@@ -125,6 +128,14 @@ public class ServiceTaskSummary {
 
     public void setReferenceLink(String referenceLink) {
         this.referenceLink = referenceLink;
+    }
+
+    public Set<String> getInstalledOnBranch() {
+        return installedOnBranch;
+    }
+
+    public void setInstalledOnBranch(Set<String> installedOnBranch) {
+        this.installedOnBranch = installedOnBranch;
     }
 
     @Override

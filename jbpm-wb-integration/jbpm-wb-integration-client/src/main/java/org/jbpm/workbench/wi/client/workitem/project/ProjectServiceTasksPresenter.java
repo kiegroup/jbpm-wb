@@ -20,8 +20,11 @@ import java.util.List;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
+import org.guvnor.structure.repositories.NewBranchEvent;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
@@ -57,6 +60,9 @@ public class ProjectServiceTasksPresenter extends Section<ProjectScreenModel>  {
     }
 
     @Inject
+    WorkspaceProjectContext workspaceProjectContext;
+
+    @Inject
     public ProjectServiceTasksPresenter(final ProjectServiceTasksPresenter.View view,
                                final Promises promises,
                                final MenuItem<ProjectScreenModel> menuItem,
@@ -74,11 +80,10 @@ public class ProjectServiceTasksPresenter extends Section<ProjectScreenModel>  {
 
     @Override
     public Promise<Void> setup(final ProjectScreenModel model) {
-
         this.model = model;
         view.init(this);
         
-        return loadServiceTasks().then(tasks -> promises.create((resolve, reject) -> {
+        return loadServiceTasks(getBranchName()).then(tasks -> promises.create((resolve, reject) -> {
             serviceTasksItemPresenters.setup(view.getServiceTasksTable(),
                                              tasks,
                                              (serviceTask, presenter) -> presenter.setup(serviceTask, this));
@@ -87,9 +92,9 @@ public class ProjectServiceTasksPresenter extends Section<ProjectScreenModel>  {
         
     }
     
-    Promise<List<ServiceTaskSummary>> loadServiceTasks() {
+    Promise<List<ServiceTaskSummary>> loadServiceTasks(String branchName) {
         return promises.promisify(serviceTasksService, s -> {
-            s.getEnabledServiceTasks();
+            s.getEnabledServiceTasks(branchName);
         });
     }
 
@@ -112,13 +117,12 @@ public class ProjectServiceTasksPresenter extends Section<ProjectScreenModel>  {
         }
     }
     
-    public void installServiceTask(String serviceTaskId, List<String> parameters, String referenceLink, Command onDone) {  
-        
+    public void installServiceTask(String serviceTaskId, List<String> parameters, String referenceLink, Command onDone) {
         if (parameters.isEmpty()) {
             serviceTasksService.call((Void) -> {
                 onDone.execute();
                 fireChangeEvent();
-            }).installServiceTask(serviceTaskId, getInstallTarget(), null);
+            }).installServiceTask(serviceTaskId, getInstallTarget(), null, getBranchName());
         } else {
             
             ServiceTaskInstallFormPresenter installFormPresenter = iocManager.lookupBean(ServiceTaskInstallFormPresenter.class).newInstance();
@@ -130,7 +134,7 @@ public class ProjectServiceTasksPresenter extends Section<ProjectScreenModel>  {
         serviceTasksService.call((Void) -> {
             onDone.execute();
             fireChangeEvent();
-        }).uninstallServiceTask(serviceTaskId, getInstallTarget());
+        }).uninstallServiceTask(serviceTaskId, getInstallTarget(), getBranchName());
     }
     
     public String getInstallTarget() {
@@ -141,5 +145,19 @@ public class ProjectServiceTasksPresenter extends Section<ProjectScreenModel>  {
         } else {
             return uri.substring(uri.indexOf("://") + 3);
         }
+    }
+
+    public void newBranchEvent(@Observes final NewBranchEvent newBranchEvent) {
+        serviceTasksService.call((Void) -> {
+
+        }).updateInstalledServiceTasks(newBranchEvent.getNewBranchName(), newBranchEvent.getFromBranchName());
+    }
+
+    public String getBranchName() {
+        String branchName = null;
+        if(workspaceProjectContext != null) {
+            branchName = workspaceProjectContext.getActiveWorkspaceProject().get().getBranch().getName();
+        }
+        return branchName;
     }
 }

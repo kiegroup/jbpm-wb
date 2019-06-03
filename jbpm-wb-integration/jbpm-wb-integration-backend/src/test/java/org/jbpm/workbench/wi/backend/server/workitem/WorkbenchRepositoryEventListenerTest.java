@@ -17,8 +17,10 @@
 package org.jbpm.workbench.wi.backend.server.workitem;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
+import org.uberfire.backend.vfs.Path;
 
 public class WorkbenchRepositoryEventListenerTest {
 
@@ -75,5 +77,35 @@ public class WorkbenchRepositoryEventListenerTest {
         
         String resolved = listener.resolveVersion(version, true);
         assertEquals("[7,)", resolved);
+    }
+
+    @Test
+    public void testGetTargetPathForBranch() {
+        WorkbenchRepositoryEventListener listener = new WorkbenchRepositoryEventListener();
+
+        Path path = listener.getTargetPath("pom.xml", "testBranchName", "testTarget");
+
+        assertNotNull(path);
+        assertEquals("default://testBranchName@testTarget", path.toURI());
+    }
+
+    @Test
+    public void testGetTargetForNullBranch() {
+        WorkbenchRepositoryEventListener listener = new WorkbenchRepositoryEventListener();
+
+        Path path = listener.getTargetPath("pom.xml", null, "testTarget");
+
+        assertNotNull(path);
+        assertEquals("default://master@testTarget", path.toURI());
+    }
+
+    @Test
+    public void testGetTargetForEmptyBranch() {
+        WorkbenchRepositoryEventListener listener = new WorkbenchRepositoryEventListener();
+
+        Path path = listener.getTargetPath("pom.xml", "", "testTarget");
+
+        assertNotNull(path);
+        assertEquals("default://master@testTarget", path.toURI());
     }
 }
