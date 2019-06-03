@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.jbpm.workbench.pr.backend.server.ProcessInstanceVariableMapper;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
 import org.kie.server.api.model.instance.VariableInstance;
 
@@ -36,14 +37,15 @@ public class DocumentsVariableProcessor implements VariableHelper.VariableProces
     }
 
     @Override
-    public void process(long processInstanceId, String varName, String varType, List<VariableInstance> variables, Consumer<ProcessVariableSummary> consumer) {
+    public void process(long processInstanceId, String varName, String varType, List<VariableInstance> variables,
+                        String deploymentId, String serverTemplateId, Consumer<ProcessVariableSummary> consumer) {
         String patternString = varName + PATTERN_SUFFIX;
 
         for (Iterator<VariableInstance> it = variables.iterator(); it.hasNext(); ) {
             VariableInstance var = it.next();
 
             if (var.getVariableName().matches(patternString)) {
-                consumer.accept(new ProcessVariableSummary(var.getVariableName(), var.getVariableName(), var.getProcessInstanceId(), var.getOldValue(), var.getValue(), var.getDate().getTime(), JBPM_DOCUMENT));
+                consumer.accept(new ProcessInstanceVariableMapper(deploymentId, serverTemplateId, JBPM_DOCUMENT).apply(var));
                 it.remove();
             }
         }
