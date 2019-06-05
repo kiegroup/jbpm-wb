@@ -27,7 +27,6 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import com.google.gwt.user.cellview.client.ColumnSortList;
 import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
@@ -167,11 +166,9 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
                                                 filter -> addActiveFilters(filter));
     }
 
-    protected void setFilterSettings(final FilterSettings filter,
-                                     final Consumer<ListTable<T>> readyCallback) {
+    protected void setFilterSettings(final FilterSettings filter, final Consumer<ListTable<T>> readyCallback) {
         getDataSetQueryHelper().setCurrentTableSettings(filter);
-        view.loadListTable(filter.getKey(),
-                           readyCallback);
+        view.loadListTable(filter.getKey(), readyCallback);
     }
 
     public ActiveFilterItem getActiveFilterFromColumnFilter(ColumnFilter columnFilter) {
@@ -203,10 +200,12 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
             final FilterSettings currentTableSettings = getDataSetQueryHelper().getCurrentTableSettings();
             currentTableSettings.setServerTemplateId(getSelectedServerTemplate());
             currentTableSettings.setTablePageSize(view.getListGrid().getPageSize());
-            ColumnSortList columnSortList = view.reloadColumnSortList();
-            if (columnSortList != null && columnSortList.size() > 0) {
-                getDataSetQueryHelper().setLastOrderedColumn(columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName() : "");
-                getDataSetQueryHelper().setLastSortOrder(columnSortList.size() > 0 && columnSortList.get(0).isAscending() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
+
+            final String sortColumn = view.getSortColumn();
+            final Boolean sortAscending = view.isSortAscending();
+            if (sortColumn != null) {
+                getDataSetQueryHelper().setLastOrderedColumn(sortColumn);
+                getDataSetQueryHelper().setLastSortOrder(sortAscending ? SortOrder.ASCENDING : SortOrder.DESCENDING);
             }
 
             getDataSetQueryHelper().setCurrentTableSettings(currentTableSettings);

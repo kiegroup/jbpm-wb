@@ -21,23 +21,26 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import org.jbpm.workbench.pr.backend.server.ProcessInstanceVariableMapper;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
 import org.kie.server.api.model.instance.VariableInstance;
 
 public class DefaultVariableProcessor implements VariableHelper.VariableProcessor {
 
     @Override
-    public void process(long processInstanceId, String varName, String varType, List<VariableInstance> variables, Consumer<ProcessVariableSummary> consumer) {
+    public void process(long processInstanceId, String varName, String varType, List<VariableInstance> variables,
+                        String deploymentId, String servetTemplateId, Consumer<ProcessVariableSummary> consumer) {
         Optional<VariableInstance> optional = variables.stream()
                 .filter(variableInstance -> variableInstance.getVariableName().equals(varName))
                 .findAny();
 
         if (optional.isPresent()) {
             VariableInstance variable = optional.get();
-            consumer.accept(new ProcessVariableSummary(variable.getVariableName(), variable.getVariableName(), variable.getProcessInstanceId(), variable.getOldValue(), variable.getValue(), variable.getDate().getTime(), varType));
+            consumer.accept(new ProcessInstanceVariableMapper(deploymentId, servetTemplateId, varType).apply(variable));
             variables.remove(variable);
         } else {
-            consumer.accept(new ProcessVariableSummary(varName, "", processInstanceId, "", "", new Date().getTime(), varType));
+            consumer.accept(new ProcessVariableSummary(varName, "", processInstanceId, "", "", new Date().getTime(),
+                                                       varType, deploymentId, servetTemplateId));
         }
     }
 

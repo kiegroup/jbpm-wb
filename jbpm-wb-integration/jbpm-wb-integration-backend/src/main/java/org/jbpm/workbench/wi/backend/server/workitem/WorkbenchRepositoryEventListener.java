@@ -67,11 +67,8 @@ public class WorkbenchRepositoryEventListener implements RepositoryEventListener
     private static final Logger logger = LoggerFactory.getLogger(WorkbenchRepositoryEventListener.class);
     
     private static final String REPOSITORY_CONTENT_LOCATION = "/service-tasks/";
-    private static final String REPOSITORY_PREFIX = "default://master@";
     
     private String repositoryVersion;
-    
-   
 
     private Predicate<ArtifactRepository> filter = new Predicate<ArtifactRepository>() {
         
@@ -160,12 +157,10 @@ public class WorkbenchRepositoryEventListener implements RepositoryEventListener
     }
 
     @Override
-    public void onServiceTaskInstalled(RepoData service, String target, List<String> parameters) {
-        
+    public void onServiceTaskInstalled(RepoData service, String target, List<String> parameters, String branchName) {
         try {
-            
             boolean installPomDepds = repositoryStorage.loadConfiguration().getInstallPomDeps();
-            Path path = PathFactory.newPath("pom.xml", REPOSITORY_PREFIX + target);
+            Path path = getTargetPath("pom.xml", branchName, target);
             
             Module module = moduleService.resolveModule(path);
             POM projectPOM = pomService.load(module.getPomXMLPath());
@@ -210,8 +205,8 @@ public class WorkbenchRepositoryEventListener implements RepositoryEventListener
     }
 
     @Override
-    public void onServiceTaskUninstalled(RepoData service, String target) {        
-        Path path = PathFactory.newPath("pom.xml", REPOSITORY_PREFIX + target);
+    public void onServiceTaskUninstalled(RepoData service, String target, String branchName) {
+        Path path = getTargetPath("pom.xml", branchName, target);
         
         Module module = moduleService.resolveModule(path);
         POM projectPOM = pomService.load(module.getPomXMLPath());
@@ -376,6 +371,14 @@ public class WorkbenchRepositoryEventListener implements RepositoryEventListener
         }
         
         return version;
+    }
+
+    protected Path getTargetPath(String fileName, String branchName, String target) {
+        if(branchName == null || branchName.trim().length() < 1) {
+            branchName = "master";
+        }
+
+        return PathFactory.newPath(fileName, "default://" + branchName + "@" + target);
     }
 
 

@@ -20,10 +20,15 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
+import org.guvnor.common.services.project.model.WorkspaceProject;
+import org.guvnor.structure.repositories.Branch;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jbpm.workbench.wi.client.workitem.project.ServiceTaskInstallFormPresenter;
 import org.jbpm.workbench.wi.client.workitem.project.ServiceTaskInstallFormView;
@@ -49,6 +54,15 @@ public class ServiceTaskInstallFormPresenterTest {
     private ServiceTaskService serviceTaskService;
 
     @Mock
+    private WorkspaceProjectContext workspaceProjectContext;
+
+    @Mock
+    private WorkspaceProject workspaceProject;
+
+    @Mock
+    private Branch branch;
+
+    @Mock
     private SyncBeanManager iocManager;
     
     @Mock
@@ -65,16 +79,33 @@ public class ServiceTaskInstallFormPresenterTest {
                                                            new CallerMock<ServiceTaskService>(serviceTaskService),
                                                            iocManager));
         presenter.init();
+
+        when(workspaceProjectContext.getActiveWorkspaceProject()).thenReturn(Optional.of(workspaceProject));
+        when(workspaceProject.getBranch()).thenReturn(branch);
     }
     
     @Test
     public void testInstallServiceTask() {
-        
+        when(branch.getName()).thenReturn("master");
+
         presenter.showView(cmd, serviceTaskId, target, parameters, null);
-        
+        presenter.setWorkspaceProjectContext(workspaceProjectContext);
         presenter.installWithParameters(serviceTaskId, target, parameters);
         
-        verify(serviceTaskService, times(1)).installServiceTask(eq(serviceTaskId), eq(target), eq(parameters));
+        verify(serviceTaskService, times(1)).installServiceTask(eq(serviceTaskId), eq(target), eq(parameters), eq("master"));
         verify(cmd, times(1)).execute();
     }
+
+    @Test
+    public void testInstallServiceTaskCustomBranch() {
+        when(branch.getName()).thenReturn("customBranch");
+
+        presenter.showView(cmd, serviceTaskId, target, parameters, null);
+        presenter.setWorkspaceProjectContext(workspaceProjectContext);
+        presenter.installWithParameters(serviceTaskId, target, parameters);
+
+        verify(serviceTaskService, times(1)).installServiceTask(eq(serviceTaskId), eq(target), eq(parameters), eq("customBranch"));
+        verify(cmd, times(1)).execute();
+    }
+
 }

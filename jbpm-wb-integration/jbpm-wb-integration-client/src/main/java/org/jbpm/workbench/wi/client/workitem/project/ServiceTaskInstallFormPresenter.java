@@ -21,6 +21,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jbpm.workbench.wi.workitems.service.ServiceTaskService;
@@ -36,6 +37,9 @@ public class ServiceTaskInstallFormPresenter implements ServiceTaskInstallFormVi
     private Command onClose;
     
     private final Caller<ServiceTaskService> serviceTasksService;
+
+    @Inject
+    WorkspaceProjectContext workspaceProjectContext;
     
     @Inject
     public ServiceTaskInstallFormPresenter(final ServiceTaskInstallFormView view,
@@ -58,7 +62,11 @@ public class ServiceTaskInstallFormPresenter implements ServiceTaskInstallFormVi
 
     @Override
     public void installWithParameters(String serviceTaskId, String target, List<String> parameterValues) {
-        serviceTasksService.call((Void) -> {}).installServiceTask(serviceTaskId, target, parameterValues);
+        String branchName = null;
+        if(workspaceProjectContext != null) {
+            branchName = workspaceProjectContext.getActiveWorkspaceProject().get().getBranch().getName();
+        }
+        serviceTasksService.call((Void) -> {}).installServiceTask(serviceTaskId, target, parameterValues, branchName);
         
         onSubmitCommand.execute();
     }
@@ -66,5 +74,10 @@ public class ServiceTaskInstallFormPresenter implements ServiceTaskInstallFormVi
     @Override
     public Command onCloseCommand() {
         return onClose;
+    }
+
+    // for testing
+    public void setWorkspaceProjectContext(WorkspaceProjectContext workspaceProjectContext) {
+        this.workspaceProjectContext = workspaceProjectContext;
     }
 }

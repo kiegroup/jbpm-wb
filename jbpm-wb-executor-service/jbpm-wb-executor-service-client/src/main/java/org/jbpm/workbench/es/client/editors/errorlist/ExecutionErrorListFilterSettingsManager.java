@@ -34,7 +34,7 @@ import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 @Dependent
 public class ExecutionErrorListFilterSettingsManager extends FilterSettingsManagerImpl {
 
-    private static final String EXECUTION_ERROR_LIST_PREFIX = "DS_ExecutionErrorListGrid";
+    protected static final String EXECUTION_ERROR_LIST_PREFIX = "DS_ExecutionErrorListGrid";
     protected static final String TAB_ALL = EXECUTION_ERROR_LIST_PREFIX + "_0";
     protected static final String TAB_ACK = EXECUTION_ERROR_LIST_PREFIX + "_1";
     protected static final String TAB_NEW = EXECUTION_ERROR_LIST_PREFIX + "_2";
@@ -78,7 +78,7 @@ public class ExecutionErrorListFilterSettingsManager extends FilterSettingsManag
                                      COLUMN_ERROR_DATE,
                                      builder -> builder.filter(equalsTo(COLUMN_ERROR_ACK,
                                                                         0)),
-                                     DEFAULT_FILTER_SETTINGS_KEY,// initial default filter
+                                     getDefaultFilterSettingsKey(),// initial default filter
                                      constants.New(),
                                      constants.UnacknowledgedErrors()),
 

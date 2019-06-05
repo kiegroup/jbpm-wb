@@ -19,7 +19,6 @@ package org.jbpm.workbench.common.client.list;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import com.google.gwt.user.cellview.client.ColumnSortList;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.model.GenericSummary;
 
@@ -36,5 +35,7 @@ public interface MultiGridView<T extends GenericSummary, V> extends ListView<T, 
 
     void setSaveFilterCallback(BiConsumer<String, Consumer<String>> filterNameCallback);
 
-    ColumnSortList reloadColumnSortList();
+    String getSortColumn();
+    
+    Boolean isSortAscending();
 }

@@ -33,8 +33,10 @@ import org.uberfire.ext.services.shared.preferences.MultiGridPreferencesStore;
 import org.uberfire.ext.services.shared.preferences.UserPreferencesService;
 import org.uberfire.mocks.CallerMock;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.jbpm.workbench.df.client.filter.FilterSettingsManagerImpl.DEFAULT_FILTER_SETTINGS_KEY;
+import static org.jbpm.workbench.es.client.editors.requestlist.JobListFilterSettingsManager.REQUEST_LIST_PREFIX;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class JobListFilterSettingsManagerTest {
@@ -59,25 +61,18 @@ public class JobListFilterSettingsManagerTest {
     @Test
     public void testDefaultFilters() {
         Consumer<List<SavedFilter>> callback = filters -> {
-            assertEquals(6,
-                         filters.size());
-            assertEquals(Constants.INSTANCE.Queued(),
-                         filters.get(0).getName());
-            assertEquals(Constants.INSTANCE.Running(),
-                         filters.get(1).getName());
-            assertEquals(Constants.INSTANCE.Retrying(),
-                         filters.get(2).getName());
-            assertEquals(Constants.INSTANCE.Error(),
-                         filters.get(3).getName());
-            assertEquals(Constants.INSTANCE.Completed(),
-                         filters.get(4).getName());
-            assertEquals(Constants.INSTANCE.Canceled(),
-                         filters.get(5).getName());
+            assertEquals(6, filters.size());
+            assertEquals(Constants.INSTANCE.Queued(), filters.get(0).getName());
+            assertEquals(REQUEST_LIST_PREFIX + "_" + DEFAULT_FILTER_SETTINGS_KEY, filters.get(1).getKey());
+            assertEquals(Constants.INSTANCE.Running(), filters.get(1).getName());
+            assertEquals(Constants.INSTANCE.Retrying(), filters.get(2).getName());
+            assertEquals(Constants.INSTANCE.Error(), filters.get(3).getName());
+            assertEquals(Constants.INSTANCE.Completed(), filters.get(4).getName());
+            assertEquals(Constants.INSTANCE.Canceled(), filters.get(5).getName());
         };
 
         final MultiGridPreferencesStore store = new MultiGridPreferencesStore();
-        manager.loadSavedFiltersFromPreferences(store,
-                                                callback);
+        manager.loadSavedFiltersFromPreferences(store, callback);
 
         verify(userPreferencesService).saveUserPreferences(store);
     }

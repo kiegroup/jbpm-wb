@@ -16,16 +16,17 @@
 package org.jbpm.workbench.common.client.list;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.function.Consumer;
 
 import javax.enterprise.event.Event;
 
 import com.google.gwt.view.client.AsyncDataProvider;
+import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.filter.ColumnFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.dashbuilder.dataset.sort.SortOrder;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.active.ClearAllActiveFiltersEvent;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
@@ -45,6 +46,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -113,7 +115,7 @@ public class AbstractMultiGridPresenterTest {
     }
 
     @Test
-    public void onOpenWithActiveSeachTest() {
+    public void onOpenWithActiveSearchTest() {
         String defaultFilterKey = "defaultFilterKey";
 
         when(presenter.existActiveSearchFilters()).thenReturn(false);
@@ -158,5 +160,36 @@ public class AbstractMultiGridPresenterTest {
         verify(presenter).getActiveFilterFromColumnFilter(columnFilter2);
         verify(view, times(2)).addActiveFilter(any(ActiveFilterItem.class));
         verify(presenter).addDataDisplay(listTableMock);
+    }
+    
+    @Test
+    public void testGetDataNoSorting(){
+        when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettingsMock);
+
+        when(view.getListGrid()).thenReturn(mock(ListTable.class));
+        when(view.getSortColumn()).thenReturn(null);
+        when(view.isSortAscending()).thenReturn(null);
+        
+        presenter.getData(new Range(0, 10));
+        
+        verify(dataSetQueryHelper, never()).setLastOrderedColumn(any());
+        verify(dataSetQueryHelper, never()).setLastSortOrder(any());
+        
+    }
+
+    @Test
+    public void testGetDataSorting(){
+        when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettingsMock);
+
+        when(view.getListGrid()).thenReturn(mock(ListTable.class));
+        final String column = "some_column";
+        when(view.getSortColumn()).thenReturn(column);
+        when(view.isSortAscending()).thenReturn(true);
+
+        presenter.getData(new Range(0, 10));
+
+        verify(dataSetQueryHelper).setLastOrderedColumn(column);
+        verify(dataSetQueryHelper).setLastSortOrder(SortOrder.ASCENDING);
+
     }
 }
