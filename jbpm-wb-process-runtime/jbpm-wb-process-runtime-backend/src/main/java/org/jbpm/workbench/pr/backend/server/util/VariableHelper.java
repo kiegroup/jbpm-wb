@@ -25,10 +25,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
+import org.jbpm.workbench.pr.backend.server.ProcessInstanceVariableMapper;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
 import org.kie.server.api.model.instance.VariableInstance;
+
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toList;
 
 public class VariableHelper {
 
@@ -64,25 +68,20 @@ public class VariableHelper {
 
         List<VariableInstance> filteredVariables = variables.stream()
                 .filter(variable -> !excludedVariables.contains(variable.getVariableName()))
-                .collect(Collectors.toList());
+                .collect(toList());
 
         List<ProcessVariableSummary> variablesSummary = new ArrayList<>();
 
         properties.forEach((key, value) -> {
             VariableProcessor processor = processors.getOrDefault(value, new DefaultVariableProcessor());
-
-            processor.process(processInstanceId, key, value, filteredVariables, variableSummary -> {
-                variablesSummary.add(variableSummary);
-                variableSummary.setDeploymentId(deploymentId);
-                variableSummary.setServerTemplateId(serverTemplateId);
-            });
+            processor.process(processInstanceId, key, value, filteredVariables, deploymentId, serverTemplateId,
+                              variableSummary -> variablesSummary.add(variableSummary));
         });
 
-        if (!filteredVariables.isEmpty()) {
-            filteredVariables.forEach(variable -> {
-                variablesSummary.add(new ProcessVariableSummary(variable.getVariableName(), variable.getVariableName(), variable.getProcessInstanceId(), variable.getOldValue(), variable.getValue(), variable.getDate().getTime(), ""));
-            });
-        }
+        variablesSummary.addAll(ofNullable(filteredVariables).orElse(emptyList())
+                                        .stream()
+                                        .map(new ProcessInstanceVariableMapper(deploymentId, serverTemplateId, ""))
+                                        .collect(toList()));
 
         variablesSummary.sort(Comparator.comparing(ProcessVariableSummary::getName));
 
@@ -93,6 +92,7 @@ public class VariableHelper {
 
         String getSupportedType();
 
-        void process(long processInstanceId, String varName, String varType, List<VariableInstance> variables, Consumer<ProcessVariableSummary> consumer);
+        void process(long processInstanceId, String varName, String varType, List<VariableInstance> variables,
+                     String deploymentId, String serverTemplateId, Consumer<ProcessVariableSummary> consumer);
     }
 }
