@@ -290,7 +290,12 @@ public class DDEditorServiceImpl
         ddModel.setAuditPersistenceUnitName(originDD.getAuditPersistenceUnit());
         ddModel.setAuditMode(originDD.getAuditMode().toString());
         ddModel.setPersistenceMode(originDD.getPersistenceMode().toString());
-        ddModel.setRuntimeStrategy(originDD.getRuntimeStrategy().toString());
+
+        if (originDD instanceof DeploymentDescriptorImpl && ((DeploymentDescriptorImpl) originDD).isEmpty()) {
+            ddModel.setRuntimeStrategy(RuntimeStrategy.PER_PROCESS_INSTANCE.toString());
+        } else {
+            ddModel.setRuntimeStrategy(originDD.getRuntimeStrategy().toString());
+        }
 
         // marshaling strategies
         List<ObjectModel> marshallingStrategies = originDD.getMarshallingStrategies();
