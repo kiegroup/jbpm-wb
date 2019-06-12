@@ -29,6 +29,7 @@ import org.uberfire.ext.services.shared.preferences.*;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.COL_ID_ACTIONS;
+import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.COL_ID_SELECT;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.COLUMN_NAME;
 import static org.jbpm.workbench.ht.util.TaskStatus.TASK_STATUS_COMPLETED;
 import static org.jbpm.workbench.ht.util.TaskStatus.TASK_STATUS_READY;
@@ -44,13 +45,14 @@ public abstract class AbstractTaskListViewTest extends AbstractMultiGridViewTest
 
     @Override
     public List<String> getExpectedBannedColumns() {
-        return Arrays.asList(COLUMN_NAME,
+        return Arrays.asList(COL_ID_SELECT,
+                             COLUMN_NAME,
                              COL_ID_ACTIONS);
     }
 
     @Override
     public Integer getExpectedNumberOfColumns() {
-        return 17;
+        return 18;
     }
 
     @Test

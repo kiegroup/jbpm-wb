@@ -44,6 +44,7 @@ import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.model.events.TaskSelectionEvent;
 import org.jbpm.workbench.ht.service.TaskService;
+import org.jbpm.workbench.ht.util.TaskStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.kie.server.controller.api.model.spec.Capability;
@@ -84,6 +85,7 @@ public abstract class AbstractTaskListPresenterTest {
 
     protected static final Long TASK_ID = 1L;
     protected static final String TASK_DEPLOYMENT_ID = "deploymentId";
+    protected static final String USER_ID = "userId";
 
     @Mock
     protected User identity;
@@ -197,7 +199,7 @@ public abstract class AbstractTaskListPresenterTest {
         }).when(dataSetQueryHelperDomainSpecific).lookupDataSet(anyInt(),
                                                                 any(DataSetReadyCallback.class));
 
-        when(identity.getIdentifier()).thenReturn("userId");
+        when(identity.getIdentifier()).thenReturn(USER_ID);
 
         when(errorHandlerBuilder.get()).thenReturn(errorHandler);
         doNothing().when(errorHandler).showErrorMessage(any());
@@ -227,6 +229,19 @@ public abstract class AbstractTaskListPresenterTest {
     }
 
     @Test
+    public void bulkReleaseTasksTest() {
+        final Map<String, List<Long>> containerTasks = new HashMap<>();
+        List<TaskSummary> taskSummaries = new ArrayList<>();
+        taskSummaries.add(createTestTaskSummary(TASK_ID, TASK_STATUS_RESERVED, identity.getIdentifier()));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 1, TASK_STATUS_RESERVED, identity.getIdentifier()));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 2, TASK_STATUS_RESERVED, identity.getIdentifier()));
+
+        getPresenter().bulkRelease(taskSummaries);
+
+        verify(taskService, times(3)).releaseTask(anyString(), eq(TASK_DEPLOYMENT_ID), anyLong());
+    }
+
+    @Test
     public void claimTaskTest() {
         final TaskSummary task = TaskSummary.builder().id(TASK_ID).deploymentId(TASK_DEPLOYMENT_ID).build();
 
@@ -236,6 +251,88 @@ public abstract class AbstractTaskListPresenterTest {
                                       TASK_DEPLOYMENT_ID,
                                       TASK_ID);
         verify(viewMock).displayNotification(any());
+    }
+
+    @Test
+    public void bulkClaimTasksTest() {
+        List<TaskSummary> taskSummaries = new ArrayList<>();
+        taskSummaries.add(createTestTaskSummary(TASK_ID, TASK_STATUS_READY, ""));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 1, TASK_STATUS_READY, ""));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 2, TASK_STATUS_READY, ""));
+
+        getPresenter().bulkClaim(taskSummaries);
+
+        verify(taskService, times(3)).claimTask(anyString(), eq(TASK_DEPLOYMENT_ID), anyLong());
+    }
+
+    @Test
+    public void bulkClaimOnlyOnReadyTasksTest() {
+        List<TaskSummary> taskSummaries = new ArrayList<>();
+        taskSummaries.add(createTestTaskSummary(TASK_ID, TASK_STATUS_RESERVED, identity.getIdentifier()));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 1, TASK_STATUS_READY, ""));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 2, TASK_STATUS_READY, ""));
+
+        getPresenter().bulkClaim(taskSummaries);
+
+        verify(taskService, times(2)).claimTask(anyString(), eq(TASK_DEPLOYMENT_ID), anyLong());
+        verify(taskService).claimTask(anyString(), eq(TASK_DEPLOYMENT_ID), eq(TASK_ID + 1));
+        verify(taskService).claimTask(anyString(), eq(TASK_DEPLOYMENT_ID), eq(TASK_ID + 2));
+    }
+
+    @Test
+    public void bulkResumeTasksTest() {
+        final Map<String, List<Long>> containerTasks = new HashMap<>();
+        List<TaskSummary> taskSummaries = new ArrayList<>();
+        taskSummaries.add(createTestTaskSummary(TASK_ID, TASK_STATUS_SUSPENDED, ""));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 1, TASK_STATUS_SUSPENDED, ""));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 2, TASK_STATUS_SUSPENDED, ""));
+
+        getPresenter().bulkResume(taskSummaries);
+
+        verify(taskService, times(3)).resumeTask(anyString(), eq(TASK_DEPLOYMENT_ID), anyLong());
+    }
+
+    @Test
+    public void bulkResumeOnlyOnSuspendTasksTest() {
+        List<TaskSummary> taskSummaries = new ArrayList<>();
+        taskSummaries.add(createTestTaskSummary(TASK_ID, TASK_STATUS_RESERVED, identity.getIdentifier()));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 1, TASK_STATUS_SUSPENDED, ""));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 2, TASK_STATUS_SUSPENDED, ""));
+
+        getPresenter().bulkResume(taskSummaries);
+
+        verify(taskService, times(2)).resumeTask(anyString(), eq(TASK_DEPLOYMENT_ID), anyLong());
+        verify(taskService).resumeTask(anyString(), eq(TASK_DEPLOYMENT_ID), eq(TASK_ID + 1));
+        verify(taskService).resumeTask(anyString(), eq(TASK_DEPLOYMENT_ID), eq(TASK_ID + 2));
+    }
+
+    @Test
+    public void bulkSuspendTasksTest() {
+        List<TaskSummary> taskSummaries = new ArrayList<>();
+        taskSummaries.add(createTestTaskSummary(TASK_ID, TASK_STATUS_RESERVED, identity.getIdentifier()));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 1, TASK_STATUS_IN_PROGRESS, ""));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 2, TASK_STATUS_IN_PROGRESS, ""));
+
+        getPresenter().bulkSuspend(taskSummaries);
+
+        verify(taskService, times(3)).suspendTask(anyString(), eq(TASK_DEPLOYMENT_ID), anyLong());
+        verify(taskService).suspendTask(anyString(), eq(TASK_DEPLOYMENT_ID), eq(TASK_ID));
+        verify(taskService).suspendTask(anyString(), eq(TASK_DEPLOYMENT_ID), eq(TASK_ID + 1));
+        verify(taskService).suspendTask(anyString(), eq(TASK_DEPLOYMENT_ID), eq(TASK_ID + 2));
+    }
+
+    @Test
+    public void bulkSuspendOnlyOnActiveTasksTest() {
+        List<TaskSummary> taskSummaries = new ArrayList<>();
+        taskSummaries.add(createTestTaskSummary(TASK_ID, TASK_STATUS_RESERVED, identity.getIdentifier()));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 1, TASK_STATUS_IN_PROGRESS, ""));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 2, TASK_STATUS_SUSPENDED, ""));
+
+        getPresenter().bulkSuspend(taskSummaries);
+
+        verify(taskService, times(2)).suspendTask(anyString(), eq(TASK_DEPLOYMENT_ID), anyLong());
+        verify(taskService).suspendTask(anyString(), eq(TASK_DEPLOYMENT_ID), eq(TASK_ID));
+        verify(taskService).suspendTask(anyString(), eq(TASK_DEPLOYMENT_ID), eq(TASK_ID + 1));
     }
 
     @Test
@@ -488,11 +585,7 @@ public abstract class AbstractTaskListPresenterTest {
 
     @Test
     public void testExitedTaskSelection() {
-        TaskSummary taskSummary = TaskSummary.builder()
-                .id(TASK_ID)
-                .deploymentId(TASK_DEPLOYMENT_ID)
-                .status(TASK_STATUS_EXITED.getIdentifier())
-                .build();
+        TaskSummary taskSummary = createTestTaskSummary(TASK_ID, TASK_STATUS_EXITED, "");
 
         getPresenter().selectSummaryItem(taskSummary);
 
@@ -506,12 +599,8 @@ public abstract class AbstractTaskListPresenterTest {
     @Test
     public void testReadyTaskSelection() {
         Integer slaCompliance = 1;
-        TaskSummary taskSummary = TaskSummary.builder()
-                .id(TASK_ID)
-                .deploymentId(TASK_DEPLOYMENT_ID)
-                .status(TASK_STATUS_READY.getIdentifier())
-                .slaCompliance(slaCompliance)
-                .build();
+        TaskSummary taskSummary = createTestTaskSummary(TASK_ID, TASK_STATUS_READY, "");
+        taskSummary.setSlaCompliance(slaCompliance);
 
         getPresenter().selectSummaryItem(taskSummary);
 
@@ -551,11 +640,7 @@ public abstract class AbstractTaskListPresenterTest {
                                                                                      TASK_DEPLOYMENT_ID,
                                                                                      TASK_ID)));
 
-        TaskSummary taskSummary = TaskSummary.builder()
-                .id(TASK_ID)
-                .deploymentId(TASK_DEPLOYMENT_ID)
-                .status(TASK_STATUS_READY.getIdentifier())
-                .build();
+        TaskSummary taskSummary = createTestTaskSummary(TASK_ID, TASK_STATUS_READY, "");
 
         getPresenter().setSelectedServerTemplate(new ServerTemplate(serverTemplateId,
                                                                     null,
@@ -580,11 +665,7 @@ public abstract class AbstractTaskListPresenterTest {
 
     @Test
     public void testOnTaskCompletedEvent() {
-        TaskSummary taskSummary = TaskSummary.builder()
-                .id(TASK_ID)
-                .deploymentId(TASK_DEPLOYMENT_ID)
-                .status(TASK_STATUS_READY.getIdentifier())
-                .build();
+        TaskSummary taskSummary = createTestTaskSummary(TASK_ID, TASK_STATUS_READY, "");
 
         final String serverTemplateId = "serverTemplateId";
         getPresenter().setSelectedServerTemplate(new ServerTemplate(serverTemplateId,
@@ -614,11 +695,7 @@ public abstract class AbstractTaskListPresenterTest {
 
     @Test
     public void testOnTaskDetailsClosed() {
-        TaskSummary taskSummary = TaskSummary.builder()
-                .id(TASK_ID)
-                .deploymentId(TASK_DEPLOYMENT_ID)
-                .status(TASK_STATUS_EXITED.getIdentifier())
-                .build();
+        TaskSummary taskSummary = createTestTaskSummary(TASK_ID, TASK_STATUS_EXITED, "");
 
         getPresenter().selectSummaryItem(taskSummary);
 
@@ -631,5 +708,23 @@ public abstract class AbstractTaskListPresenterTest {
         getPresenter().onTaskDetailsClosed(newCloseEventMock(PerspectiveIds.TASK_DETAILS_SCREEN));
 
         assertNull(getPresenter().getSelectedTask());
+    }
+
+    protected TaskSummary createTestTaskSummary(Long taskId, TaskStatus taskStatus, String actualOwner) {
+        Long newTaskId = taskId;
+        String statusStr = TASK_STATUS_READY.getIdentifier();
+        if (taskId == null) {
+            newTaskId = new Random().nextLong();
+        }
+        if (taskStatus != null) {
+            statusStr = taskStatus.getIdentifier();
+        }
+
+        return TaskSummary.builder()
+                .id(newTaskId)
+                .deploymentId(TASK_DEPLOYMENT_ID)
+                .status(statusStr)
+                .actualOwner(actualOwner)
+                .build();
     }
 }

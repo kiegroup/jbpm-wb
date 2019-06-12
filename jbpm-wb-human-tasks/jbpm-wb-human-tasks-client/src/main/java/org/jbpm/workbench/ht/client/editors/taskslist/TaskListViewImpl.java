@@ -28,7 +28,8 @@ public class TaskListViewImpl extends AbstractTaskListView<TaskListPresenter> {
 
     @Override
     public List<String> getInitColumns() {
-        return Arrays.asList(COLUMN_NAME,
+        return Arrays.asList(COL_ID_SELECT,
+                             COLUMN_NAME,
                              COLUMN_PROCESS_ID,
                              COLUMN_STATUS,
                              COLUMN_CREATED_ON,

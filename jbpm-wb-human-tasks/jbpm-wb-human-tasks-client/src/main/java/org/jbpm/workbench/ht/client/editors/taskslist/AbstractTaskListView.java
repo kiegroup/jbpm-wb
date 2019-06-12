@@ -21,13 +21,17 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.BrowserEvents;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.view.client.CellPreviewEvent;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
+import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.ConditionalAction;
 import org.jbpm.workbench.common.client.util.DateUtils;
@@ -35,7 +39,9 @@ import org.jbpm.workbench.common.client.util.SLAComplianceCell;
 import org.jbpm.workbench.ht.client.resources.HumanTaskResources;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
+import org.uberfire.client.views.pfly.widgets.ConfirmPopup;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
+import org.uberfire.mvp.Command;
 
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 import static org.jbpm.workbench.ht.util.TaskStatus.TASK_STATUS_COMPLETED;
@@ -47,9 +53,12 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
 
     protected final Constants constants = Constants.INSTANCE;
 
+    @Inject
+    private ConfirmPopup confirmPopup;
+
     @Override
     public List<String> getBannedColumns() {
-        return Arrays.asList(COLUMN_NAME, COL_ID_ACTIONS);
+        return Arrays.asList(COL_ID_SELECT, COLUMN_NAME, COL_ID_ACTIONS);
     }
 
     @Override
@@ -71,18 +80,34 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
     }
 
     @Override
+    public List<AnchorListItem> getBulkActionsItems(ExtendedPagedTable<TaskSummary> extendedPagedTable) {
+        List<AnchorListItem> bulkActionsItems = new ArrayList<>();
+        bulkActionsItems.add(getBulkClaim(extendedPagedTable));
+        bulkActionsItems.add(getBulkRelease(extendedPagedTable));
+        bulkActionsItems.add(getBulkResume(extendedPagedTable));
+        bulkActionsItems.add(getBulkSuspend(extendedPagedTable));
+        return bulkActionsItems;
+    }
+
+    @Override
     public void initColumns(ListTable<TaskSummary> extendedPagedTable) {
         initCellPreview(extendedPagedTable);
+
+        final ColumnMeta checkColumnMeta = initChecksColumn(extendedPagedTable);
 
         final Column<TaskSummary, String> createdOnColumn = createTextColumn(COLUMN_CREATED_ON,
                                                                              task -> DateUtils.getDateTimeStr(task.getCreatedOn()));
         ColumnMeta<TaskSummary> actionsColumnMeta = initActionsColumn();
         extendedPagedTable.addSelectionIgnoreColumn(actionsColumnMeta.getColumn());
 
-        List<ColumnMeta<TaskSummary>> columnMetas = getGeneralColumnMetas(extendedPagedTable, createdOnColumn, actionsColumnMeta);
+        List<ColumnMeta<TaskSummary>> columnMetas = getGeneralColumnMetas(extendedPagedTable, checkColumnMeta, createdOnColumn, actionsColumnMeta);
 
         columnMetas.addAll(renameVariables(extendedPagedTable, columnMetas));
         extendedPagedTable.addColumns(columnMetas);
+
+        extendedPagedTable.setColumnWidth(checkColumnMeta.getColumn(),
+                                          CHECK_COLUMN_WIDTH,
+                                          Style.Unit.PX);
         extendedPagedTable.setColumnWidth(actionsColumnMeta.getColumn(),
                                           ACTIONS_COLUMN_WIDTH,
                                           Style.Unit.PX);
@@ -90,10 +115,17 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
     }
 
     protected List<ColumnMeta<TaskSummary>> getGeneralColumnMetas(ListTable<TaskSummary> extendedPagedTable,
+                                                                  final ColumnMeta checkColumnMeta,
                                                                   Column<TaskSummary, String> createdOnColumn,
                                                                   ColumnMeta<TaskSummary> actionsColumnMeta) {
+
+        extendedPagedTable.addSelectionIgnoreColumn(checkColumnMeta.getColumn());
+
         List<ColumnMeta<TaskSummary>> columnMetas = new ArrayList<ColumnMeta<TaskSummary>>();
         Column<TaskSummary, ?> slaComplianceColumn = initSlaComplianceColumn();
+
+        columnMetas.add(checkColumnMeta);
+
         columnMetas.add(new ColumnMeta<>(
                 createNumberColumn(COLUMN_TASK_ID,
                                    task -> task.getId()),
@@ -252,6 +284,86 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
                                                    presenter.getProcessInstanceCondition(),
                                                    true)
         );
+    }
+
+    protected AnchorListItem getBulkClaim(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
+        final AnchorListItem bulkClaimNavLink = GWT.create(AnchorListItem.class);
+        bulkClaimNavLink.setText(constants.Bulk_Claim());
+        bulkClaimNavLink.setIcon(IconType.LOCK);
+        bulkClaimNavLink.setIconFixedWidth(true);
+        bulkClaimNavLink.addClickHandler(event -> confirmPopup.show(constants.Claim_tasks(),
+                                                                    constants.Claim(),
+                                                                    constants.Claim_Confirmation(),
+                                                                    getClaimCommand(extendedPagedTable))
+        );
+        return bulkClaimNavLink;
+    }
+
+    protected AnchorListItem getBulkRelease(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
+        final AnchorListItem bulkReleaseNavLink = GWT.create(AnchorListItem.class);
+        bulkReleaseNavLink.setText(constants.Bulk_Release());
+        bulkReleaseNavLink.setIcon(IconType.UNLOCK);
+        bulkReleaseNavLink.setIconFixedWidth(true);
+        bulkReleaseNavLink.addClickHandler(event -> confirmPopup.show(constants.Release_tasks(),
+                                                                      constants.Release(),
+                                                                      constants.Release_Confirmation(),
+                                                                      getReleaseCommand(extendedPagedTable))
+        );
+        return bulkReleaseNavLink;
+    }
+
+    protected AnchorListItem getBulkResume(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
+        final AnchorListItem bulkResumeNavLink = GWT.create(AnchorListItem.class);
+        bulkResumeNavLink.setText(constants.Bulk_Resume());
+        bulkResumeNavLink.setIcon(IconType.HISTORY);
+        bulkResumeNavLink.setIconFixedWidth(true);
+        bulkResumeNavLink.addClickHandler(event -> confirmPopup.show(constants.Resume_tasks(),
+                                                                     constants.Resume(),
+                                                                     constants.Resume_Confirmation(),
+                                                                     getResumeCommand(extendedPagedTable))
+        );
+        return bulkResumeNavLink;
+    }
+
+    protected AnchorListItem getBulkSuspend(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
+        final AnchorListItem bulkSuspendNavLink = GWT.create(AnchorListItem.class);
+        bulkSuspendNavLink.setText(constants.Bulk_Suspend());
+        bulkSuspendNavLink.setIcon(IconType.BAN);
+        bulkSuspendNavLink.setIconFixedWidth(true);
+        bulkSuspendNavLink.addClickHandler(event -> confirmPopup.show(constants.Suspend_tasks(),
+                                                                      constants.Suspend(),
+                                                                      constants.Suspend_Confirmation(),
+                                                                      getSuspendCommand(extendedPagedTable))
+        );
+        return bulkSuspendNavLink;
+    }
+
+    protected Command getClaimCommand(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
+        return () -> {
+            presenter.bulkClaim(extendedPagedTable.getSelectedItems());
+            extendedPagedTable.deselectAllItems();
+        };
+    }
+
+    protected Command getReleaseCommand(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
+        return () -> {
+            presenter.bulkRelease(extendedPagedTable.getSelectedItems());
+            extendedPagedTable.deselectAllItems();
+        };
+    }
+
+    protected Command getResumeCommand(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
+        return () -> {
+            presenter.bulkResume(extendedPagedTable.getSelectedItems());
+            extendedPagedTable.deselectAllItems();
+        };
+    }
+
+    protected Command getSuspendCommand(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
+        return () -> {
+            presenter.bulkSuspend(extendedPagedTable.getSelectedItems());
+            extendedPagedTable.deselectAllItems();
+        };
     }
 
     protected Column<TaskSummary, ?> initGenericColumn(final String key) {

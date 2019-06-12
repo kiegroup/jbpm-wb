@@ -41,7 +41,8 @@ public class TaskAdminListViewImpl extends AbstractTaskListView<TaskAdminListPre
 
     @Override
     public List<String> getInitColumns() {
-        return Arrays.asList(COLUMN_NAME,
+        return Arrays.asList(COL_ID_SELECT,
+                             COLUMN_NAME,
                              COLUMN_PROCESS_ID,
                              COLUMN_STATUS,
                              COLUMN_ACTUAL_OWNER,

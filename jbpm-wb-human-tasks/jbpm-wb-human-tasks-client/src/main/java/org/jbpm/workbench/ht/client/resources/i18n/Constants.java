@@ -275,4 +275,43 @@ public interface Constants extends Messages {
 
     String SlaDueDate();
 
+    String Bulk_Claim();
+
+    String Claim_Confirmation();
+
+    String Claim_tasks();
+
+    String ClaimNotAllowedOn(String taskId, String taskName);
+
+    String UnableToClaimTask(String taskId, String taskName, String message);
+
+    String Bulk_Release();
+
+    String Release_Confirmation();
+
+    String Release_tasks();
+
+    String ReleaseNotAllowedOn(String taskId, String taskName);
+
+    String UnableToReleaseTask(String taskId, String taskName, String message);
+
+    String Bulk_Resume();
+
+    String Resume_Confirmation();
+
+    String Resume_tasks();
+
+    String ResumeNotAllowedOn(String taskId, String taskName);
+
+    String UnableToResumeTask(String taskId, String taskName, String message);
+
+    String Bulk_Suspend();
+
+    String Suspend_Confirmation();
+
+    String Suspend_tasks();
+
+    String SuspendNotAllowedOn(String taskId, String taskName);
+
+    String UnableToSuspendTask(String taskId, String taskName, String message);
 }

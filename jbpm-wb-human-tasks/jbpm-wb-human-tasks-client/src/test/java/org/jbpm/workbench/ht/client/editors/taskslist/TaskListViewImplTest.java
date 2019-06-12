@@ -42,6 +42,7 @@ import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.COL_ID_ACTIONS;
+import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.COL_ID_SELECT;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyList;
@@ -70,7 +71,8 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
 
     @Override
     public List<String> getExpectedInitialColumns() {
-        return Arrays.asList(COLUMN_NAME,
+        return Arrays.asList(COL_ID_SELECT,
+                             COLUMN_NAME,
                              COLUMN_PROCESS_ID,
                              COLUMN_STATUS,
                              COLUMN_CREATED_ON,
@@ -84,7 +86,7 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
             @Override
             public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
                 final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[0];
-                assertEquals(20,
+                assertEquals(21,
                              columns.size());
                 return null;
             }
@@ -129,32 +131,34 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
     }
 
     @Test
-    public void testRenameProcessVariableForInitColumns(){
-        GridGlobalPreferences gridPreferences = new GridGlobalPreferences("test",view.getInitColumns(),view.getBannedColumns());
+    public void testRenameProcessVariableForInitColumns() {
+        GridGlobalPreferences gridPreferences = new GridGlobalPreferences("test", view.getInitColumns(), view.getBannedColumns());
 
         ListTable<TaskSummary> extendedPagedTable = new ListTable<TaskSummary>(gridPreferences);
         List<GridColumnPreference> gridColumnPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
-        gridColumnPreferenceList.add(new GridColumnPreference("Id",-1,""));
-        gridColumnPreferenceList.add(new GridColumnPreference("performance",-1,""));
+        gridColumnPreferenceList.add(new GridColumnPreference("Id", -1, ""));
+        gridColumnPreferenceList.add(new GridColumnPreference("performance", -1, ""));
 
         view.initCellPreview(extendedPagedTable);
-
+        final ColumnMeta checkColumnMeta = view.initChecksColumn(extendedPagedTable);
         final Column<TaskSummary, String> createdOnColumn = view.createTextColumn(COLUMN_CREATED_ON,
-                                                                                          task -> DateUtils.getDateTimeStr(task.getCreatedOn()));
+                                                                                  task -> DateUtils.getDateTimeStr(task.getCreatedOn()));
         ColumnMeta<TaskSummary> actionsColumnMeta = view.initActionsColumn();
+        extendedPagedTable.addSelectionIgnoreColumn(checkColumnMeta.getColumn());
         extendedPagedTable.addSelectionIgnoreColumn(actionsColumnMeta.getColumn());
 
         List<ColumnMeta<TaskSummary>> columnMetas = view.getGeneralColumnMetas(extendedPagedTable,
-                                                                                       createdOnColumn,
-                                                                                       actionsColumnMeta);
+                                                                               checkColumnMeta,
+                                                                               createdOnColumn,
+                                                                               actionsColumnMeta);
 
-        assertThat(columnMetas.stream()).extracting(c -> c.getCaption()).hasSize(17).doesNotContain("Var_Id");
+        assertThat(columnMetas.stream()).extracting(c -> c.getCaption()).hasSize(18).doesNotContain("Var_Id");
 
         List<ColumnMeta<TaskSummary>> tmp = view.renameVariables(extendedPagedTable, columnMetas);
 
         columnMetas.addAll(tmp);
 
-        assertThat(columnMetas.stream()).extracting(c -> c.getCaption()).hasSize(19).containsOnlyOnce("Var_Id");
+        assertThat(columnMetas.stream()).extracting(c -> c.getCaption()).hasSize(20).containsOnlyOnce("Var_Id");
     }
 
     @Test
@@ -167,11 +171,11 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
         Set<String> set = Collections.singleton("Id");
         view.initColumns(extendedPagedTable);
 
-        assertThat(extendedPagedTable.getColumnMetaList().stream()).extracting(c -> c.getCaption()).hasSize(17).doesNotContain("Var_Id");
+        assertThat(extendedPagedTable.getColumnMetaList().stream()).extracting(c -> c.getCaption()).hasSize(18).doesNotContain("Var_Id");
 
         view.addDomainSpecifColumns(set);
 
-        assertThat(extendedPagedTable.getColumnMetaList().stream()).extracting(c -> c.getCaption()).hasSize(18).containsOnlyOnce("Var_Id");
+        assertThat(extendedPagedTable.getColumnMetaList().stream()).extracting(c -> c.getCaption()).hasSize(19).containsOnlyOnce("Var_Id");
     }
 
     @Test
@@ -181,12 +185,12 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
         ListTable<TaskSummary> extendedPagedTable = new ListTable<TaskSummary>(gridPreferences);
         when(view.getListGrid()).thenReturn(extendedPagedTable);
 
-        extendedPagedTable.getGridPreferencesStore().getColumnPreferences().add(new GridColumnPreference("Extra",-1,""));
+        extendedPagedTable.getGridPreferencesStore().getColumnPreferences().add(new GridColumnPreference("Extra", -1, ""));
 
         Set<String> set = Sets.newHashSet("Extra");
 
         view.initColumns(extendedPagedTable);
-        assertThat(extendedPagedTable.getColumnMetaList().size()).isEqualTo(18);
+        assertThat(extendedPagedTable.getColumnMetaList().size()).isEqualTo(19);
         view.addDomainSpecifColumns(set);
 
         assertThat(set.size()).isEqualTo(0);
@@ -200,17 +204,17 @@ public class TaskListViewImplTest extends AbstractTaskListViewTest {
         when(view.getListGrid()).thenReturn(extendedPagedTable);
 
         Column<TaskSummary, String> column = view.createTextColumn("Extra", taskSummary -> taskSummary.getName());
-        ColumnMeta<TaskSummary> columnMeta = new ColumnMeta<TaskSummary>(column,"Extra",true,true);
+        ColumnMeta<TaskSummary> columnMeta = new ColumnMeta<TaskSummary>(column, "Extra", true, true);
         Set<String> set = Collections.singleton("Extra_test");
 
         view.initColumns(extendedPagedTable);
-        assertThat(extendedPagedTable.getColumnMetaList().size()).isEqualTo(17);
+        assertThat(extendedPagedTable.getColumnMetaList().size()).isEqualTo(18);
         extendedPagedTable.addColumns(Collections.singletonList(columnMeta));
 
-        assertThat(extendedPagedTable.getColumnMetaList().stream()).extracting(c -> c.getCaption()).hasSize(18).containsOnlyOnce("Extra");
+        assertThat(extendedPagedTable.getColumnMetaList().stream()).extracting(c -> c.getCaption()).hasSize(19).containsOnlyOnce("Extra");
         view.addDomainSpecifColumns(set);
 
-        assertThat(extendedPagedTable.getColumnMetaList().stream()).extracting(c -> c.getCaption()).hasSize(18).doesNotContain("Extra");
+        assertThat(extendedPagedTable.getColumnMetaList().stream()).extracting(c -> c.getCaption()).hasSize(19).doesNotContain("Extra");
 
         assertThat(set.size()).isEqualTo(1);
     }
