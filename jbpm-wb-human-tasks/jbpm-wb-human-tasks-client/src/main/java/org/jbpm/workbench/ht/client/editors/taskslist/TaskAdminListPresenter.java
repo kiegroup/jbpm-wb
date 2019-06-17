@@ -17,6 +17,7 @@ package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -65,10 +66,5 @@ public class TaskAdminListPresenter extends AbstractTaskListPresenter<TaskAdminL
                     taskStatus.equals(TASK_STATUS_IN_PROGRESS) ||
                     taskStatus.equals(TASK_STATUS_READY));
         };
-    }
-
-    @Override
-    protected Predicate<TaskSummary> getResumeActionCondition() {
-        return task -> TASK_STATUS_SUSPENDED.equals(task.getTaskStatus());
     }
 }

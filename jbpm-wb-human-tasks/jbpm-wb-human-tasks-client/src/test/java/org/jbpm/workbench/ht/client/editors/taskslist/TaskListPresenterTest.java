@@ -15,6 +15,9 @@
  */
 package org.jbpm.workbench.ht.client.editors.taskslist;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.junit.Before;
@@ -31,8 +34,11 @@ import org.uberfire.mvp.Commands;
 
 import static org.jbpm.workbench.ht.util.TaskStatus.*;
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -136,5 +142,36 @@ public class TaskListPresenterTest extends AbstractTaskListPresenterTest {
         verify(breadcrumbs).addBreadCrumb(eq(PERSPECTIVE_ID),
                                           eq(detailLabel),
                                           eq(Commands.DO_NOTHING));
+    }
+
+    @Test
+    public void bulkReleaseOnlyOnReservedTest() {
+        List<TaskSummary> taskSummaries = new ArrayList<>();
+        taskSummaries.add(createTestTaskSummary(TASK_ID, TASK_STATUS_RESERVED, identity.getIdentifier()));
+        taskSummaries.add(createTestTaskSummary(TASK_ID, TASK_STATUS_RESERVED, "otherUser"));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 1, TASK_STATUS_READY, ""));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 2, TASK_STATUS_IN_PROGRESS, ""));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 3, TASK_STATUS_IN_PROGRESS, identity.getIdentifier()));
+
+        getPresenter().bulkRelease(taskSummaries);
+
+        verify(taskService, times(2)).releaseTask(anyString(), eq(TASK_DEPLOYMENT_ID), anyLong());
+        verify(taskService).releaseTask(anyString(), eq(TASK_DEPLOYMENT_ID), eq(TASK_ID));
+        verify(taskService).releaseTask(anyString(), eq(TASK_DEPLOYMENT_ID), eq(TASK_ID + 3));
+    }
+
+    @Test
+    public void bulkSuspendOnlyOnReservedInProgressTest() {
+        List<TaskSummary> taskSummaries = new ArrayList<>();
+        taskSummaries.add(createTestTaskSummary(TASK_ID, TASK_STATUS_RESERVED, identity.getIdentifier()));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 1, TASK_STATUS_IN_PROGRESS, ""));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 2, TASK_STATUS_READY, ""));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 2, TASK_STATUS_COMPLETED, ""));
+
+        getPresenter().bulkSuspend(taskSummaries);
+
+        verify(taskService, times(2)).suspendTask(anyString(), eq(TASK_DEPLOYMENT_ID), anyLong());
+        verify(taskService).suspendTask(anyString(), eq(TASK_DEPLOYMENT_ID), eq(TASK_ID));
+        verify(taskService).suspendTask(anyString(), eq(TASK_DEPLOYMENT_ID), eq(TASK_ID + 1));
     }
 }

@@ -37,6 +37,7 @@ import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.COL_ID_ACTIONS;
+import static org.jbpm.workbench.common.client.list.AbstractMultiGridView.COL_ID_SELECT;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyList;
@@ -70,7 +71,8 @@ public class TaskAdminListViewImplTest extends AbstractTaskListViewTest {
 
     @Override
     public List<String> getExpectedInitialColumns() {
-        return Arrays.asList(COLUMN_NAME,
+        return Arrays.asList(COL_ID_SELECT,
+                             COLUMN_NAME,
                              COLUMN_PROCESS_ID,
                              COLUMN_STATUS,
                              COLUMN_ACTUAL_OWNER,
@@ -81,7 +83,7 @@ public class TaskAdminListViewImplTest extends AbstractTaskListViewTest {
 
     @Override
     public Integer getExpectedNumberOfColumns() {
-        return 18;
+        return 19;
     }
 
     @Before
@@ -98,7 +100,7 @@ public class TaskAdminListViewImplTest extends AbstractTaskListViewTest {
             @Override
             public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
                 final List<ColumnMeta> columns = (List<ColumnMeta>) invocationOnMock.getArguments()[0];
-                assertEquals(21,
+                assertEquals(22,
                              columns.size());
                 return null;
             }

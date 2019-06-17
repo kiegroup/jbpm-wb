@@ -34,8 +34,8 @@ import org.dashbuilder.dataset.DataSetOpType;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.*;
 import org.dashbuilder.dataset.sort.SortOrder;
+import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.jbpm.workbench.common.client.PerspectiveIds;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
@@ -58,7 +58,6 @@ import org.uberfire.workbench.model.menu.Menus;
 import static org.dashbuilder.dataset.filter.FilterFactory.*;
 import static org.jbpm.workbench.common.client.util.DataSetUtils.*;
 import static org.jbpm.workbench.ht.model.TaskDataSetConstants.*;
-import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.COLUMN_STATUS;
 
 public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresenter.TaskListView> extends AbstractMultiGridPresenter<TaskSummary, V> {
 
@@ -225,70 +224,71 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
     }
 
     public void releaseTask(final TaskSummary task) {
-        taskService.call(
-                new RemoteCallback<Void>() {
-                    @Override
-                    public void callback(Void nothing) {
-                        view.displayNotification(constants.TaskReleased(String.valueOf(task.getId())));
-                        refreshGrid();
-                    }
-                }).releaseTask(getSelectedServerTemplate(),
-                               task.getDeploymentId(),
-                               task.getId());
+        taskService.call((Void nothing) -> {
+                             view.displayNotification(constants.TaskReleased((String.valueOf(task.getId()))));
+                             refreshGrid();
+                         }, (Message message, Throwable throwable) -> {
+                             view.displayNotification(constants.UnableToReleaseTask(String.valueOf(task.getId()),
+                                                                                    task.getName(), throwable.getMessage()));
+                             return true;
+                         }
+        ).releaseTask(getSelectedServerTemplate(),
+                      task.getDeploymentId(),
+                      task.getId());
     }
 
     public void claimTask(final TaskSummary task) {
-        taskService.call(
-                new RemoteCallback<Void>() {
-                    @Override
-                    public void callback(Void nothing) {
-                        view.displayNotification(constants.TaskClaimed(String.valueOf(task.getId())));
-                        refreshGrid();
-                    }
-                }
+        taskService.call((Void nothing) -> {
+                             view.displayNotification(constants.TaskClaimed(String.valueOf(task.getId())));
+                             refreshGrid();
+                         }, (Message message, Throwable throwable) -> {
+                             view.displayNotification(constants.UnableToClaimTask(String.valueOf(task.getId()),
+                                                                                  task.getName(), throwable.getMessage()));
+                             return true;
+                         }
         ).claimTask(getSelectedServerTemplate(),
                     task.getDeploymentId(),
                     task.getId());
     }
 
     public void claimAndWorkTask(final TaskSummary task) {
-        taskService.call(
-                new RemoteCallback<Void>() {
-                    @Override
-                    public void callback(Void nothing) {
-                        view.displayNotification(constants.TaskClaimed(String.valueOf(task.getId())));
-                        selectSummaryItem(task);
-                        refreshGrid();
-                    }
-                }
+        taskService.call((Void nothing) -> {
+                             view.displayNotification(constants.TaskClaimed(String.valueOf(task.getId())));
+                             selectSummaryItem(task);
+                             refreshGrid();
+                         }, (Message message, Throwable throwable) -> {
+                             view.displayNotification(constants.UnableToClaimTask(String.valueOf(task.getId()),
+                                                                                  task.getName(), throwable.getMessage()));
+                             return true;
+                         }
         ).claimTask(getSelectedServerTemplate(),
                     task.getDeploymentId(),
                     task.getId());
     }
 
     public void resumeTask(final TaskSummary task) {
-        taskService.call(
-                new RemoteCallback<Void>() {
-                    @Override
-                    public void callback(Void nothing) {
-                        view.displayNotification(constants.TaskResumed(String.valueOf(task.getId())));
-                        refreshGrid();
-                    }
-                }
+        taskService.call((Void nothing) -> {
+                             view.displayNotification(constants.TaskResumed(String.valueOf(task.getId())));
+                             refreshGrid();
+                         }, (Message message, Throwable throwable) -> {
+                             view.displayNotification(constants.UnableToResumeTask(String.valueOf(task.getId()),
+                                                                                   task.getName(), throwable.getMessage()));
+                             return true;
+                         }
         ).resumeTask(getSelectedServerTemplate(),
                      task.getDeploymentId(),
                      task.getId());
     }
 
     public void suspendTask(final TaskSummary task) {
-        taskService.call(
-                new RemoteCallback<Void>() {
-                    @Override
-                    public void callback(Void nothing) {
-                        view.displayNotification(constants.TaskSuspended(String.valueOf(task.getId())));
-                        refreshGrid();
-                    }
-                }
+        taskService.call((Void nothing) -> {
+                             view.displayNotification(constants.TaskSuspended(String.valueOf(task.getId())));
+                             refreshGrid();
+                         }, (Message message, Throwable throwable) -> {
+                             view.displayNotification(constants.UnableToSuspendTask(String.valueOf(task.getId()),
+                                                                                    task.getName(), throwable.getMessage()));
+                             return true;
+                         }
         ).suspendTask(getSelectedServerTemplate(),
                       task.getDeploymentId(),
                       task.getId());
@@ -438,7 +438,9 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     protected abstract Predicate<TaskSummary> getSuspendActionCondition();
 
-    protected abstract Predicate<TaskSummary> getResumeActionCondition();
+    protected Predicate<TaskSummary> getResumeActionCondition() {
+        return task -> TaskStatus.TASK_STATUS_SUSPENDED.equals(task.getTaskStatus());
+    }
 
     protected Predicate<TaskSummary> getCompleteActionCondition() {
         return task -> task.getActualOwner() != null && TaskStatus.TASK_STATUS_IN_PROGRESS.equals(task.getTaskStatus());
@@ -454,6 +456,62 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     protected Predicate<TaskSummary> getProcessInstanceCondition() {
         return task -> task.getProcessInstanceId() != null;
+    }
+
+    public void bulkClaim(List<TaskSummary> taskSummaries) {
+        if (taskSummaries == null || taskSummaries.isEmpty()) {
+            return;
+        }
+        taskSummaries.forEach(taskSummary -> {
+            if (getClaimActionCondition().test(taskSummary)) {
+                claimTask(taskSummary);
+            } else {
+                view.displayNotification(
+                        constants.ClaimNotAllowedOn(String.valueOf(taskSummary.getId()), taskSummary.getName()));
+            }
+        });
+    }
+
+    public void bulkRelease(List<TaskSummary> taskSummaries) {
+        if (taskSummaries == null || taskSummaries.isEmpty()) {
+            return;
+        }
+        taskSummaries.forEach(taskSummary -> {
+            if (getReleaseActionCondition().test(taskSummary)) {
+                releaseTask(taskSummary);
+            } else {
+                view.displayNotification(
+                        constants.ReleaseNotAllowedOn(String.valueOf(taskSummary.getId()), taskSummary.getName()));
+            }
+        });
+    }
+
+    public void bulkResume(List<TaskSummary> taskSummaries) {
+        if (taskSummaries == null || taskSummaries.isEmpty()) {
+            return;
+        }
+        taskSummaries.forEach(taskSummary -> {
+            if (getResumeActionCondition().test(taskSummary)) {
+                resumeTask(taskSummary);
+            } else {
+                view.displayNotification(
+                        constants.ResumeNotAllowedOn(String.valueOf(taskSummary.getId()), taskSummary.getName()));
+            }
+        });
+    }
+
+    public void bulkSuspend(List<TaskSummary> taskSummaries) {
+        if (taskSummaries == null || taskSummaries.isEmpty()) {
+            return;
+        }
+        taskSummaries.forEach(taskSummary -> {
+            if (getSuspendActionCondition().test(taskSummary)) {
+                suspendTask(taskSummary);
+            } else {
+                view.displayNotification(
+                        constants.SuspendNotAllowedOn(String.valueOf(taskSummary.getId()), taskSummary.getName()));
+            }
+        });
     }
 
     public interface TaskListView<T extends AbstractTaskListPresenter> extends MultiGridView<TaskSummary, T> {
