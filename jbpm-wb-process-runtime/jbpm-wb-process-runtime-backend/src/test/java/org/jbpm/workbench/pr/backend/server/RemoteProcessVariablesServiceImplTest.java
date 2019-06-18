@@ -100,7 +100,7 @@ public class RemoteProcessVariablesServiceImplTest {
                                               false,
                                               "",
                                               "",
-                                              false,
+                                              true,
                                               null,
                                               params);
     }

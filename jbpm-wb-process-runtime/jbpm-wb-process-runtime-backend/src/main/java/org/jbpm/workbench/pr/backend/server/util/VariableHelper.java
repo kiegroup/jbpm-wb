@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.jbpm.workbench.pr.backend.server.ProcessInstanceVariableMapper;
 import org.jbpm.workbench.pr.model.ProcessVariableSummary;
@@ -32,7 +33,8 @@ import org.kie.server.api.model.instance.VariableInstance;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toList;
+import static java.util.Comparator.comparing;
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 
 public class VariableHelper {
 
@@ -64,11 +66,13 @@ public class VariableHelper {
                                                                Map<String, String> properties,
                                                                long processInstanceId,
                                                                String deploymentId,
-                                                               String serverTemplateId) {
+                                                               String serverTemplateId,
+                                                               String sortBy,
+                                                               boolean asc) {
 
         List<VariableInstance> filteredVariables = variables.stream()
                 .filter(variable -> !excludedVariables.contains(variable.getVariableName()))
-                .collect(toList());
+                .collect(Collectors.toList());
 
         List<ProcessVariableSummary> variablesSummary = new ArrayList<>();
 
@@ -81,9 +85,27 @@ public class VariableHelper {
         variablesSummary.addAll(ofNullable(filteredVariables).orElse(emptyList())
                                         .stream()
                                         .map(new ProcessInstanceVariableMapper(deploymentId, serverTemplateId, ""))
-                                        .collect(toList()));
+                                        .collect(Collectors.toList()));
 
-        variablesSummary.sort(Comparator.comparing(ProcessVariableSummary::getName));
+        Comparator<ProcessVariableSummary> comparator;
+        switch (ofNullable(sortBy).orElse(COL_PROCESS_INSTANCE_VAR_ID)) {
+            case COL_PROCESS_INSTANCE_VAR_ID:
+                comparator = comparing(ProcessVariableSummary::getVariableId);
+                break;
+            case COL_PROCESS_INSTANCE_VAR_VALUE:
+                comparator = comparing(ProcessVariableSummary::getNewValue);
+                break;
+            case COL_PROCESS_INSTANCE_VAR_TYPE:
+                comparator = comparing(ProcessVariableSummary::getType);
+                break;
+            case COL_PROCESS_INSTANCE_VAR_LASTMOD:
+                comparator = comparing(ProcessVariableSummary::getTimestamp);
+                break;
+            default:
+                comparator = comparing(ProcessVariableSummary::getName);
+        }
+
+        variablesSummary.sort(asc ? comparator : comparator.reversed());
 
         return variablesSummary;
     }

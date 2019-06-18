@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.kie.server.api.model.instance.VariableInstance;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.COL_PROCESS_INSTANCE_VAR_ID;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -71,7 +72,7 @@ public class VariableHelperTest {
     public void addDeploymentIdServerTemplateToAllProcessInstancesVarsTest() {
 
         List<ProcessVariableSummary> varList =
-                VariableHelper.adaptCollection(variables, properties, processInstanceId, deploymentId, serverTemplateId);
+                VariableHelper.adaptCollection(variables, properties, processInstanceId, deploymentId, serverTemplateId, null, true);
 
         //Check all ProcessVariableSummary have deploymentId and serverTemplateId
         varList.stream().forEach(processVariableSummary -> {
@@ -90,5 +91,24 @@ public class VariableHelperTest {
         assertEquals(processDefinitionVar1Value, varList.get(1).getNewValue());
         assertEquals("", varList.get(2).getNewValue());
         assertEquals("", varList.get(3).getNewValue());
+    }
+
+    @Test
+    public void sortProcessInstancesVarsByNameTest() {
+        List<ProcessVariableSummary> varList =
+                VariableHelper.adaptCollection(variables, properties, processInstanceId, deploymentId, serverTemplateId,
+                                               COL_PROCESS_INSTANCE_VAR_ID, true);
+        assertEquals(4, varList.size());
+        assertEquals(processDefaultVar_name, varList.get(0).getName());
+        assertEquals(processDefinitionVar1Name, varList.get(1).getName());
+        assertEquals(processDefinitionVar2Name, varList.get(2).getName());
+        assertEquals(processDefinitionVar3Name, varList.get(3).getName());
+
+        varList = VariableHelper.adaptCollection(variables, properties, processInstanceId, deploymentId,
+                                                 serverTemplateId, COL_PROCESS_INSTANCE_VAR_ID, false);
+        assertEquals(processDefaultVar_name, varList.get(3).getName());
+        assertEquals(processDefinitionVar1Name, varList.get(2).getName());
+        assertEquals(processDefinitionVar2Name, varList.get(1).getName());
+        assertEquals(processDefinitionVar3Name, varList.get(0).getName());
     }
 }
