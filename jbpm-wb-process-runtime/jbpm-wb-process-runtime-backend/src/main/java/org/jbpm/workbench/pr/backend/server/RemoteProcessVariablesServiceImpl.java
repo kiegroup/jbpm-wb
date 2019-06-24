@@ -98,7 +98,9 @@ public class RemoteProcessVariablesServiceImpl extends AbstractKieServerService 
                                                                                              properties,
                                                                                              processInstanceId,
                                                                                              deploymentId,
-                                                                                             serverTemplateId);
+                                                                                             serverTemplateId,
+                                                                                             filter.getOrderBy(),
+                                                                                             filter.isAscending());
 
         List<ProcessVariableSummary> processVariablesSums = new ArrayList<ProcessVariableSummary>(processVariables.size());
         for (ProcessVariableSummary pv : processVariables) {
@@ -126,6 +128,8 @@ public class RemoteProcessVariablesServiceImpl extends AbstractKieServerService 
                                               new HashMap<String, String>(),
                                               processInstance.getProcessInstanceId(),
                                               processInstance.getDeploymentId(),
-                                              processInstance.getServerTemplateId());
+                                              processInstance.getServerTemplateId(),
+                                              null,
+                                              true);
     }
 }

@@ -31,6 +31,7 @@ import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class ProcessVariableListViewTest {
@@ -72,7 +73,7 @@ public class ProcessVariableListViewTest {
                     if (ProcessVariableListViewImpl.COL_ID_ACTIONS.equals(columnMeta.getColumn().getDataStoreName())) {
                         assertTrue(columnMeta.getColumn().getCell() instanceof CompositeCell);
                     }
-                    if (ProcessVariableListViewImpl.COL_ID_VARVALUE.equals(columnMeta.getColumn().getDataStoreName())) {
+                    if (COL_PROCESS_INSTANCE_VAR_VALUE.equals(columnMeta.getColumn().getDataStoreName())) {
                         assertTrue(columnMeta.getColumn().getCell() instanceof PopoverTextCell);
                     }
                 }
