@@ -75,7 +75,7 @@ public class RemoteProcessDocumentsServiceImplTest {
                                                           false,
                                                           "",
                                                           "",
-                                                          false);
+                                                          true);
 
         queryFilter.getParams().put(serverTemplateId, serverTemplateId);
 
@@ -105,7 +105,7 @@ public class RemoteProcessDocumentsServiceImplTest {
                                                           false,
                                                           "",
                                                           "",
-                                                          false);
+                                                          true);
 
         queryFilter.getParams().put(serverTemplateId, serverTemplateId);
 

@@ -45,6 +45,11 @@ public final class ProcessInstanceDataSetConstants {
     public static final String VARIABLE_VALUE = "value";
     public static final String VARIABLE_ID = "id";
 
+    public static final String COL_PROCESS_INSTANCE_VAR_ID = "varId";
+    public static final String COL_PROCESS_INSTANCE_VAR_VALUE = "varValue";
+    public static final String COL_PROCESS_INSTANCE_VAR_TYPE = "varType";
+    public static final String COL_PROCESS_INSTANCE_VAR_LASTMOD = "varLastMod";
+
     private ProcessInstanceDataSetConstants() {
     }
 }

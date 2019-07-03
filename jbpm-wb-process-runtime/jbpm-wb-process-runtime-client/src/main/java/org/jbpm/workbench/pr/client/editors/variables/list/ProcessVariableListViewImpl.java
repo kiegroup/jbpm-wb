@@ -53,15 +53,13 @@ import org.uberfire.ext.widgets.common.client.tables.PopoverTextCell;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 import org.uberfire.mvp.ParameterizedCommand;
 
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
+
 @Dependent
 @Templated(value = "/org/jbpm/workbench/common/client/list/AbstractListView.html")
 public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariableSummary, ProcessVariableListPresenter>
         implements ProcessVariableListPresenter.ProcessVariableListView {
 
-    public static final String COL_ID_VARID = "varId";
-    public static final String COL_ID_VARVALUE = "varValue";
-    public static final String COL_ID_VARTYPE = "varType";
-    public static final String COL_ID_LASTMOD = "lastMod";
     public static final String COL_ID_ACTIONS = "Actions";
 
     @Inject
@@ -78,14 +76,14 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
     public void init(final ProcessVariableListPresenter presenter) {
         List<String> bannedColumns = new ArrayList<String>();
 
-        bannedColumns.add(COL_ID_VARID);
-        bannedColumns.add(COL_ID_VARVALUE);
+        bannedColumns.add(COL_PROCESS_INSTANCE_VAR_ID);
+        bannedColumns.add(COL_PROCESS_INSTANCE_VAR_VALUE);
         bannedColumns.add(COL_ID_ACTIONS);
         List<String> initColumns = new ArrayList<String>();
-        initColumns.add(COL_ID_VARID);
-        initColumns.add(COL_ID_VARVALUE);
-        initColumns.add(COL_ID_VARTYPE);
-        initColumns.add(COL_ID_LASTMOD);
+        initColumns.add(COL_PROCESS_INSTANCE_VAR_ID);
+        initColumns.add(COL_PROCESS_INSTANCE_VAR_VALUE);
+        initColumns.add(COL_PROCESS_INSTANCE_VAR_TYPE);
+        initColumns.add(COL_PROCESS_INSTANCE_VAR_LASTMOD);
         initColumns.add(COL_ID_ACTIONS);
 
         super.init(presenter,
@@ -160,7 +158,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
             }
         };
         variableId.setSortable(true);
-        variableId.setDataStoreName(COL_ID_VARID);
+        variableId.setDataStoreName(COL_PROCESS_INSTANCE_VAR_ID);
 
         return variableId;
     }
@@ -175,7 +173,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
             }
         };
         valueColumn.setSortable(true);
-        valueColumn.setDataStoreName(COL_ID_VARVALUE);
+        valueColumn.setDataStoreName(COL_PROCESS_INSTANCE_VAR_VALUE);
         return valueColumn;
     }
 
@@ -190,7 +188,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
             }
         };
         typeColumn.setSortable(true);
-        typeColumn.setDataStoreName(COL_ID_VARTYPE);
+        typeColumn.setDataStoreName(COL_PROCESS_INSTANCE_VAR_TYPE);
         return typeColumn;
     }
 
@@ -204,7 +202,7 @@ public class ProcessVariableListViewImpl extends AbstractListView<ProcessVariabl
             }
         };
         lastModificationColumn.setSortable(true);
-        lastModificationColumn.setDataStoreName(COL_ID_LASTMOD);
+        lastModificationColumn.setDataStoreName(COL_PROCESS_INSTANCE_VAR_LASTMOD);
         return lastModificationColumn;
     }
 
