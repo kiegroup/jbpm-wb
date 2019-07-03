@@ -151,6 +151,13 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
     public void addTextFilter(final String label,
                               final String placeholder,
                               final Consumer<ActiveFilterItem<String>> callback) {
+        addTextFilter(label, placeholder, false, callback);
+    }
+
+    private void addTextFilter(String label, String placeholder, boolean disableFiltersInputHelp, Consumer<ActiveFilterItem<String>> callback) {
+        if (disableFiltersInputHelp) {
+            hideFiltersInputHelp();
+        }
 
         createFilterOption(label);
 
@@ -160,6 +167,16 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
                     input -> input.setType("text"),
                     v -> v,
                     callback);
+    }
+
+    protected void hideFiltersInputHelp() {
+        filtersInputHelp.setDisabled(true);
+        addCSSClass(filtersInputHelp, "hidden");
+    }
+
+    protected void showFiltersInputHelp() {
+        filtersInputHelp.setDisabled(false);
+        removeCSSClass(filtersInputHelp, "hidden");
     }
 
     @Override
@@ -179,6 +196,10 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
                     },
                     v -> Integer.valueOf(v),
                           callback);
+
+        if (refineSelect.getOptions().getLength() == 1) {
+            hideFiltersInputHelp();
+        }
     }
 
     @Override
@@ -585,8 +606,12 @@ public class BasicFiltersViewImpl implements BasicFiltersView,
         for (Element child : elementIterable(filtersInput.getChildNodes())) {
             if (child.getTagName().equals("INPUT")) {
                 if (label.equals(child.getAttribute("data-filter"))) {
-                    removeCSSClass((HTMLElement) child,
-                                   "hidden");
+                    removeCSSClass((HTMLElement) child, "hidden");
+                    if (((Input) child).getType().equals("number")) {
+                        hideFiltersInputHelp();
+                    } else {
+                        showFiltersInputHelp();
+                    }
                 } else {
                     addCSSClass((HTMLElement) child,
                                 "hidden");
