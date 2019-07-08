@@ -18,6 +18,8 @@ package org.jbpm.workbench.common.client.filters.basic;
 
 import javax.enterprise.event.Event;
 
+import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.CoreFunctionFilter;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +29,7 @@ import org.uberfire.mocks.EventSourceMock;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -74,6 +77,16 @@ public abstract class AbstractBasicFiltersPresenterTest {
                                                                   singletonList("value"),
                                                                   null));
 
+        verify(activeFilters).fire(any());
+    }
+
+    @Test
+    public void testAddSearchFilter() {
+        CoreFunctionFilter testColumnFilter = mock(CoreFunctionFilter.class);
+        ActiveFilterItem activeFilterItem = new ActiveFilterItem("test_key", "test_lable", null, null, null);
+
+        getPresenter().addSearchFilter(activeFilterItem, testColumnFilter);
+        verify(testColumnFilter).setLabelValue("test_lable");
         verify(activeFilters).fire(any());
     }
 

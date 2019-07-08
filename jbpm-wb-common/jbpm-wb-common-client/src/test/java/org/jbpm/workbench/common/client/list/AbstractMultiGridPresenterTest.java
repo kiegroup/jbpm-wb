@@ -25,7 +25,10 @@ import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.CoreFunctionFilter;
 import org.dashbuilder.dataset.filter.DataSetFilter;
+import org.dashbuilder.dataset.filter.LogicalExprFilter;
+import org.dashbuilder.dataset.filter.LogicalExprType;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.active.ClearAllActiveFiltersEvent;
@@ -42,6 +45,8 @@ import org.mockito.Spy;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.EventSourceMock;
 
+import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -129,6 +134,25 @@ public class AbstractMultiGridPresenterTest {
         verify(view).removeAllActiveFilters();
         verify(dataSetQueryHelper).setCurrentTableSettings(filterSettingsMock);
         verify(view).loadListTable(eq(defaultFilterKey), any());
+    }
+
+    @Test
+    public void testActiveFiltersLabel() {
+        ColumnFilter testColumnFilter = equalsTo("test_columnId", 1);
+        ((CoreFunctionFilter) testColumnFilter).setLabelValue("test_lable");
+
+        ActiveFilterItem activeFilterItemOne = presenter.getActiveFilterFromColumnFilter(testColumnFilter);
+        assertEquals(((CoreFunctionFilter) testColumnFilter).getLabelValue(), activeFilterItemOne.getLabelValue());
+
+        LogicalExprFilter logicalExprFilter = new LogicalExprFilter("test_columnId", LogicalExprType.OR, Arrays.asList(testColumnFilter));
+        ActiveFilterItem activeFilterItemTwo = presenter.getActiveFilterFromColumnFilter(logicalExprFilter);
+        assertEquals(logicalExprFilter.toString(), activeFilterItemTwo.getLabelValue());
+
+        ColumnFilter testColumnFilterEmpty = equalsTo("test_columnId", 1);
+        ((CoreFunctionFilter) testColumnFilterEmpty).setLabelValue("");
+
+        ActiveFilterItem activeFilterItemThree = presenter.getActiveFilterFromColumnFilter(testColumnFilterEmpty);
+        assertEquals(testColumnFilterEmpty.toString(), activeFilterItemThree.getLabelValue());
     }
 
     @Test
