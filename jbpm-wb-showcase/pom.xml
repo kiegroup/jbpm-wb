@@ -483,6 +483,12 @@
       <scope>runtime</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.drools</groupId>
+      <artifactId>drools-workbench-models-commons</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- jBPM Designer -->
     <dependency>
       <groupId>org.jbpm</groupId>
