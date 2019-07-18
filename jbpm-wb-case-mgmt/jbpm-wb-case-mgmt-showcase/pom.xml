@@ -355,6 +355,11 @@
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-preferences-client-backend</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
       <artifactId>uberfire-preferences-processors</artifactId>
       <scope>provided</scope>
     </dependency>
@@ -551,6 +556,7 @@
               <compileSourcesArtifact>org.uberfire:uberfire-backend-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-preferences-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-preferences-client</compileSourcesArtifact>
+              <compileSourcesArtifact>org.uberfire:uberfire-preferences-client-backend</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-ssh-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:appformer-js-bridge</compileSourcesArtifact>
 
