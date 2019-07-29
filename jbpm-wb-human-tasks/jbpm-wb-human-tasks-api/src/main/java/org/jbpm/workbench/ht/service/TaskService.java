@@ -24,6 +24,7 @@ import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.workbench.ht.model.CommentSummary;
 import org.jbpm.workbench.ht.model.TaskAssignmentSummary;
 import org.jbpm.workbench.ht.model.TaskEventSummary;
+import org.jbpm.workbench.ht.model.TaskKey;
 import org.jbpm.workbench.ht.model.TaskSummary;
 
 @Remote
@@ -58,6 +59,8 @@ public interface TaskService {
                                          Integer pageSize);
 
     void delegate(String serverTemplateId, String containerId, Long taskId, String entity);
+
+    List<TaskAssignmentSummary> delegateTasks(String serverTemplateId, List<TaskKey> tasksKeyToReassign, String entity);
 
     void forward(String serverTemplateId, String containerId, Long taskId, String entity);
 

@@ -17,6 +17,7 @@ package org.jbpm.workbench.ht.client.editors.taskassignments;
 
 import java.util.Arrays;
 import java.util.Date;
+
 import javax.enterprise.event.Event;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
@@ -116,7 +117,7 @@ public class TaskAssignmentsPresenterTest extends AbstractTaskPresenterTest {
     public void emptyDelegationUserOrGroup_notAccepted() {
         presenter.delegateTask("");
 
-        verify(viewMock).setHelpText(Constants.INSTANCE.DelegationUserInputRequired());
+        verify(viewMock).setHelpText(Constants.INSTANCE.PleaseEnterUserIdToPerformDelegation());
         verify(taskService,
                never())
                 .delegate(anyString(),
@@ -129,7 +130,7 @@ public class TaskAssignmentsPresenterTest extends AbstractTaskPresenterTest {
     public void nullDelegationUserOrGroup_notAccepted() {
         presenter.delegateTask(null);
 
-        verify(viewMock).setHelpText(Constants.INSTANCE.DelegationUserInputRequired());
+        verify(viewMock).setHelpText(Constants.INSTANCE.PleaseEnterUserIdToPerformDelegation());
         verify(taskService,
                never())
                 .delegate(anyString(),

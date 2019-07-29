@@ -102,7 +102,7 @@ public interface Constants extends Messages {
     String Process_Instance_Correlation_Key();
 
     String Process_Instance_Description();
-    
+
     String Error_Count();
 
     String Last_Modification_Date();
@@ -187,13 +187,7 @@ public interface Constants extends Messages {
 
     String No_Actual_Owner();
 
-    String DelegationUserInputRequired();
-
     String DelegationUnable();
-
-    String DelegationSuccessfully();
-
-    String TaskSuccessfullyDelegated();
 
     String High();
 
@@ -213,19 +207,9 @@ public interface Constants extends Messages {
 
     String UnexpectedError(String errorMessage);
 
-    String TaskReleased(String taskId);
-
-    String TaskClaimed(String taskId);
-
-    String TaskResumed(String taskId);
-
-    String TaskSuspended(String taskId);
-
-    String TaskSuccessfullyForwarded();
-
     String ReminderSentTo(String userName);
 
-    String PleaseEnterUserOrAGroupToDelegate();
+    String PleaseEnterUserIdToPerformDelegation();
 
     String PleaseEnterUserOrAGroupToForward();
 
@@ -248,7 +232,7 @@ public interface Constants extends Messages {
     String ViewProcess();
 
     String TaskListCouldNotBeLoaded();
-    
+
     String Errors();
 
     String TaskCommentsNotAvailable(String containerId);
@@ -314,4 +298,30 @@ public interface Constants extends Messages {
     String SuspendNotAllowedOn(String taskId, String taskName);
 
     String UnableToSuspendTask(String taskId, String taskName, String message);
+
+    String Bulk_Reassign();
+
+    String To_Reassign_Selected_Tasks_Introduce_UserId();
+
+    String Tasks_Reassignment();
+
+    String ReassignmentNotAllowedOn(String taskId, String taskName, String entity);
+
+    String UnableToPerformReassignment(String entity, String message);
+
+    String Clear();
+
+    String TaskWasDelegated(String taskId, String taskName, String entity);
+
+    String TaskWasClaimed(String taskId, String taskName);
+
+    String TaskWasResumed(String taskId, String taskName);
+
+    String TaskWasSuspended(String taskId, String taskName);
+
+    String TaskWasReleased(String taskId, String taskName);
+
+    String TaskWithIdWasForwarded(String taskId, String entity);
+
+    String TaskWithIdWasDelegated(String taskId, String entityId);
 }

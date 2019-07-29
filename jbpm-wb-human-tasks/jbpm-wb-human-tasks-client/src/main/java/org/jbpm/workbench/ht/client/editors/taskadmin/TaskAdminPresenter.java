@@ -16,6 +16,7 @@
 package org.jbpm.workbench.ht.client.editors.taskadmin;
 
 import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -69,7 +70,7 @@ public class TaskAdminPresenter extends AbstractTaskPresenter {
 
     public void forwardTask(final String entity) {
         taskService.call(nothing -> {
-            displayNotification(constants.TaskSuccessfullyForwarded());
+            displayNotification(constants.TaskWithIdWasForwarded(String.valueOf(getTaskId()), entity));
             taskRefreshed.fire(new TaskRefreshedEvent(getServerTemplateId(),
                                                       getContainerId(),
                                                       getTaskId()));

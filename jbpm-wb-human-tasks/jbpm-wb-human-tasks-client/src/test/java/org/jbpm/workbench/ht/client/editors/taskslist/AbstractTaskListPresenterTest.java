@@ -22,6 +22,7 @@ import java.util.function.Predicate;
 import javax.enterprise.event.Event;
 
 import com.google.gwt.view.client.Range;
+import org.apache.commons.lang3.StringUtils;
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
@@ -39,6 +40,7 @@ import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.menu.ServerTemplateSelectorMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
+import org.jbpm.workbench.ht.client.editors.taskslist.popup.TasksReassignmentPresenter;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
@@ -364,6 +366,30 @@ public abstract class AbstractTaskListPresenterTest {
         getPresenter().suspendTask(task);
 
         verify(taskService).suspendTask("", TASK_DEPLOYMENT_ID, TASK_ID);
+    }
+
+    @Test
+    public void bulkReassignTasksTest() {
+        List<TaskSummary> taskSummaries = new ArrayList<>();
+        taskSummaries.add(createTestTaskSummary(TASK_ID, TASK_STATUS_RESERVED, identity.getIdentifier()));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 1, TASK_STATUS_IN_PROGRESS, ""));
+        taskSummaries.add(createTestTaskSummary(TASK_ID + 2, TASK_STATUS_SUSPENDED, ""));
+
+        final List<Long> tIds = new ArrayList();
+        final List<String> deploymentIds = new ArrayList();
+        for (TaskSummary summary : taskSummaries) {
+            tIds.add(summary.getId());
+            deploymentIds.add(summary.getDeploymentId());
+        }
+
+        getPresenter().bulkReassign(taskSummaries);
+
+        final ArgumentCaptor<PlaceRequest> placeRequest = ArgumentCaptor.forClass(PlaceRequest.class);
+        verify(placeManager).goTo(placeRequest.capture());
+
+        assertEquals(TasksReassignmentPresenter.TASKS_REASSIGNMENT_POPUP, placeRequest.getValue().getIdentifier());
+        assertEquals(StringUtils.join(tIds, ","), placeRequest.getValue().getParameter("taskIds", null));
+        assertEquals(StringUtils.join(deploymentIds, ","), placeRequest.getValue().getParameter("deploymentIds", null));
     }
 
     @Test

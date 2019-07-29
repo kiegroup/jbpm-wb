@@ -86,6 +86,7 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
         bulkActionsItems.add(getBulkRelease(extendedPagedTable));
         bulkActionsItems.add(getBulkResume(extendedPagedTable));
         bulkActionsItems.add(getBulkSuspend(extendedPagedTable));
+        bulkActionsItems.add(getBulkReassign(extendedPagedTable));
         return bulkActionsItems;
     }
 
@@ -338,6 +339,15 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
         return bulkSuspendNavLink;
     }
 
+    protected AnchorListItem getBulkReassign(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
+        final AnchorListItem bulkAbortNavLink = GWT.create(AnchorListItem.class);
+        bulkAbortNavLink.setText(constants.Bulk_Reassign());
+        bulkAbortNavLink.setIcon(IconType.SHARE_SQUARE_O);
+        bulkAbortNavLink.setIconFixedWidth(true);
+        bulkAbortNavLink.addClickHandler(event -> getReassignCommand(extendedPagedTable).execute());
+        return bulkAbortNavLink;
+    }
+
     protected Command getClaimCommand(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
         return () -> {
             presenter.bulkClaim(extendedPagedTable.getSelectedItems());
@@ -362,6 +372,13 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
     protected Command getSuspendCommand(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
         return () -> {
             presenter.bulkSuspend(extendedPagedTable.getSelectedItems());
+            extendedPagedTable.deselectAllItems();
+        };
+    }
+
+    protected Command getReassignCommand(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
+        return () -> {
+            presenter.bulkReassign(extendedPagedTable.getSelectedItems());
             extendedPagedTable.deselectAllItems();
         };
     }

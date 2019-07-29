@@ -16,10 +16,12 @@
 
 package org.jbpm.workbench.ht.backend.server;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -28,6 +30,7 @@ import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.workbench.ht.model.CommentSummary;
 import org.jbpm.workbench.ht.model.TaskAssignmentSummary;
 import org.jbpm.workbench.ht.model.TaskEventSummary;
+import org.jbpm.workbench.ht.model.TaskKey;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.service.TaskService;
@@ -305,21 +308,34 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
     }
 
     @Override
-    public void delegate(String serverTemplateId,
-                         String containerId,
-                         Long taskId,
-                         String entity) {
+    public void delegate(String serverTemplateId, String containerId, Long taskId, String entity) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return;
         }
 
-        UserTaskServicesClient client = getClient(serverTemplateId,
-                                                  UserTaskServicesClient.class);
+        UserTaskServicesClient client = getClient(serverTemplateId, UserTaskServicesClient.class);
 
-        client.delegateTask(containerId,
-                            taskId,
-                            identityProvider.getName(),
-                            entity);
+        client.delegateTask(containerId, taskId, identityProvider.getName(), entity);
+    }
+
+    @Override
+    public List<TaskAssignmentSummary> delegateTasks(String serverTemplateId, List<TaskKey> tasksKeyToReassign, String entity) {
+        List<TaskAssignmentSummary> reassignments = new ArrayList<>();
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return reassignments;
+        }
+        if (tasksKeyToReassign != null && tasksKeyToReassign.size() > 0) {
+            tasksKeyToReassign.forEach(taskKey -> {
+                TaskAssignmentSummary assignmentSummary = getTaskAssignmentDetails(taskKey.getServerTemplateId(),
+                                                                                   taskKey.getDeploymentId(),
+                                                                                   taskKey.getTaskId());
+                if (assignmentSummary != null && assignmentSummary.isDelegationAllowed()) {
+                    delegate(taskKey.getServerTemplateId(), taskKey.getDeploymentId(), taskKey.getTaskId(), entity);
+                }
+                reassignments.add(assignmentSummary);
+            });
+        }
+        return reassignments;
     }
 
     @Override
