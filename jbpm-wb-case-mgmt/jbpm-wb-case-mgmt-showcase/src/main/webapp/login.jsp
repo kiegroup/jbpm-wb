@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="<%=request.getContextPath()%>/org.jbpm.workbench.cm.jBPMCaseManagement/css/patternfly.min.css">
     <link rel="stylesheet" href="<%=request.getContextPath()%>/org.jbpm.workbench.cm.jBPMCaseManagement/css/patternfly-additions.min.css">
     <link rel="stylesheet" href="<%=request.getContextPath()%>/org.jbpm.workbench.cm.jBPMCaseManagement/css/showcase.css">
-    <link rel="shortcut icon" href="favicon.ico"/>
+    <link rel="shortcut icon" href="favicon.png"/>
     <title>Sample Case Management App</title>
 </head>
 
