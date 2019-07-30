@@ -18,6 +18,7 @@ package org.jbpm.workbench.ht.model;
 
 import java.util.List;
 
+import org.jboss.errai.common.client.api.annotations.NonPortable;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jbpm.workbench.common.model.GenericSummary;
 
@@ -33,6 +34,7 @@ public class TaskAssignmentSummary extends GenericSummary<Long> {
     private String status;
     private Boolean delegationAllowed;
     private Boolean forwardAllowed;
+    private String deploymentId;
 
     public TaskAssignmentSummary() {
 
@@ -66,11 +68,16 @@ public class TaskAssignmentSummary extends GenericSummary<Long> {
         this.delegationAllowed = false;
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public Long getTaskId() {
         return taskId;
     }
 
     public void setTaskId(Long taskId) {
+        this.id = taskId;
         this.taskId = taskId;
     }
 
@@ -79,6 +86,7 @@ public class TaskAssignmentSummary extends GenericSummary<Long> {
     }
 
     public void setTaskName(String taskName) {
+        this.name = taskName;
         this.taskName = taskName;
     }
 
@@ -138,6 +146,67 @@ public class TaskAssignmentSummary extends GenericSummary<Long> {
         return forwardAllowed;
     }
 
+    public String getDeploymentId() {
+        return deploymentId;
+    }
+
+    public void setDeploymentId(String deploymentId) {
+        this.deploymentId = deploymentId;
+    }
+
+    @NonPortable
+    public static final class Builder {
+
+        private TaskAssignmentSummary taskAssignmentSummary = new TaskAssignmentSummary();
+
+        private Builder() {
+        }
+
+        public TaskAssignmentSummary build() {
+            return taskAssignmentSummary;
+        }
+
+        public Builder taskId(Long taskId) {
+            this.taskAssignmentSummary.setTaskId(taskId);
+            return this;
+        }
+
+        public Builder taskName(String taskName) {
+            this.taskAssignmentSummary.setTaskName(taskName);
+            return this;
+        }
+
+        public Builder actualOwner(String actualOwner) {
+            this.taskAssignmentSummary.setActualOwner(actualOwner);
+            return this;
+        }
+
+        public Builder createdBy(String createdBy) {
+            this.taskAssignmentSummary.setCreatedBy(createdBy);
+            return this;
+        }
+
+        public Builder status(String status) {
+            this.taskAssignmentSummary.setStatus(status);
+            return this;
+        }
+
+        public Builder delegationAllowed(Boolean delegationAllowed) {
+            this.taskAssignmentSummary.setDelegationAllowed(delegationAllowed);
+            return this;
+        }
+
+        public Builder forwardAllowed(Boolean forwardAllowed) {
+            this.taskAssignmentSummary.setForwardAllowed(forwardAllowed);
+            return this;
+        }
+
+        public Builder deploymentId(String deploymentId) {
+            this.taskAssignmentSummary.setDeploymentId(deploymentId);
+            return this;
+        }
+    }
+
     @Override
     public String toString() {
         return "TaskAssignmentSummary{" +
@@ -150,6 +219,7 @@ public class TaskAssignmentSummary extends GenericSummary<Long> {
                 ", status='" + status + '\'' +
                 ", delegationAllowed=" + delegationAllowed +
                 ", forwardAllowed=" + forwardAllowed +
+                ", deploymentId=" + deploymentId +
                 "} " + super.toString();
     }
 }

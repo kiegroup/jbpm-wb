@@ -44,6 +44,7 @@ public class TaskAssignmentSummaryMapper implements BiFunction<TaskInstance, Ide
                                                              identityProvider));
             summary.setForwardAllowed(isForwardAllowed(task,
                                                        identityProvider));
+            summary.setDeploymentId(task.getContainerId());
             return summary;
         }
     }

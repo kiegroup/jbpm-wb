@@ -16,6 +16,7 @@
 package org.jbpm.workbench.ht.client.editors.taskassignments;
 
 import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -65,16 +66,16 @@ public class TaskAssignmentsPresenter extends AbstractTaskPresenter {
 
     public void delegateTask(String entity) {
         if (entity == null || "".equals(entity.trim())) {
-            view.setHelpText(constants.DelegationUserInputRequired());
+            view.setHelpText(constants.PleaseEnterUserIdToPerformDelegation());
             return;
         }
         taskService.call(
                 new RemoteCallback<Void>() {
                     @Override
                     public void callback(Void nothing) {
-                        view.displayNotification(constants.TaskSuccessfullyDelegated());
+                        view.displayNotification(constants.TaskWithIdWasDelegated(String.valueOf(getTaskId()), entity));
                         view.setDelegateButtonActive(false);
-                        view.setHelpText(constants.DelegationSuccessfully());
+                        view.setHelpText(constants.TaskWithIdWasDelegated(String.valueOf(getTaskId()), entity));
                         taskRefreshed.fire(new TaskRefreshedEvent(getServerTemplateId(),
                                                                   getContainerId(),
                                                                   getTaskId()));
@@ -88,6 +89,8 @@ public class TaskAssignmentsPresenter extends AbstractTaskPresenter {
                                          Throwable throwable) {
                         view.setDelegateButtonActive(true);
                         view.setHelpText(constants.DelegationUnable());
+                        view.displayNotification(constants.UnableToPerformReassignment(entity, throwable.getMessage()));
+
                         return super.error(message,
                                            throwable);
                     }
