@@ -44,6 +44,7 @@ import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.df.client.list.DataSetQueryHelper;
+import org.jbpm.workbench.ht.client.editors.taskslist.popup.TasksReassignmentPresenter;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.*;
@@ -225,7 +226,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     public void releaseTask(final TaskSummary task) {
         taskService.call((Void nothing) -> {
-                             view.displayNotification(constants.TaskReleased((String.valueOf(task.getId()))));
+            view.displayNotification(constants.TaskWasReleased(String.valueOf(task.getId()), task.getName()));
                              refreshGrid();
                          }, (Message message, Throwable throwable) -> {
                              view.displayNotification(constants.UnableToReleaseTask(String.valueOf(task.getId()),
@@ -239,7 +240,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     public void claimTask(final TaskSummary task) {
         taskService.call((Void nothing) -> {
-                             view.displayNotification(constants.TaskClaimed(String.valueOf(task.getId())));
+            view.displayNotification(constants.TaskWasClaimed(String.valueOf(task.getId()), task.getName()));
                              refreshGrid();
                          }, (Message message, Throwable throwable) -> {
                              view.displayNotification(constants.UnableToClaimTask(String.valueOf(task.getId()),
@@ -253,7 +254,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     public void claimAndWorkTask(final TaskSummary task) {
         taskService.call((Void nothing) -> {
-                             view.displayNotification(constants.TaskClaimed(String.valueOf(task.getId())));
+            view.displayNotification(constants.TaskWasClaimed(String.valueOf(task.getId()), task.getName()));
                              selectSummaryItem(task);
                              refreshGrid();
                          }, (Message message, Throwable throwable) -> {
@@ -268,7 +269,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     public void resumeTask(final TaskSummary task) {
         taskService.call((Void nothing) -> {
-                             view.displayNotification(constants.TaskResumed(String.valueOf(task.getId())));
+            view.displayNotification(constants.TaskWasResumed(String.valueOf(task.getId()), task.getName()));
                              refreshGrid();
                          }, (Message message, Throwable throwable) -> {
                              view.displayNotification(constants.UnableToResumeTask(String.valueOf(task.getId()),
@@ -282,7 +283,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
     public void suspendTask(final TaskSummary task) {
         taskService.call((Void nothing) -> {
-                             view.displayNotification(constants.TaskSuspended(String.valueOf(task.getId())));
+            view.displayNotification(constants.TaskWasSuspended(String.valueOf(task.getId()), task.getName()));
                              refreshGrid();
                          }, (Message message, Throwable throwable) -> {
                              view.displayNotification(constants.UnableToSuspendTask(String.valueOf(task.getId()),
@@ -512,6 +513,25 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                         constants.SuspendNotAllowedOn(String.valueOf(taskSummary.getId()), taskSummary.getName()));
             }
         });
+    }
+
+    public void bulkReassign(List<TaskSummary> taskSummaries) {
+        if (taskSummaries == null || taskSummaries.isEmpty()) {
+            return;
+        }
+
+        String taskIdsParam = taskSummaries.stream().map(s -> s.getId().toString()).collect(Collectors.joining(","));
+        String deploymentIdsParam = taskSummaries.stream().map(s -> s.getDeploymentId()).collect(Collectors.joining(","));
+
+        if (taskIdsParam.isEmpty()) {
+            return;
+        }
+        PlaceRequest placeRequestImpl = new DefaultPlaceRequest(TasksReassignmentPresenter.TASKS_REASSIGNMENT_POPUP);
+        placeRequestImpl.addParameter("taskIds", taskIdsParam);
+        placeRequestImpl.addParameter("deploymentIds", deploymentIdsParam);
+        placeRequestImpl.addParameter("serverTemplateId", getSelectedServerTemplate());
+
+        placeManager.goTo(placeRequestImpl);
     }
 
     public interface TaskListView<T extends AbstractTaskListPresenter> extends MultiGridView<TaskSummary, T> {

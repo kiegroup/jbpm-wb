@@ -22,9 +22,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import javax.enterprise.event.Event;
 
 import org.jbpm.workbench.ht.model.TaskEventSummary;
+import org.jbpm.workbench.ht.model.TaskKey;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.service.TaskService;
@@ -163,6 +165,68 @@ public class RemoteTaskServiceImplTest {
                                                    CURRENT_USER,
                                                    userId);
         verify(kieServerIntegration).getServerClient(serverTemplateId);
+    }
+
+    @Test
+    public void testDelegateTasksSuccessfully() {
+        final String userId = "user";
+        final String serverTemplateId = "serverTemplateId";
+        Long taskId1 = 1L;
+        String deploymentId1 = "deploymentId1";
+        Long taskId2 = 2L;
+        String deploymentId2 = "deploymentId2";
+        Long taskId3 = 3L;
+        String deploymentId3 = "deploymentId3";
+
+        List<TaskKey> taskKeysToReassign = Arrays.asList(new TaskKey(serverTemplateId, deploymentId1, taskId1),
+                                                         new TaskKey(serverTemplateId, deploymentId2, taskId2),
+                                                         new TaskKey(serverTemplateId, deploymentId3, taskId3));
+        String currentUser = identityProvider.getName();
+        TaskInstance taskInstance = TaskInstance.builder().id(1L).status("Ready").actualOwner(currentUser).build();
+
+        when(userTaskServicesClient.getTaskInstance(anyString(), anyLong(), eq(false), eq(false), eq(true)))
+                .thenReturn(taskInstance);
+
+        remoteTaskService.delegateTasks(serverTemplateId, taskKeysToReassign, userId);
+
+        verify(userTaskServicesClient).getTaskInstance(deploymentId1, taskId1, false, false, true);
+        verify(userTaskServicesClient).getTaskInstance(deploymentId2, taskId2, false, false, true);
+        verify(userTaskServicesClient).getTaskInstance(deploymentId3, taskId3, false, false, true);
+
+        verify(userTaskServicesClient).delegateTask(deploymentId1, taskId1, identityProvider.getName(), userId);
+        verify(userTaskServicesClient).delegateTask(deploymentId2, taskId2, identityProvider.getName(), userId);
+        verify(userTaskServicesClient).delegateTask(deploymentId3, taskId3, identityProvider.getName(), userId);
+
+        verify(kieServerIntegration, times(6)).getServerClient(serverTemplateId);
+    }
+
+    @Test
+    public void testDelegateTasksFailingOnCompleteTasks() {
+        final String userId = "user";
+        final String serverTemplateId = "serverTemplateId";
+        Long taskId1 = 1L;
+        String deploymentId1 = "deploymentId1";
+        Long taskId2 = 2L;
+        String deploymentId2 = "deploymentId2";
+        Long taskId3 = 3L;
+        String deploymentId3 = "deploymentId3";
+        List<TaskKey> taskKeysToReassign = Arrays.asList(new TaskKey(serverTemplateId, deploymentId1, taskId1),
+                                                         new TaskKey(serverTemplateId, deploymentId2, taskId2),
+                                                         new TaskKey(serverTemplateId, deploymentId3, taskId3));
+        String currentUser = identityProvider.getName();
+        TaskInstance taskInstance = TaskInstance.builder().id(1L).status("Completed").actualOwner(currentUser).build();
+
+        when(userTaskServicesClient.getTaskInstance(anyString(), anyLong(), eq(false), eq(false), eq(true)))
+                .thenReturn(taskInstance);
+
+        remoteTaskService.delegateTasks(serverTemplateId, taskKeysToReassign, userId);
+
+        verify(userTaskServicesClient).getTaskInstance(deploymentId1, taskId1, false, false, true);
+        verify(userTaskServicesClient).getTaskInstance(deploymentId2, taskId2, false, false, true);
+        verify(userTaskServicesClient).getTaskInstance(deploymentId3, taskId3, false, false, true);
+
+        verify(userTaskServicesClient, never()).delegateTask(anyString(), anyLong(), anyString(), anyString());
+        verify(kieServerIntegration, times(3)).getServerClient(serverTemplateId);
     }
 
     @Test
