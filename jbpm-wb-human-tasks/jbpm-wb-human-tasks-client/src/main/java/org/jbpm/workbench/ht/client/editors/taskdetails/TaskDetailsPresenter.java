@@ -147,7 +147,7 @@ public class TaskDetailsPresenter extends AbstractTaskPresenter {
                                            task.getProcessId(),
                                            task.getSlaCompliance());
                         }
-                    }).getTask(getServerTemplateId(), getContainerId(), getTaskId());
+                    }).getTaskWithSLA(getServerTemplateId(), getContainerId(), getTaskId());
         }
     }
 

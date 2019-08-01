@@ -18,6 +18,7 @@ package org.jbpm.dashboard.renderer.client.panel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
@@ -425,9 +426,7 @@ public class TaskDashboard extends AbstractDashboard {
                     displayNotification(i18n.taskDetailsNotAvailableContainerNotStartedOrUnreacheable(deploymentId));
                     tableRedraw();
                     return false;
-                }).getTask(serverTemplateId,
-                           deploymentId,
-                           taskId);
+                }).getTaskWithSLA(serverTemplateId, deploymentId, taskId);
     }
 
     public void showDashboard() {

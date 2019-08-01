@@ -209,7 +209,7 @@ public class TaskDetailsMultiPresenter extends AbstractTaskPresenter implements 
                     } else {
                         view.displayNotification(constants.TaskDetailsNotAvailable());
                     }
-                }).getTask(getServerTemplateId(), getContainerId(), getTaskId());
+                }).getTaskWithSLA(getServerTemplateId(), getContainerId(), getTaskId());
     }
 
     @WorkbenchMenu

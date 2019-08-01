@@ -236,14 +236,11 @@ public class RemoteTaskServiceImplTest {
         final String taskName = "taskName";
         final String serverTemplateId = "serverTemplateId";
         when(userTaskServicesClient.findTaskById(any())).thenReturn(TaskInstance.builder().id(taskId).name(taskName).build());
-        TaskSummary taskSummary = remoteTaskService.getTask(serverTemplateId,
-                                                            containerId,
-                                                            taskId);
+        TaskSummary taskSummary = remoteTaskService.getTask(serverTemplateId, containerId, taskId);
         verify(userTaskServicesClient).findTaskById(taskId);
         assertNotNull(taskSummary);
         assertTrue(taskId == taskSummary.getId());
-        assertEquals(taskName,
-                     taskSummary.getName());
+        assertEquals(taskName, taskSummary.getName());
     }
 
     @Test
@@ -251,10 +248,40 @@ public class RemoteTaskServiceImplTest {
         final long taskId = 1l;
         final String serverTemplateId = "serverTemplateId";
         when(userTaskServicesClient.findTaskById(any())).thenReturn(null);
-        TaskSummary taskSummary = remoteTaskService.getTask(serverTemplateId,
-                                                            "containerId",
-                                                            taskId);
+        TaskSummary taskSummary = remoteTaskService.getTask(serverTemplateId, "containerId", taskId);
         verify(userTaskServicesClient).findTaskById(taskId);
+        assertNull(taskSummary);
+    }
+
+    @Test
+    public void getTaskWithSLA_ReturnsSingleTaskTest() {
+        final String containerId = "containerId";
+        final long taskId = 1l;
+        Date slaDueDate = new Date();
+        final String taskName = "taskName";
+        final String serverTemplateId = "serverTemplateId";
+        when(userTaskServicesClient.findTaskById(any(), eq(true))).thenReturn(TaskInstance.builder()
+                                                                                      .id(taskId)
+                                                                                      .name(taskName)
+                                                                                      .slaCompliance(0)
+                                                                                      .slaDueDate(slaDueDate)
+                                                                                      .build());
+        TaskSummary taskSummary = remoteTaskService.getTaskWithSLA(serverTemplateId, containerId, taskId);
+        verify(userTaskServicesClient).findTaskById(taskId, true);
+        assertNotNull(taskSummary);
+        assertTrue(taskId == taskSummary.getId());
+        assertEquals(taskName, taskSummary.getName());
+        assertTrue(0 == taskSummary.getSlaCompliance());
+        assertEquals(slaDueDate, taskSummary.getSlaDueDate());
+    }
+
+    @Test
+    public void getTaskWithSLA_ReturnsNoneTasksTest() {
+        final long taskId = 1l;
+        final String serverTemplateId = "serverTemplateId";
+        when(userTaskServicesClient.findTaskById(any(), eq(true))).thenReturn(null);
+        TaskSummary taskSummary = remoteTaskService.getTaskWithSLA(serverTemplateId, "containerId", taskId);
+        verify(userTaskServicesClient).findTaskById(taskId, true);
         assertNull(taskSummary);
     }
 
