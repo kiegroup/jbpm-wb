@@ -521,9 +521,7 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testOpenInstanceDetails() {
-        when(taskService.getTask(anyString(),
-                                 anyString(),
-                                 anyLong())).thenReturn(mock(TaskSummary.class));
+        when(taskService.getTaskWithSLA(anyString(), anyString(), anyLong())).thenReturn(mock(TaskSummary.class));
         when(placeManager.getStatus(TASK_DETAILS_SCREEN)).thenReturn(PlaceStatus.CLOSE);
         TableDisplayer tableDisplayer = presenter.getTasksTable();
         tableDisplayer.selectCell(COLUMN_TASK_ID,
@@ -535,13 +533,10 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testOpenInstanceUnavailableDetails() {
-        when(taskService.getTask(anyString(),
-                                 anyString(),
-                                 anyLong())).thenReturn(null);
+        when(taskService.getTaskWithSLA(anyString(), anyString(), anyLong())).thenReturn(null);
         when(placeManager.getStatus(TASK_DETAILS_SCREEN)).thenReturn(PlaceStatus.CLOSE);
         TableDisplayer tableDisplayer = presenter.getTasksTable();
-        tableDisplayer.selectCell(COLUMN_TASK_ID,
-                                  0);
+        tableDisplayer.selectCell(COLUMN_TASK_ID, 0);
 
         verifyNoMoreInteractions(taskSelectionEvent);
         verifyNoMoreInteractions(placeManager);

@@ -32,6 +32,8 @@ public interface TaskService {
 
     TaskSummary getTask(String serverTemplateId, String containerId, Long taskId);
 
+    TaskSummary getTaskWithSLA(String serverTemplateId, String containerId, Long taskId);
+
     void updateTask(String serverTemplateId, String containerId, Long taskId, Integer priority, String description,
                     Date dueDate);
 
