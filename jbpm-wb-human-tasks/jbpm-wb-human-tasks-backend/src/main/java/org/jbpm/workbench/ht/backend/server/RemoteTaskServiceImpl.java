@@ -58,9 +58,7 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
     private Event<TaskCompletedEvent> taskCompletedEvent;
 
     @Override
-    public TaskSummary getTask(String serverTemplateId,
-                               String containerId,
-                               Long taskId) {
+    public TaskSummary getTask(String serverTemplateId, String containerId, Long taskId) {
         if (serverTemplateId == null || serverTemplateId.isEmpty()) {
             return null;
         }
@@ -70,6 +68,27 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
         try {
             //Although in the UserTaskServicesClient, this method does not validate the running container
             TaskInstance task = client.findTaskById(taskId);
+            return new TaskSummaryMapper().apply(task);
+        } catch (KieServicesHttpException kieException) {
+            if (kieException.getHttpCode() == NOT_FOUND_ERROR_CODE) {
+                return null;
+            } else {
+                throw kieException;
+            }
+        }
+    }
+
+    @Override
+    public TaskSummary getTaskWithSLA(String serverTemplateId, String containerId, Long taskId) {
+        if (serverTemplateId == null || serverTemplateId.isEmpty()) {
+            return null;
+        }
+
+        UserTaskServicesClient client = getClient(serverTemplateId,
+                                                  UserTaskServicesClient.class);
+        try {
+            //Although in the UserTaskServicesClient, this method does not validate the running container
+            TaskInstance task = client.findTaskById(taskId, true);
             return new TaskSummaryMapper().apply(task);
         } catch (KieServicesHttpException kieException) {
             if (kieException.getHttpCode() == NOT_FOUND_ERROR_CODE) {

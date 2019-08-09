@@ -107,7 +107,7 @@ public class TaskDetailsMultiPresenterTest extends AbstractTaskPresenterTest {
     public void setupMocks() {
         taskService = new CallerMock<>(taskServiceMock);
         presenter.setTaskDataService(taskService);
-        when(taskServiceMock.getTask(anyString(), anyString(), anyLong()))
+        when(taskServiceMock.getTaskWithSLA(anyString(), anyString(), anyLong()))
                 .thenReturn(mock(TaskSummary.class));
         when(taskFormPresenter.getTaskFormView()).thenReturn(taskFormViewMock);
         when(taskFormViewMock.getDisplayerView()).thenReturn(formDisplayerViewMock);
@@ -174,7 +174,7 @@ public class TaskDetailsMultiPresenterTest extends AbstractTaskPresenterTest {
                         .slaCompliance(slaCompliance)
                         .build();
 
-        when(taskServiceMock.getTask(serverTemplateId, containerId, taskId)).thenReturn(taskSummary);
+        when(taskServiceMock.getTaskWithSLA(serverTemplateId, containerId, taskId)).thenReturn(taskSummary);
         presenter.onTaskSelectionEvent(new TaskSelectionEvent(serverTemplateId,
                                                               taskSummary.getDeploymentId(),
                                                               taskSummary.getId(),
@@ -195,7 +195,7 @@ public class TaskDetailsMultiPresenterTest extends AbstractTaskPresenterTest {
 
         presenter.onRefresh();
 
-        verify(taskServiceMock).getTask(eq(serverTemplateId), eq(containerId), eq(taskId));
+        verify(taskServiceMock).getTaskWithSLA(eq(serverTemplateId), eq(containerId), eq(taskId));
 
         final ArgumentCaptor<TaskSelectionEvent> taskSelectionEventArgumentCaptor = ArgumentCaptor.forClass(TaskSelectionEvent.class);
         verify(taskSelectionEvent).fire(taskSelectionEventArgumentCaptor.capture());
@@ -223,7 +223,7 @@ public class TaskDetailsMultiPresenterTest extends AbstractTaskPresenterTest {
         Long taskId = 1L;
         String containerId = "container1.2";
         String serverTemplateId = "serverTemplateId";
-        when(taskServiceMock.getTask(serverTemplateId, containerId, taskId)).thenReturn(null);
+        when(taskServiceMock.getTaskWithSLA(serverTemplateId, containerId, taskId)).thenReturn(null);
 
         presenter.onTaskSelectionEvent(new TaskSelectionEvent(serverTemplateId, containerId, taskId, "task", false, false));
         verify(view).displayAllTabs();
@@ -231,7 +231,7 @@ public class TaskDetailsMultiPresenterTest extends AbstractTaskPresenterTest {
 
         presenter.onRefresh();
 
-        verify(taskServiceMock).getTask(eq(serverTemplateId), eq(containerId), eq(taskId));
+        verify(taskServiceMock).getTaskWithSLA(eq(serverTemplateId), eq(containerId), eq(taskId));
 
         verify(view).displayNotification(anyString());
         verifyNoMoreInteractions(taskSelectionEvent);
