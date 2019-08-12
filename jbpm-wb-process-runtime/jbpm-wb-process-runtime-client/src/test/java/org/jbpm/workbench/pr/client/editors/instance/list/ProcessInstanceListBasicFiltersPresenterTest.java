@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.api.runtime.process.ProcessInstance;
 import org.mockito.ArgumentCaptor;
-import org.kie.api.runtime.process.ProcessInstance;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 
@@ -41,7 +40,6 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(GwtMockitoTestRunner.class)
@@ -106,5 +104,20 @@ public class ProcessInstanceListBasicFiltersPresenterTest extends AbstractBasicF
         presenter.onActiveFilterAdded(activeFilterItemMock);
         verify(getView()).checkSelectFilter(Constants.INSTANCE.State(), String.valueOf(ProcessInstance.STATE_ACTIVE));
         verify(getView()).checkSelectFilter(Constants.INSTANCE.State(), String.valueOf(ProcessInstance.STATE_COMPLETED));
+    }
+
+    @Test
+    public void testOnActiveFilterAdded() {
+        ActiveFilterItem testActiveFilterItem = new ActiveFilterItem(Constants.INSTANCE.State(), "test label", null, Arrays.asList("Active"), null);
+        presenter.onActiveFilterAdded(testActiveFilterItem);
+        verify(getView()).checkSelectFilter(Constants.INSTANCE.State(), "Active");
+
+        ActiveFilterItem activeWithErrorsFilterItem = new ActiveFilterItem("errorCount", "test label", null, Arrays.asList("0"), null);
+        presenter.onActiveFilterAdded(activeWithErrorsFilterItem);
+        verify(getView()).checkSelectFilter(Constants.INSTANCE.Errors(), "0");
+
+        ActiveFilterItem activeWithoutErrorsFilterItem = new ActiveFilterItem("errorCount", "test label", null, Arrays.asList("1"), null);
+        presenter.onActiveFilterAdded(activeWithoutErrorsFilterItem);
+        verify(getView()).checkSelectFilter(Constants.INSTANCE.Errors(), "1");
     }
 }

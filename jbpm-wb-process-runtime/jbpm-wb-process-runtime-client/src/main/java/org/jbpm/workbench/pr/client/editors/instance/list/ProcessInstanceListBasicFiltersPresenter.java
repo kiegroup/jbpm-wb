@@ -89,9 +89,8 @@ public class ProcessInstanceListBasicFiltersPresenter extends BasicFiltersPresen
         errorOptions.put(String.valueOf(false),
                          constants.WithoutErrors());
         final Function<String, ColumnFilter> errorFilterGenerator = (String hasErrors) ->
-                (Boolean.valueOf(hasErrors) ? greaterThan(COLUMN_ERROR_COUNT,
-                                                          0) : lowerOrEqualsTo(COLUMN_ERROR_COUNT,
-                                                                               0));
+                (Boolean.valueOf(hasErrors) ? greaterThan(COLUMN_ERROR_COUNT, 0) :
+                        lowerOrEqualsTo(COLUMN_ERROR_COUNT, 1));
         view.addMultiSelectFilter(constants.Errors(),
                                   errorOptions,
                                   f -> {
@@ -192,9 +191,16 @@ public class ProcessInstanceListBasicFiltersPresenter extends BasicFiltersPresen
 
     @Override
     protected void onActiveFilterAdded(ActiveFilterItem activeFilterItem) {
-        if (activeFilterItem.getKey().equals(constants.State()) && activeFilterItem.getValue() instanceof List) {
+        if (activeFilterItem.getKey().equals(constants.State()) &&
+                activeFilterItem.getValue() instanceof List) {
             final List<String> values = (List<String>) activeFilterItem.getValue();
-            values.forEach(v -> view.checkSelectFilter(constants.State(), String.valueOf(v)));
+            values.forEach(v -> view.checkSelectFilter(constants.State(), v));
+        }
+
+        if (activeFilterItem.getKey().equals(COLUMN_ERROR_COUNT) &&
+                activeFilterItem.getValue() instanceof List) {
+            final List<String> values = (List<String>) activeFilterItem.getValue();
+            values.forEach(v -> view.checkSelectFilter(constants.Errors(), v));
         }
     }
 }
