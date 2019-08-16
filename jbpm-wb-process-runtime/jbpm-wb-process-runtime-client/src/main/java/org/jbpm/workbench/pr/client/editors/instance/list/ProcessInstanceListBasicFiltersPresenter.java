@@ -194,7 +194,7 @@ public class ProcessInstanceListBasicFiltersPresenter extends BasicFiltersPresen
     protected void onActiveFilterAdded(ActiveFilterItem activeFilterItem) {
         if (activeFilterItem.getKey().equals(constants.State()) && activeFilterItem.getValue() instanceof List) {
             final List<String> values = (List<String>) activeFilterItem.getValue();
-            values.forEach(v -> view.checkSelectFilter(constants.State(), String.valueOf(v)));
+            values.forEach(v -> view.checkSelectFilter(constants.State(), v));
         }
     }
 }

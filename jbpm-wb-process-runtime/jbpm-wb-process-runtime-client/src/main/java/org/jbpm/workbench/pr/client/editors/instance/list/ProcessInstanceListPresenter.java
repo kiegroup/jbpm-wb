@@ -471,7 +471,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                 return new ActiveFilterItem<>(constants.State(),
                                               getStatusColumnFilterDescription(columnFilter),
                                               null,
-                                              coreFunctionFilter.getParameters(),
+                                              coreFunctionFilter.getParameters().stream().map(v -> v.toString()).collect(Collectors.toList()),
                                               v -> removeActiveFilter(columnFilter));
             }
         }
