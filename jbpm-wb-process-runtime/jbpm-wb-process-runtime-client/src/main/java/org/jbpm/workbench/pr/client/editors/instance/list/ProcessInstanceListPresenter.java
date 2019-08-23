@@ -465,17 +465,35 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
     public ActiveFilterItem getActiveFilterFromColumnFilter(ColumnFilter columnFilter) {
         if (columnFilter instanceof CoreFunctionFilter) {
             CoreFunctionFilter coreFunctionFilter = (CoreFunctionFilter) columnFilter;
-            if (columnFilter.getColumnId().equals(COLUMN_STATUS) &&
-                    (coreFunctionFilter.getType() == CoreFunctionType.IN ||
-                            coreFunctionFilter.getType() == CoreFunctionType.EQUALS_TO)) {
+            if (isStatusFilters(coreFunctionFilter)) {
                 return new ActiveFilterItem<>(constants.State(),
                                               getStatusColumnFilterDescription(columnFilter),
                                               null,
-                                              coreFunctionFilter.getParameters(),
+                                              coreFunctionFilter.getParameters().stream().map(v -> v.toString()).collect(Collectors.toList()),
+                                              v -> removeActiveFilter(columnFilter));
+            }
+            if (isErrorsFilters(coreFunctionFilter)) {
+                return new ActiveFilterItem<>(COLUMN_ERROR_COUNT,
+                                              coreFunctionFilter.toString(),
+                                              null,
+                                              coreFunctionFilter.getParameters().stream().map(v -> Boolean.valueOf(v.toString().equals("0")).toString()).collect(Collectors.toList()),
                                               v -> removeActiveFilter(columnFilter));
             }
         }
+
         return super.getActiveFilterFromColumnFilter(columnFilter);
+    }
+
+    private boolean isStatusFilters(CoreFunctionFilter columnFilter) {
+        return columnFilter.getColumnId().equals(COLUMN_STATUS) &&
+                (columnFilter.getType() == CoreFunctionType.IN ||
+                        columnFilter.getType() == CoreFunctionType.EQUALS_TO);
+    }
+
+    private boolean isErrorsFilters(CoreFunctionFilter columnFilter) {
+        return columnFilter.getColumnId().equals(COLUMN_ERROR_COUNT) &&
+                (columnFilter.getType() == CoreFunctionType.LOWER_OR_EQUALS_TO ||
+                        columnFilter.getType() == CoreFunctionType.GREATER_THAN);
     }
 
     public String getStatusColumnFilterDescription(ColumnFilter columnFilter) {
