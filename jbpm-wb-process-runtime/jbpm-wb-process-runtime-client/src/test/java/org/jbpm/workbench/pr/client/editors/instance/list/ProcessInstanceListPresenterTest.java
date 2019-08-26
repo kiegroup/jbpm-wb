@@ -75,8 +75,10 @@ import org.uberfire.workbench.model.ActivityResourceType;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static org.dashbuilder.dataset.filter.FilterFactory.equalsTo;
+import static org.dashbuilder.dataset.filter.FilterFactory.greaterThan;
 import static org.dashbuilder.dataset.filter.FilterFactory.in;
 import static org.dashbuilder.dataset.filter.FilterFactory.likeTo;
+import static org.dashbuilder.dataset.filter.FilterFactory.lowerOrEqualsTo;
 import static org.jbpm.workbench.common.client.PerspectiveIds.*;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 import static org.junit.Assert.*;
@@ -603,6 +605,23 @@ public class ProcessInstanceListPresenterTest {
         assertEquals(testColumFilter.toString(), activeFilterItem.getLabelValue());
     }
 
+    @Test
+    public void testGetActiveFilterFromColumnFilter() {
+        ColumnFilter testStateColumFilter = equalsTo(COLUMN_STATUS, "Active");
+        ActiveFilterItem activeStateFilterItem = presenter.getActiveFilterFromColumnFilter(testStateColumFilter);
+        assertEquals("State", activeStateFilterItem.getKey());
+        assertEquals("Active", ((List<String>) activeStateFilterItem.getValue()).get(0));
+
+        ColumnFilter testWithErrorsColumFilter = greaterThan(COLUMN_ERROR_COUNT, "0");
+        ActiveFilterItem activeWithErrorsFilterItem = presenter.getActiveFilterFromColumnFilter(testWithErrorsColumFilter);
+        assertEquals(COLUMN_ERROR_COUNT, activeWithErrorsFilterItem.getKey());
+        assertEquals("true", ((List<String>) activeWithErrorsFilterItem.getValue()).get(0));
+
+        ColumnFilter testWithoutErrorsColumFilter = lowerOrEqualsTo(COLUMN_ERROR_COUNT, "1");
+        ActiveFilterItem activeWithoutErrorsFilterItem = presenter.getActiveFilterFromColumnFilter(testWithoutErrorsColumFilter);
+        assertEquals(COLUMN_ERROR_COUNT, activeWithoutErrorsFilterItem.getKey());
+        assertEquals("false", ((List<String>) activeWithoutErrorsFilterItem.getValue()).get(0));
+    }
 
     @Test
     public void testActiveSearchFiltersProcessDefinitionId() {
