@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import com.google.gwt.view.client.Range;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.CoreFunctionFilter;
 import org.dashbuilder.dataset.sort.SortOrder;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jbpm.workbench.common.client.dataset.ErrorHandlerBuilder;
@@ -172,8 +173,15 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
     }
 
     public ActiveFilterItem getActiveFilterFromColumnFilter(ColumnFilter columnFilter) {
+        String labelValue = columnFilter.toString();
+        if (columnFilter instanceof CoreFunctionFilter) {
+            labelValue = ((CoreFunctionFilter) columnFilter).getLabelValue();
+            if (labelValue == null || labelValue.isEmpty()) {
+                labelValue = columnFilter.toString();
+            }
+        }
         return new ActiveFilterItem<>(columnFilter.getColumnId(),
-                                      columnFilter.toString(),
+                                      labelValue,
                                       null,
                                       null,
                                       v -> removeActiveFilter(columnFilter));
