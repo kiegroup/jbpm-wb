@@ -24,6 +24,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.dashbuilder.dataset.filter.ColumnFilter;
+import org.dashbuilder.dataset.filter.CoreFunctionFilter;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItem;
 import org.jbpm.workbench.common.client.filters.active.ActiveFilterItemAddedEvent;
@@ -74,6 +75,9 @@ public abstract class BasicFiltersPresenter {
 
     protected void addSearchFilter(final ActiveFilterItem filter,
                                    final ColumnFilter columnFilter) {
+        if (columnFilter instanceof CoreFunctionFilter) {
+            ((CoreFunctionFilter) columnFilter).setLabelValue(filter.getLabelValue());
+        }
         basicFilterAddEvent.fire(new BasicFilterAddEvent(getDataSetId(),
                                                          filter,
                                                          columnFilter));

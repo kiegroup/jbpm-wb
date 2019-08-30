@@ -473,8 +473,12 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                                               v -> removeActiveFilter(columnFilter));
             }
             if (isErrorsFilters(coreFunctionFilter)) {
+                String labelValue = coreFunctionFilter.getLabelValue();
+                if (labelValue == null || labelValue.isEmpty()) {
+                    labelValue = columnFilter.toString();
+                }
                 return new ActiveFilterItem<>(COLUMN_ERROR_COUNT,
-                                              coreFunctionFilter.toString(),
+                                              labelValue,
                                               null,
                                               coreFunctionFilter.getParameters().stream().map(v -> Boolean.valueOf(v.toString().equals("0")).toString()).collect(Collectors.toList()),
                                               v -> removeActiveFilter(columnFilter));
