@@ -37,9 +37,14 @@ import static org.kie.server.common.KeyStoreHelperUtil.loadServerPassword;
 
 public class KieServerUtils {
 
+
     private static final Logger LOGGER = LoggerFactory.getLogger(KieServerUtils.class);
     
     private static boolean KIE_SERVER_FORM_RENDERER = Boolean.parseBoolean(System.getProperty("org.jbpm.wb.forms.renderer.ext", "false"));
+    
+    private static final String USE_KEYCLOAK_PROPERTY = "org.jbpm.workbench.kie_server.keycloak";
+
+    private static boolean KIE_SERVER_KEYCLOAK = Boolean.parseBoolean(System.getProperty(USE_KEYCLOAK_PROPERTY, "false"));
 
     public static KieServicesClient createKieServicesClient(final String... capabilities) {
         final String kieServerEndpoint = System.getProperty(KieServerConstants.KIE_SERVER_LOCATION);
@@ -114,11 +119,13 @@ public class KieServerUtils {
     }
 
     public static CredentialsProvider getCredentialsProvider() {
-        CredentialsProvider credentialsProvider;
-        try {
-            credentialsProvider = new KeyCloakTokenCredentialsProvider();
-        } catch (UnsupportedOperationException e) {
-            credentialsProvider = new SubjectCredentialsProvider();
+        CredentialsProvider credentialsProvider = new SubjectCredentialsProvider();
+        if (KIE_SERVER_KEYCLOAK) {
+            try {
+                credentialsProvider = new KeyCloakTokenCredentialsProvider();
+            } catch (UnsupportedOperationException e) {
+                LOGGER.warn(USE_KEYCLOAK_PROPERTY + " set to true, but keycloak libraries are not in the classpath", e);
+            }
         }
         LOGGER.debug("{} initialized for the client.",
                      credentialsProvider.getClass().getName());
