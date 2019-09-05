@@ -31,6 +31,11 @@ public interface BasicFiltersView extends IsElement {
                        String placeholder,
                        Consumer<ActiveFilterItem<String>> callback);
 
+    void addTextFilter(String label,
+                       String placeholder,
+                       boolean disableFiltersInputHelp,
+                       Consumer<ActiveFilterItem<String>> callback);
+
     void addNumericFilter(String label,
                           String placeholder,
                           Consumer<ActiveFilterItem<Integer>> callback);

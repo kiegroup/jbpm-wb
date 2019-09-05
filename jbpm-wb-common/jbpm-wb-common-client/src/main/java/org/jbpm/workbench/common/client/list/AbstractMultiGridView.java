@@ -250,7 +250,13 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     public void initSelectionModel(final ListTable<T> extendedPagedTable) {
         extendedPagedTable.setEmptyTableCaption(getEmptyTableCaption());
         extendedPagedTable.setSelectionCallback((s) -> presenter.selectSummaryItem(s));
-        initBulkActions(extendedPagedTable);
+        if(hasBulkActions()) {
+            initBulkActions(extendedPagedTable);
+        }
+    }
+
+    protected boolean hasBulkActions(){
+        return true;
     }
 
     public abstract String getEmptyTableCaption();
