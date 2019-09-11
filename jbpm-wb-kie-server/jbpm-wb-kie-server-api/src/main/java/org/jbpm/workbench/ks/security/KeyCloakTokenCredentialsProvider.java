@@ -16,10 +16,11 @@
 
 package org.jbpm.workbench.ks.security;
 
-import java.lang.reflect.Method;
 import java.security.Principal;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.keycloak.KeycloakPrincipal;
 import org.kie.server.client.CredentialsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,27 +28,7 @@ import org.uberfire.ext.security.server.SecurityIntegrationFilter;
 
 public class KeyCloakTokenCredentialsProvider implements CredentialsProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(KeyCloakTokenCredentialsProvider.class);
-
-    private Class<?> keycloakPrincipal;
-    private Class<?> keycloakSecurityContext;
-    private Method tokenMethod;
-    private Method securityContextMethod;
-
-    public KeyCloakTokenCredentialsProvider() {
-        try {
-            keycloakPrincipal = Class.forName("org.keycloak.KeycloakPrincipal");
-            keycloakSecurityContext = Class.forName("org.keycloak.KeycloakSecurityContext");
-            tokenMethod = keycloakSecurityContext.getMethod("getTokenString",
-                                                            new Class[0]);
-            securityContextMethod = keycloakPrincipal.getMethod("getKeycloakSecurityContext",
-                                                                new Class[0]);
-        } catch (Exception e) {
-            logger.debug("KeyCloak not on classpath due to {}",
-                         e.toString());
-            throw new UnsupportedOperationException("KeyCloak not on classpath");
-        }
-    }
+    private static final Logger LOGGER = LoggerFactory.getLogger(KeyCloakTokenCredentialsProvider.class);
 
     @Override
     public String getHeaderName() {
@@ -56,16 +37,14 @@ public class KeyCloakTokenCredentialsProvider implements CredentialsProvider {
 
     @Override
     public String getAuthorization() {
+        LOGGER.debug("Get user authorization using KeyCloakTokenCredentialsProvider");
         HttpServletRequest request = SecurityIntegrationFilter.getRequest();
 
         Principal principal = request.getUserPrincipal();
-        if (principal != null) {
+        if (principal != null && principal instanceof KeycloakPrincipal) {
             try {
-                Object securityContext = securityContextMethod.invoke(principal,
-                                                                      new Object[0]);
-
-                return CredentialsProvider.TOKEN_AUTH_PREFIX + tokenMethod.invoke(securityContext,
-                                                                                  new Object[0]);
+                KeycloakPrincipal kc = (KeycloakPrincipal) principal;
+                return CredentialsProvider.TOKEN_AUTH_PREFIX + kc.getKeycloakSecurityContext().getTokenString();
             } catch (Exception e) {
                 e.printStackTrace();
             }

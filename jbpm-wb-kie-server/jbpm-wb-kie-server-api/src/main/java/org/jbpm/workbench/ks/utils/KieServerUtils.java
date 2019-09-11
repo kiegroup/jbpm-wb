@@ -16,9 +16,11 @@
 
 package org.jbpm.workbench.ks.utils;
 
+import java.security.Principal;
 import java.util.Arrays;
 
 import org.jbpm.workbench.ks.security.KeyCloakTokenCredentialsProvider;
+import org.keycloak.KeycloakPrincipal;
 import org.kie.server.api.KieServerConstants;
 import org.kie.server.api.marshalling.MarshallingFormat;
 import org.kie.server.client.CredentialsProvider;
@@ -31,16 +33,18 @@ import org.kie.server.client.credentials.EnteredTokenCredentialsProvider;
 import org.kie.server.client.credentials.SubjectCredentialsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uberfire.ext.security.server.SecurityIntegrationFilter;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.kie.server.common.KeyStoreHelperUtil.loadServerPassword;
 
 public class KieServerUtils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KieServerUtils.class);
-    
-    private static boolean KIE_SERVER_FORM_RENDERER = Boolean.parseBoolean(System.getProperty("org.jbpm.wb.forms.renderer.ext", "false"));
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(KieServerUtils.class);
+
+    private static boolean KIE_SERVER_FORM_RENDERER = Boolean.parseBoolean(System.getProperty("org.jbpm.wb.forms.renderer.ext", "false"));
+    
     public static KieServicesClient createKieServicesClient(final String... capabilities) {
         final String kieServerEndpoint = System.getProperty(KieServerConstants.KIE_SERVER_LOCATION);
         checkNotNull(kieServerEndpoint,
@@ -114,15 +118,26 @@ public class KieServerUtils {
     }
 
     public static CredentialsProvider getCredentialsProvider() {
-        CredentialsProvider credentialsProvider;
-        try {
-            credentialsProvider = new KeyCloakTokenCredentialsProvider();
-        } catch (UnsupportedOperationException e) {
-            credentialsProvider = new SubjectCredentialsProvider();
-        }
-        LOGGER.debug("{} initialized for the client.",
-                     credentialsProvider.getClass().getName());
-        return credentialsProvider;
+        return new CredentialsProvider() {
+
+            KeyCloakTokenCredentialsProvider keyCloakProvider = new KeyCloakTokenCredentialsProvider();
+            SubjectCredentialsProvider subjectProvider = new SubjectCredentialsProvider();
+            
+            @Override
+            public String getHeaderName() {
+                return javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
+            }
+
+            @Override
+            public String getAuthorization() {
+                Principal principal = SecurityIntegrationFilter.getRequest().getUserPrincipal();
+                if (principal instanceof KeycloakPrincipal) {
+                    return keyCloakProvider.getAuthorization();
+                } else {
+                    return subjectProvider.getAuthorization();
+                }
+            }
+        };
     }
 
     public static CredentialsProvider getAdminCredentialsProvider() {
@@ -134,7 +149,7 @@ public class KieServerUtils {
                                                   loadServerPassword());
         }
     }
-    
+
     public static boolean isKieServerRendererEnabled() {
         return KIE_SERVER_FORM_RENDERER;
     }

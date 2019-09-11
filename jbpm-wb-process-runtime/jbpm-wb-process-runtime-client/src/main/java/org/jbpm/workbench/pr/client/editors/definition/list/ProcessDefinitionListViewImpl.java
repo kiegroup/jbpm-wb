@@ -22,40 +22,27 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import com.google.gwt.cell.client.TextCell;
-import com.google.gwt.dom.client.BrowserEvents;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.cellview.client.Header;
-import com.google.gwt.user.cellview.client.TextHeader;
-import com.google.gwt.view.client.CellPreviewEvent;
-import com.google.gwt.view.client.DefaultSelectionEventManager;
-import com.google.gwt.view.client.NoSelectionModel;
-import com.google.gwt.view.client.SelectionChangeEvent;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.jbpm.workbench.common.client.list.AbstractListView;
 import org.jbpm.workbench.common.client.list.AbstractMultiGridView;
-import org.jbpm.workbench.common.client.list.ExtendedPagedTable;
 import org.jbpm.workbench.common.client.list.ListTable;
 import org.jbpm.workbench.common.client.util.ConditionalAction;
 import org.jbpm.workbench.common.client.util.ConditionalKebabActionCell;
 import org.jbpm.workbench.common.preferences.ManagePreferences;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.ProcessSummary;
-import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback;
-import org.uberfire.ext.services.shared.preferences.GridGlobalPreferences;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
-@Dependent
-@Templated(value = "/org/jbpm/workbench/common/client/list/AbstractListView.html", stylesheet = "/org/jbpm/workbench/common/client/resources/css/kie-manage.less")
-public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSummary, ProcessDefinitionListPresenter>
-        implements ProcessDefinitionListPresenter.ProcessDefinitionListView {
+import static org.jbpm.workbench.pr.model.ProcessDefinitionDataSetConstants.COL_ID_PROCESSNAME;
+import static org.jbpm.workbench.pr.model.ProcessDefinitionDataSetConstants.COL_ID_PROCESSVERSION;
+import static org.jbpm.workbench.pr.model.ProcessDefinitionDataSetConstants.COL_ID_PROJECT;
 
-    public static final String COL_ID_PROCESSNAME = "ProcessName";
-    public static final String COL_ID_PROCESSVERSION = "ProcessVersion";
-    public static final String COL_ID_PROJECT = "Project";
-    public static final String COL_ID_ACTIONS = "Actions";
+@Dependent
+@Templated(value = "/org/jbpm/workbench/common/client/list/AbstractMultiGridView.html", stylesheet = "/org/jbpm/workbench/common/client/resources/css/kie-manage.less")
+public class ProcessDefinitionListViewImpl extends AbstractMultiGridView<ProcessSummary, ProcessDefinitionListPresenter>
+        implements ProcessDefinitionListPresenter.ProcessDefinitionListView {
 
     private Constants constants = Constants.INSTANCE;
 
@@ -65,67 +52,6 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     @Inject
     protected ManagedInstance<ConditionalKebabActionCell> conditionalKebabActionCell;
 
-    @Override
-    protected ExtendedPagedTable<ProcessSummary> createListGrid(final GridGlobalPreferences preferences) {
-        return new ListTable<>(preferences);
-    }
-
-    @Override
-    public void init(final ProcessDefinitionListPresenter presenter) {
-        List<String> bannedColumns = new ArrayList<String>();
-        bannedColumns.add(COL_ID_PROCESSNAME);
-        bannedColumns.add(COL_ID_ACTIONS);
-        List<String> initColumns = new ArrayList<String>();
-        initColumns.add(COL_ID_PROCESSNAME);
-        initColumns.add(COL_ID_PROCESSVERSION);
-        initColumns.add(COL_ID_PROJECT);
-        initColumns.add(COL_ID_ACTIONS);
-
-        preferences.load(preferences -> {
-                             final GridGlobalPreferences globalPreferences = new GridGlobalPreferences("ProcessDefinitionsGrid",
-                                                                                                       initColumns,
-                                                                                                       bannedColumns);
-                             globalPreferences.setPageSize(preferences.getItemsPerPage());
-                             super.init(presenter,
-                                        globalPreferences);
-
-                             selectionModel = new NoSelectionModel<ProcessSummary>();
-                             selectionModel.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
-                                 @Override
-                                 public void onSelectionChange(SelectionChangeEvent event) {
-                                     selectedItem = selectionModel.getLastSelectedObject();
-
-                                     presenter.selectProcessDefinition(selectedItem);
-                                 }
-                             });
-                             final ExtendedPagedTable<ProcessSummary> extendedPagedTable = getListGrid();
-                             noActionColumnManager = DefaultSelectionEventManager
-                                     .createCustomManager(new DefaultSelectionEventManager.EventTranslator<ProcessSummary>() {
-
-                                         @Override
-                                         public boolean clearCurrentSelection(CellPreviewEvent<ProcessSummary> event) {
-                                             return false;
-                                         }
-
-                                         @Override
-                                         public DefaultSelectionEventManager.SelectAction translateSelectionEvent(CellPreviewEvent<ProcessSummary> event) {
-                                             DefaultSelectionEventManager.SelectAction ret = DefaultSelectionEventManager.SelectAction.DEFAULT;
-                                             NativeEvent nativeEvent = event.getNativeEvent();
-                                             if (BrowserEvents.CLICK.equals(nativeEvent.getType()) &&
-                                                     // Ignore if the event didn't occur in the correct column.
-                                                     extendedPagedTable.isSelectionIgnoreColumn(event.getColumn())) {
-                                                 ret = DefaultSelectionEventManager.SelectAction.IGNORE;
-                                             }
-                                             return ret;
-                                         }
-                                     });
-
-                             listGrid.setSelectionModel(selectionModel,
-                                                        noActionColumnManager);
-                             listGrid.setEmptyTableCaption(constants.No_Process_Definitions_Found());
-                         },
-                         error -> new DefaultWorkbenchErrorCallback().error(error));
-    }
 
     @Override
     public void displayBlockingError(final String summary,
@@ -145,7 +71,7 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
     }
 
     @Override
-    public void initColumns(ExtendedPagedTable extendedPagedTable) {
+    public void initColumns(ListTable<ProcessSummary> extendedPagedTable) {
         Column processNameColumn = initProcessNameColumn();
         Column versionColumn = initVersionColumn();
         Column deploymentColumn = initDeploymentColumn();
@@ -166,6 +92,29 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
                                           AbstractMultiGridView.ACTIONS_COLUMN_WIDTH,
                                           Style.Unit.PX);
         extendedPagedTable.getColumnSortList().push(processNameColumn);
+    }
+
+    @Override
+    public String getEmptyTableCaption() {
+        return constants.No_Process_Definitions_Found();
+    }
+
+    @Override
+    public List<String> getInitColumns() {
+        List<String> initColumns = new ArrayList<String>();
+        initColumns.add(COL_ID_PROCESSNAME);
+        initColumns.add(COL_ID_PROCESSVERSION);
+        initColumns.add(COL_ID_PROJECT);
+        initColumns.add(COL_ID_ACTIONS);
+        return initColumns;
+    }
+
+    @Override
+    public List<String> getBannedColumns() {
+        List<String> bannedColumns = new ArrayList<String>();
+        bannedColumns.add(COL_ID_PROCESSNAME);
+        bannedColumns.add(COL_ID_ACTIONS);
+        return bannedColumns;
     }
 
     private Column initProcessNameColumn() {
@@ -206,29 +155,6 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
         return deploymentColumn;
     }
 
-    private ColumnMeta<ProcessSummary> initActionsColumn() {
-        final ConditionalKebabActionCell<ProcessSummary> cell = conditionalKebabActionCell.get();
-
-        cell.setActions(getConditionalActions());
-        Column<ProcessSummary, ProcessSummary> actionsColumn = new Column<ProcessSummary, ProcessSummary>(cell) {
-            @Override
-            public ProcessSummary getValue(ProcessSummary object) {
-                return object;
-            }
-        };
-        actionsColumn.setDataStoreName(COL_ID_ACTIONS);
-        actionsColumn.setCellStyleNames("kie-table-view-pf-actions text-center");
-
-        Header header = new TextHeader(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.Actions());
-        header.setHeaderStyleNames("text-center");
-
-        final ColumnMeta<ProcessSummary> actionsColMeta = new ColumnMeta<ProcessSummary>(actionsColumn,
-                                                                                         "");
-        actionsColMeta.setHeader(header);
-        return actionsColMeta;
-
-    }
-
     protected List<ConditionalAction<ProcessSummary>> getConditionalActions() {
         return Arrays.asList(
 
@@ -251,5 +177,10 @@ public class ProcessDefinitionListViewImpl extends AbstractListView<ProcessSumma
                         true
                 )
         );
+    }
+
+    @Override
+    protected boolean hasBulkActions(){
+        return false;
     }
 }

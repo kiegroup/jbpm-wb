@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2019 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,7 @@
  */
 package org.jbpm.workbench.pr.client.editors.definition.list;
 
-import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.PROCESS_INSTANCES;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -26,14 +24,15 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-
+import org.dashbuilder.dataset.DataSet;
+import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.PerspectiveIds;
-import org.jbpm.workbench.common.client.list.AbstractScreenListPresenter;
-import org.jbpm.workbench.common.client.list.ListView;
+import org.jbpm.workbench.common.client.list.AbstractMultiGridPresenter;
+import org.jbpm.workbench.common.client.list.MultiGridView;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
-import org.jbpm.workbench.common.model.PortableQueryFilter;
+import org.jbpm.workbench.df.client.filter.FilterSettings;
 import org.jbpm.workbench.forms.client.display.providers.StartProcessFormDisplayProviderImpl;
 import org.jbpm.workbench.forms.client.display.views.PopupFormDisplayerView;
 import org.jbpm.workbench.forms.display.api.ProcessDisplayerConfig;
@@ -48,9 +47,7 @@ import org.jbpm.workbench.pr.model.ProcessSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.kie.workbench.common.workbench.client.error.DefaultWorkbenchErrorCallback;
 import org.uberfire.client.annotations.WorkbenchMenu;
-import org.uberfire.client.annotations.WorkbenchPartView;
 import org.uberfire.client.annotations.WorkbenchScreen;
-import org.uberfire.client.mvp.UberView;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 import org.uberfire.security.ResourceRef;
@@ -59,12 +56,14 @@ import org.uberfire.workbench.model.ActivityResourceType;
 import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.Menus;
 
-import com.google.gwt.user.cellview.client.ColumnSortList;
-import com.google.gwt.view.client.Range;
+import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
+import static org.jbpm.workbench.common.client.util.DataSetUtils.getColumnStringValue;
+import static org.jbpm.workbench.pr.model.ProcessDefinitionDataSetConstants.*;
+import static org.kie.workbench.common.workbench.client.PerspectiveIds.PROCESS_INSTANCES;
 
 @Dependent
 @WorkbenchScreen(identifier = PerspectiveIds.PROCESS_DEFINITION_LIST_SCREEN)
-public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<ProcessSummary> {
+public class ProcessDefinitionListPresenter extends AbstractMultiGridPresenter<ProcessSummary,ProcessDefinitionListPresenter.ProcessDefinitionListView> {
 
     @Inject
     PopupFormDisplayerView formDisplayPopUp;
@@ -73,19 +72,38 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     StartProcessFormDisplayProviderImpl startProcessDisplayProvider;
 
     @Inject
-    private ProcessDefinitionListView view;
-
-    @Inject
     private Caller<ProcessRuntimeDataService> processRuntimeDataService;
 
     @Inject
     private DefaultWorkbenchErrorCallback errorCallback;
 
-    protected AuthorizationManager authorizationManager;
+    protected ProcessDefinitionListBasicFiltersPresenter processDefinitionListBasicFiltersPresenter;
 
     @Inject
     public void setAuthorizationManager(final AuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
+    }
+
+    @Inject
+    public void setProcessDefinitionListBasicFiltersPresenter(final ProcessDefinitionListBasicFiltersPresenter processDefinitionListBasicFiltersPresenter){
+        this.processDefinitionListBasicFiltersPresenter = processDefinitionListBasicFiltersPresenter;
+    }
+
+    @Override
+    public void setupActiveSearchFilters() {
+
+    }
+
+    @Override
+    public boolean existActiveSearchFilters() {
+        return false;
+    }
+
+    @Override
+    protected void selectSummaryItem(ProcessSummary processSummary) {
+        setupDetailBreadcrumb(constants.ProcessDefinitionBreadcrumb(processSummary.getName()));
+        placeManager.goTo(PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN);
+        fireProcessDefSelectionEvent(processSummary);
     }
 
     @Inject
@@ -100,11 +118,6 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
 
     public ProcessDefinitionListPresenter() {
         super();
-    }
-
-    @WorkbenchPartView
-    public UberView<ProcessDefinitionListPresenter> getView() {
-        return view;
     }
 
     @Override
@@ -138,48 +151,43 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
                                           formDisplayPopUp);
     }
 
-    @Override
-    protected ListView getListView() {
-        return view;
+    @Inject
+    public void setFilterSettingsManager(final ProcessDefinitionListFilterSettingsManager filterSettingsManager) {
+        super.setFilterSettingsManager(filterSettingsManager);
     }
 
+    private final List<ProcessSummary> myProcessDefinitionsFromDataSet = new ArrayList<ProcessSummary>();
     @Override
-    public void getData(Range visibleRange) {
-        ColumnSortList columnSortList = view.getListGrid().getColumnSortList();
-        if (currentFilter == null) {
-            currentFilter = new PortableQueryFilter(visibleRange.getStart(),
-                                                    visibleRange.getLength(),
-                                                    false,
-                                                    "",
-                                                    columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName() : "",
-                                                    columnSortList.size() == 0 || columnSortList.get(0).isAscending());
-        }
-        // If we are refreshing after a search action, we need to go back to offset 0
-        if (currentFilter.getParams() == null || currentFilter.getParams().isEmpty()
-                || currentFilter.getParams().get("textSearch") == null || currentFilter.getParams().get("textSearch").equals("")) {
-            currentFilter.setOffset(visibleRange.getStart());
-            currentFilter.setCount(visibleRange.getLength());
-        } else {
-            currentFilter.setOffset(0);
-            currentFilter.setCount(view.getListGrid().getPageSize());
-        }
+    protected DataSetReadyCallback getDataSetReadyCallback(Integer startRange, FilterSettings tableSettings) {
+        return errorHandlerBuilder.get().withUUID(tableSettings.getUUID()).withDataSetCallback(
+                dataSet -> {
+                    if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(tableSettings.getKey())) {
+                        myProcessDefinitionsFromDataSet.clear();
+                        for (int i = 0; i < dataSet.getRowCount(); i++) {
+                            myProcessDefinitionsFromDataSet.add(createProcessSummaryFromDataSet(dataSet, i));
+                        }
 
-        currentFilter.setOrderBy(columnSortList.size() > 0 ? columnSortList.get(0).getColumn().getDataStoreName() : "");
-        currentFilter.setIsAscending(columnSortList.size() == 0 || columnSortList.get(0).isAscending());
+                        boolean lastPage = false;
+                        if (dataSet.getRowCount() < view.getListGrid().getPageSize()) {
+                            lastPage = true;
+                        }
 
-        processRuntimeDataService.call((List<ProcessSummary> processDefsSums) -> {
-                                           boolean lastPageExactCount = processDefsSums.size() < visibleRange.getLength();
-                                           updateDataOnCallback(processDefsSums,
-                                                                visibleRange.getStart(),
-                                                                visibleRange.getStart() + processDefsSums.size(),
-                                                                lastPageExactCount);
-                                       },
-                                       (Message message, Throwable throwable) -> onRuntimeDataServiceError(throwable)
-        ).getProcesses(getSelectedServerTemplate(),
-                       visibleRange.getStart() / visibleRange.getLength(),
-                       visibleRange.getLength(),
-                       currentFilter.getOrderBy(),
-                       currentFilter.isAscending());
+                        updateDataOnCallback(myProcessDefinitionsFromDataSet,
+                                             startRange,
+                                             startRange + myProcessDefinitionsFromDataSet.size(),
+                                             lastPage);
+                    }
+                    view.hideBusyIndicator();
+                })
+                .withEmptyResultsCallback(() -> setEmptyResults());
+    }
+
+    private ProcessSummary createProcessSummaryFromDataSet(DataSet dataSet, int index) {
+        return new ProcessSummary(getColumnStringValue(dataSet, COL_ID_PROCESSDEF, index),
+                                  getColumnStringValue(dataSet, COL_ID_PROCESSNAME, index),
+                                  getColumnStringValue(dataSet, COL_ID_PROJECT, index),
+                                  getColumnStringValue(dataSet, COL_ID_PROCESSVERSION, index),
+                                  Boolean.valueOf(getColumnStringValue(dataSet, COL_DYNAMIC, index)));
     }
 
     boolean onRuntimeDataServiceError(final Throwable throwable) {
@@ -189,17 +197,11 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
     }
 
     @WorkbenchMenu
-    public void buildMenu(final Consumer<Menus> menusConsumer) {
+    public void getMenus(final Consumer<Menus> menusConsumer) {
         menusConsumer.accept(MenuFactory
                                      .newTopLevelCustomMenu(new RefreshMenuBuilder(this))
                                      .endMenu()
                                      .build());
-    }
-
-    protected void selectProcessDefinition(final ProcessSummary processSummary) {
-        setupDetailBreadcrumb(constants.ProcessDefinitionBreadcrumb(processSummary.getName()));
-        placeManager.goTo(PerspectiveIds.PROCESS_DEFINITION_DETAILS_SCREEN);
-        fireProcessDefSelectionEvent(processSummary);
     }
 
     private void fireProcessDefSelectionEvent(final ProcessSummary processSummary) {
@@ -221,24 +223,22 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
                                                                        newProcessInstance.getNewProcessInstanceId(),
                                                                        false));
     }
-    
+
     public void refreshNewCaseInstance(@Observes NewCaseInstanceEvent newCaseInstance) {
-                
+
         processRuntimeDataService.call((ProcessInstanceSummary newProcessInstance) -> {
-            setupDetailBreadcrumb(placeManager,
-                                  commonConstants.Manage_Process_Definitions(),
-                                  constants.ProcessInstanceBreadcrumb(newProcessInstance.getId()),
-                                  PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
-            placeManager.goTo(PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
-            processInstanceSelected.fire(new ProcessInstanceSelectionEvent(newProcessInstance.getServerTemplateId(),
-                                                                           newProcessInstance.getDeploymentId(),
-                                                                           newProcessInstance.getId(),
-                                                                           false));
-            },
-            (Message message, Throwable throwable) -> onRuntimeDataServiceError(throwable)
+                                           setupDetailBreadcrumb(placeManager,
+                                                                 commonConstants.Manage_Process_Definitions(),
+                                                                 constants.ProcessInstanceBreadcrumb(newProcessInstance.getId()),
+                                                                 PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
+                                           placeManager.goTo(PerspectiveIds.PROCESS_INSTANCE_DETAILS_SCREEN);
+                                           processInstanceSelected.fire(new ProcessInstanceSelectionEvent(newProcessInstance.getServerTemplateId(),
+                                                                                                          newProcessInstance.getDeploymentId(),
+                                                                                                          newProcessInstance.getId(),
+                                                                                                          false));
+                                       },
+                                       (Message message, Throwable throwable) -> onRuntimeDataServiceError(throwable)
         ).getProcessInstanceByCorrelationKey(newCaseInstance.getServerTemplateId(), newCaseInstance.getNewCaseId());
-        
-        
     }
 
     public Predicate<ProcessSummary> getViewProcessInstanceActionCondition() {
@@ -268,7 +268,8 @@ public class ProcessDefinitionListPresenter extends AbstractScreenListPresenter<
         this.processRuntimeDataService = processRuntimeDataService;
     }
 
-    public interface ProcessDefinitionListView extends ListView<ProcessSummary, ProcessDefinitionListPresenter> {
+    public interface ProcessDefinitionListView extends MultiGridView<ProcessSummary, ProcessDefinitionListPresenter> {
 
     }
+
 }
