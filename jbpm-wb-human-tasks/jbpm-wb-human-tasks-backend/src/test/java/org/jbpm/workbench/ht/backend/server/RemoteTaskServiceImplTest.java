@@ -30,6 +30,7 @@ import org.jbpm.workbench.ht.model.TaskKey;
 import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.TaskCompletedEvent;
 import org.jbpm.workbench.ht.service.TaskService;
+import org.jbpm.workbench.ht.util.TaskStatus;
 import org.jbpm.workbench.ks.integration.KieServerIntegration;
 import org.junit.Before;
 import org.junit.Test;
@@ -182,7 +183,7 @@ public class RemoteTaskServiceImplTest {
                                                          new TaskKey(serverTemplateId, deploymentId2, taskId2),
                                                          new TaskKey(serverTemplateId, deploymentId3, taskId3));
         String currentUser = identityProvider.getName();
-        TaskInstance taskInstance = TaskInstance.builder().id(1L).status("Ready").actualOwner(currentUser).build();
+        TaskInstance taskInstance = TaskInstance.builder().id(1L).status(TaskStatus.TASK_STATUS_RESERVED.getIdentifier()).actualOwner(currentUser).build();
 
         when(userTaskServicesClient.getTaskInstance(anyString(), anyLong(), eq(false), eq(false), eq(true)))
                 .thenReturn(taskInstance);
@@ -214,7 +215,7 @@ public class RemoteTaskServiceImplTest {
                                                          new TaskKey(serverTemplateId, deploymentId2, taskId2),
                                                          new TaskKey(serverTemplateId, deploymentId3, taskId3));
         String currentUser = identityProvider.getName();
-        TaskInstance taskInstance = TaskInstance.builder().id(1L).status("Completed").actualOwner(currentUser).build();
+        TaskInstance taskInstance = TaskInstance.builder().id(1L).status(TaskStatus.TASK_STATUS_COMPLETED.getIdentifier()).actualOwner(currentUser).build();
 
         when(userTaskServicesClient.getTaskInstance(anyString(), anyLong(), eq(false), eq(false), eq(true)))
                 .thenReturn(taskInstance);
