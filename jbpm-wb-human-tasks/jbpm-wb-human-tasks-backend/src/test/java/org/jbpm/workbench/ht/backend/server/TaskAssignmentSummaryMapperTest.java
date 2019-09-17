@@ -18,6 +18,7 @@ package org.jbpm.workbench.ht.backend.server;
 
 import java.util.Arrays;
 
+import org.jbpm.workbench.ht.util.TaskStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,21 +45,15 @@ public class TaskAssignmentSummaryMapperTest {
     }
 
     @Test
-    public void preventDelegateCompletedTask() {
-        final TaskInstance task = new TaskInstance();
-        task.setStatus("Completed");
-
-        assertFalse(new TaskAssignmentSummaryMapper().isDelegationAllowed(task,
-                                                                          identityProvider));
-    }
-
-    @Test
-    public void allowDelegateActualOwner() {
+    public void allowDelegateOwnedTasks() {
         final TaskInstance task = new TaskInstance();
         task.setActualOwner(CURRENT_USER);
 
-        assertTrue(new TaskAssignmentSummaryMapper().isDelegationAllowed(task,
-                                                                         identityProvider));
+        assertDelegationAllowed(task, identityProvider, TaskStatus.TASK_STATUS_RESERVED);
+        assertDelegationAllowed(task, identityProvider, TaskStatus.TASK_STATUS_IN_PROGRESS);
+
+        assertDelegationDenied(task, identityProvider, TaskStatus.TASK_STATUS_READY);
+        assertDelegationDenied(task, identityProvider, TaskStatus.TASK_STATUS_COMPLETED);
     }
 
     @Test
@@ -66,36 +61,23 @@ public class TaskAssignmentSummaryMapperTest {
         final TaskInstance task = new TaskInstance();
         task.setActualOwner(OTHER_USER);
 
-        assertFalse(new TaskAssignmentSummaryMapper().isDelegationAllowed(task,
-                                                                          identityProvider));
+        assertDelegationDenied(task, identityProvider, TaskStatus.TASK_STATUS_RESERVED);
+        assertDelegationDenied(task, identityProvider, TaskStatus.TASK_STATUS_IN_PROGRESS);
+        assertDelegationDenied(task, identityProvider, TaskStatus.TASK_STATUS_READY);
+        assertDelegationDenied(task, identityProvider, TaskStatus.TASK_STATUS_COMPLETED);
     }
 
     @Test
-    public void allowDelegateCreatedBy() {
-        final TaskInstance task = new TaskInstance();
-        task.setCreatedBy(CURRENT_USER);
-
-        assertTrue(new TaskAssignmentSummaryMapper().isDelegationAllowed(task,
-                                                                         identityProvider));
-    }
-
-    @Test
-    public void allowDelegateCreatedByNotCurrentUser() {
-        final TaskInstance task = new TaskInstance();
-        task.setCreatedBy(OTHER_USER);
-
-        assertFalse(new TaskAssignmentSummaryMapper().isDelegationAllowed(task,
-                                                                          identityProvider));
-    }
-
-    @Test
-    public void allowDelegatePotentialOwner() {
+    public void allowDelegatePotentialOwnerOnReadyTasks() {
         final TaskInstance task = new TaskInstance();
         task.setPotentialOwners(Arrays.asList(CURRENT_USER));
         when(identityProvider.getRoles()).thenReturn(Arrays.asList(CURRENT_USER));
 
-        assertTrue(new TaskAssignmentSummaryMapper().isDelegationAllowed(task,
-                                                                         identityProvider));
+        assertDelegationAllowed(task, identityProvider, TaskStatus.TASK_STATUS_READY);
+
+        assertDelegationDenied(task, identityProvider, TaskStatus.TASK_STATUS_RESERVED);
+        assertDelegationDenied(task, identityProvider, TaskStatus.TASK_STATUS_IN_PROGRESS);
+        assertDelegationDenied(task, identityProvider, TaskStatus.TASK_STATUS_COMPLETED);
     }
 
     @Test
@@ -104,18 +86,24 @@ public class TaskAssignmentSummaryMapperTest {
         task.setPotentialOwners(Arrays.asList(OTHER_USER));
         when(identityProvider.getRoles()).thenReturn(Arrays.asList(CURRENT_USER));
 
-        assertFalse(new TaskAssignmentSummaryMapper().isDelegationAllowed(task,
-                                                                          identityProvider));
+        assertDelegationDenied(task, identityProvider, TaskStatus.TASK_STATUS_READY);
+        assertDelegationDenied(task, identityProvider, TaskStatus.TASK_STATUS_RESERVED);
+        assertDelegationDenied(task, identityProvider, TaskStatus.TASK_STATUS_IN_PROGRESS);
+        assertDelegationDenied(task, identityProvider, TaskStatus.TASK_STATUS_COMPLETED);
     }
 
     @Test
     public void allowDelegateBusinessAdmins() {
         final TaskInstance task = new TaskInstance();
         task.setBusinessAdmins(Arrays.asList(CURRENT_USER));
+        task.setStatus(TaskStatus.TASK_STATUS_READY.getIdentifier());
         when(identityProvider.getRoles()).thenReturn(Arrays.asList(CURRENT_USER));
 
-        assertTrue(new TaskAssignmentSummaryMapper().isDelegationAllowed(task,
-                                                                         identityProvider));
+        assertDelegationAllowed(task, identityProvider, TaskStatus.TASK_STATUS_READY);
+        assertDelegationAllowed(task, identityProvider, TaskStatus.TASK_STATUS_RESERVED);
+        assertDelegationAllowed(task, identityProvider, TaskStatus.TASK_STATUS_IN_PROGRESS);
+
+        assertDelegationDenied(task, identityProvider, TaskStatus.TASK_STATUS_COMPLETED);
     }
 
     @Test
@@ -124,17 +112,10 @@ public class TaskAssignmentSummaryMapperTest {
         task.setBusinessAdmins(Arrays.asList(OTHER_USER));
         when(identityProvider.getRoles()).thenReturn(Arrays.asList(CURRENT_USER));
 
-        assertFalse(new TaskAssignmentSummaryMapper().isDelegationAllowed(task,
-                                                                          identityProvider));
-    }
-
-    @Test
-    public void preventForwardCompletedTask() {
-        final TaskInstance task = new TaskInstance();
-        task.setStatus("Completed");
-
-        assertFalse(new TaskAssignmentSummaryMapper().isForwardAllowed(task,
-                                                                       identityProvider));
+        assertDelegationDenied(task, identityProvider, TaskStatus.TASK_STATUS_READY);
+        assertDelegationDenied(task, identityProvider, TaskStatus.TASK_STATUS_RESERVED);
+        assertDelegationDenied(task, identityProvider, TaskStatus.TASK_STATUS_IN_PROGRESS);
+        assertDelegationDenied(task, identityProvider, TaskStatus.TASK_STATUS_COMPLETED);
     }
 
     @Test
@@ -142,8 +123,11 @@ public class TaskAssignmentSummaryMapperTest {
         final TaskInstance task = new TaskInstance();
         task.setActualOwner(CURRENT_USER);
 
-        assertTrue(new TaskAssignmentSummaryMapper().isForwardAllowed(task,
-                                                                      identityProvider));
+        assertForwardAllowed(task, identityProvider, TaskStatus.TASK_STATUS_RESERVED);
+        assertForwardAllowed(task, identityProvider, TaskStatus.TASK_STATUS_IN_PROGRESS);
+
+        assertForwardDenied(task, identityProvider, TaskStatus.TASK_STATUS_READY);
+        assertForwardDenied(task, identityProvider, TaskStatus.TASK_STATUS_COMPLETED);
     }
 
     @Test
@@ -151,8 +135,10 @@ public class TaskAssignmentSummaryMapperTest {
         final TaskInstance task = new TaskInstance();
         task.setActualOwner(OTHER_USER);
 
-        assertFalse(new TaskAssignmentSummaryMapper().isForwardAllowed(task,
-                                                                       identityProvider));
+        assertForwardDenied(task, identityProvider, TaskStatus.TASK_STATUS_RESERVED);
+        assertForwardDenied(task, identityProvider, TaskStatus.TASK_STATUS_IN_PROGRESS);
+        assertForwardDenied(task, identityProvider, TaskStatus.TASK_STATUS_READY);
+        assertForwardDenied(task, identityProvider, TaskStatus.TASK_STATUS_COMPLETED);
     }
 
     @Test
@@ -161,8 +147,11 @@ public class TaskAssignmentSummaryMapperTest {
         task.setPotentialOwners(Arrays.asList(CURRENT_USER));
         when(identityProvider.getRoles()).thenReturn(Arrays.asList(CURRENT_USER));
 
-        assertTrue(new TaskAssignmentSummaryMapper().isForwardAllowed(task,
-                                                                      identityProvider));
+        assertForwardAllowed(task, identityProvider, TaskStatus.TASK_STATUS_READY);
+
+        assertForwardDenied(task, identityProvider, TaskStatus.TASK_STATUS_RESERVED);
+        assertForwardDenied(task, identityProvider, TaskStatus.TASK_STATUS_IN_PROGRESS);
+        assertForwardDenied(task, identityProvider, TaskStatus.TASK_STATUS_COMPLETED);
     }
 
     @Test
@@ -171,8 +160,10 @@ public class TaskAssignmentSummaryMapperTest {
         task.setPotentialOwners(Arrays.asList(OTHER_USER));
         when(identityProvider.getRoles()).thenReturn(Arrays.asList(CURRENT_USER));
 
-        assertFalse(new TaskAssignmentSummaryMapper().isForwardAllowed(task,
-                                                                       identityProvider));
+        assertForwardDenied(task, identityProvider, TaskStatus.TASK_STATUS_READY);
+        assertForwardDenied(task, identityProvider, TaskStatus.TASK_STATUS_RESERVED);
+        assertForwardDenied(task, identityProvider, TaskStatus.TASK_STATUS_IN_PROGRESS);
+        assertForwardDenied(task, identityProvider, TaskStatus.TASK_STATUS_COMPLETED);
     }
 
     @Test
@@ -181,8 +172,11 @@ public class TaskAssignmentSummaryMapperTest {
         task.setBusinessAdmins(Arrays.asList(CURRENT_USER));
         when(identityProvider.getRoles()).thenReturn(Arrays.asList(CURRENT_USER));
 
-        assertTrue(new TaskAssignmentSummaryMapper().isForwardAllowed(task,
-                                                                      identityProvider));
+        assertForwardAllowed(task, identityProvider, TaskStatus.TASK_STATUS_READY);
+        assertForwardAllowed(task, identityProvider, TaskStatus.TASK_STATUS_RESERVED);
+        assertForwardAllowed(task, identityProvider, TaskStatus.TASK_STATUS_IN_PROGRESS);
+
+        assertForwardDenied(task, identityProvider, TaskStatus.TASK_STATUS_COMPLETED);
     }
 
     @Test
@@ -191,8 +185,29 @@ public class TaskAssignmentSummaryMapperTest {
         task.setBusinessAdmins(Arrays.asList(OTHER_USER));
         when(identityProvider.getRoles()).thenReturn(Arrays.asList(CURRENT_USER));
 
-        assertFalse(new TaskAssignmentSummaryMapper().isForwardAllowed(task,
-                                                                       identityProvider));
+        assertForwardDenied(task, identityProvider, TaskStatus.TASK_STATUS_READY);
+        assertForwardDenied(task, identityProvider, TaskStatus.TASK_STATUS_RESERVED);
+        assertForwardDenied(task, identityProvider, TaskStatus.TASK_STATUS_IN_PROGRESS);
+        assertForwardDenied(task, identityProvider, TaskStatus.TASK_STATUS_COMPLETED);
     }
 
+    private void assertDelegationAllowed(TaskInstance task, IdentityProvider identityProvider, TaskStatus taskStatus) {
+        task.setStatus(taskStatus.getIdentifier());
+        assertTrue(new TaskAssignmentSummaryMapper().isDelegationAllowed(task, identityProvider));
+    }
+
+    private void assertDelegationDenied(TaskInstance task, IdentityProvider identityProvider, TaskStatus taskStatus) {
+        task.setStatus(taskStatus.getIdentifier());
+        assertFalse(new TaskAssignmentSummaryMapper().isDelegationAllowed(task, identityProvider));
+    }
+
+    private void assertForwardAllowed(TaskInstance task, IdentityProvider identityProvider, TaskStatus taskStatus) {
+        task.setStatus(taskStatus.getIdentifier());
+        assertTrue(new TaskAssignmentSummaryMapper().isForwardAllowed(task, identityProvider));
+    }
+
+    private void assertForwardDenied(TaskInstance task, IdentityProvider identityProvider, TaskStatus taskStatus) {
+        task.setStatus(taskStatus.getIdentifier());
+        assertFalse(new TaskAssignmentSummaryMapper().isForwardAllowed(task, identityProvider));
+    }
 }

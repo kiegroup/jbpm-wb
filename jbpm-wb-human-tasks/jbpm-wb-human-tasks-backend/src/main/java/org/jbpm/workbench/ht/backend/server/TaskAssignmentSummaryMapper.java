@@ -17,10 +17,10 @@
 package org.jbpm.workbench.ht.backend.server;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.function.BiFunction;
 
 import org.jbpm.workbench.ht.model.TaskAssignmentSummary;
+import org.jbpm.workbench.ht.util.TaskStatus;
 import org.kie.internal.identity.IdentityProvider;
 import org.kie.server.api.model.instance.TaskInstance;
 
@@ -40,73 +40,56 @@ public class TaskAssignmentSummaryMapper implements BiFunction<TaskInstance, Ide
             summary.setCreatedBy(task.getCreatedBy());
             summary.setBusinessAdmins(task.getBusinessAdmins());
             summary.setStatus(task.getStatus());
-            summary.setDelegationAllowed(isDelegationAllowed(task,
-                                                             identityProvider));
-            summary.setForwardAllowed(isForwardAllowed(task,
-                                                       identityProvider));
+            summary.setDelegationAllowed(isDelegationAllowed(task, identityProvider));
+            summary.setForwardAllowed(isForwardAllowed(task, identityProvider));
             summary.setDeploymentId(task.getContainerId());
             return summary;
         }
     }
 
-    protected Boolean isForwardAllowed(final TaskInstance task,
-                                       final IdentityProvider identityProvider) {
-        if ("Completed".equals(task.getStatus())) {
-            return false;
+    protected Boolean isForwardAllowed(final TaskInstance task, final IdentityProvider identityProvider) {
+        return isReassignmentAllowed(task, identityProvider);
+    }
+
+    protected Boolean isDelegationAllowed(final TaskInstance task, final IdentityProvider identityProvider) {
+        return isReassignmentAllowed(task, identityProvider);
+    }
+
+    private Boolean isReassignmentAllowed(final TaskInstance task, final IdentityProvider identityProvider) {
+        if (TaskStatus.TASK_STATUS_READY.equals(task.getStatus())) {
+            if (currentUserIsPotentialOwner(identityProvider, task)) {
+                return true;
+            }
+            if (currentUserIsBusinessAdministrator(identityProvider, task)) {
+                return true;
+            }
+        } else if (TaskStatus.TASK_STATUS_IN_PROGRESS.equals(task.getStatus())
+                || TaskStatus.TASK_STATUS_RESERVED.equals(task.getStatus())) {
+            if (currentUserIsOwner(identityProvider, task)) {
+                return true;
+            }
+            if (currentUserIsBusinessAdministrator(identityProvider, task)) {
+                return true;
+            }
         }
-
-        final String actualOwner = task.getActualOwner();
-        if (actualOwner != null && actualOwner.equals(identityProvider.getName())) {
-            return true;
-        }
-
-        final List<String> roles = identityProvider.getRoles();
-
-        final List<String> potentialOwners = task.getPotentialOwners();
-        if (potentialOwners != null && Collections.disjoint(potentialOwners,
-                                                            roles) == false) {
-            return true;
-        }
-
-        final List<String> businessAdministrators = task.getBusinessAdmins();
-        if (businessAdministrators != null && Collections.disjoint(businessAdministrators,
-                                                                   roles) == false) {
-            return true;
-        }
-
         return false;
     }
 
-    protected Boolean isDelegationAllowed(final TaskInstance task,
-                                          final IdentityProvider identityProvider) {
-        if ("Completed".equals(task.getStatus())) {
-            return false;
+    private boolean currentUserIsPotentialOwner(IdentityProvider identityProvider, TaskInstance task) {
+        if (task != null && task.getPotentialOwners() != null && identityProvider != null) {
+            return !Collections.disjoint(task.getPotentialOwners(), identityProvider.getRoles());
         }
-
-        final String actualOwner = task.getActualOwner();
-        if (actualOwner != null && actualOwner.equals(identityProvider.getName())) {
-            return true;
-        }
-
-        final String initiator = task.getCreatedBy();
-        if (initiator != null && initiator.equals(identityProvider.getName())) {
-            return true;
-        }
-
-        final List<String> roles = identityProvider.getRoles();
-
-        final List<String> potentialOwners = task.getPotentialOwners();
-        if (potentialOwners != null && Collections.disjoint(potentialOwners,
-                                                            roles) == false) {
-            return true;
-        }
-
-        final List<String> businessAdministrators = task.getBusinessAdmins();
-        if (businessAdministrators != null && Collections.disjoint(businessAdministrators,
-                                                                   roles) == false) {
-            return true;
-        }
-
         return false;
+    }
+
+    private boolean currentUserIsBusinessAdministrator(IdentityProvider identityProvider, TaskInstance task) {
+        if (task != null && task.getBusinessAdmins() != null && identityProvider != null) {
+            return !Collections.disjoint(task.getBusinessAdmins(), identityProvider.getRoles());
+        }
+        return false;
+    }
+
+    private boolean currentUserIsOwner(IdentityProvider identityProvider, TaskInstance task) {
+        return identityProvider.getName().equals(task.getActualOwner());
     }
 }
