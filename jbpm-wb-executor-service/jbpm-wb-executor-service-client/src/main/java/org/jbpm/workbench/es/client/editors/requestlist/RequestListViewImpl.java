@@ -19,6 +19,7 @@ package org.jbpm.workbench.es.client.editors.requestlist;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
@@ -205,17 +206,10 @@ public class RequestListViewImpl extends AbstractMultiGridView<RequestSummary, R
     }
 
     protected Command getCancelCommand(final ExtendedPagedTable<RequestSummary> extendedPagedTable) {
-        return () -> {
-            presenter.bulkCancel(extendedPagedTable.getSelectedItems());
-            extendedPagedTable.deselectAllItems();
-        };
+        return () -> presenter.bulkCancel(extendedPagedTable.getSelectedItems());
     }
 
     protected Command getRequeueCommand(final ExtendedPagedTable<RequestSummary> extendedPagedTable) {
-        return () -> {
-            presenter.bulkRequeue(extendedPagedTable.getSelectedItems());
-            extendedPagedTable.deselectAllItems();
-        };
+        return () -> presenter.bulkRequeue(extendedPagedTable.getSelectedItems());
     }
-
 }

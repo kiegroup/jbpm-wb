@@ -210,6 +210,7 @@ public class ExecutionErrorListPresenterTest {
                                                      eq(error2_deploymentId),
                                                      eq(error2_ID));
         verifyNoMoreInteractions(executorServiceMock);
+        verify(extendedPagedTable).deselectAllItems();
     }
 
     @Test

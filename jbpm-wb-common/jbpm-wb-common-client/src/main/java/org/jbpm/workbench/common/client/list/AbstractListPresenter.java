@@ -17,10 +17,13 @@ package org.jbpm.workbench.common.client.list;
 
 import java.util.List;
 
+import javax.enterprise.event.Observes;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
+import org.jbpm.workbench.common.client.list.event.DeselectAllItemsEvent;
 import org.jbpm.workbench.common.client.menu.RefreshMenuBuilder;
 import org.jbpm.workbench.common.client.resources.i18n.Constants;
 import org.jbpm.workbench.common.model.QueryFilter;
@@ -77,7 +80,7 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
     }
 
     public void addDataDisplay(final HasData<T> display) {
-        if(dataProvider.getDataDisplays().size() == 1){
+        if (dataProvider.getDataDisplays().size() == 1) {
             dataProvider.removeDataDisplay(dataProvider.getDataDisplays().iterator().next());
         }
         dataProvider.addDataDisplay(display);
@@ -100,6 +103,16 @@ public abstract class AbstractListPresenter<T> implements RefreshMenuBuilder.Sup
         if (getListView().getListGrid() != null) {
             getListView().getListGrid().setVisibleRangeAndClearData(getListView().getListGrid().getVisibleRange(),
                                                                     true);
+        }
+    }
+
+    public void onDeselectAllItemsEvent(@Observes DeselectAllItemsEvent event) {
+        deselectAllItems();
+    }
+
+    public void deselectAllItems() {
+        if (getListView().getListGrid() != null) {
+            getListView().getListGrid().deselectAllItems();
         }
     }
 }

@@ -22,6 +22,7 @@ import javax.enterprise.event.Event;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
+import org.jbpm.workbench.common.client.list.event.DeselectAllItemsEvent;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskAssignmentSummary;
 import org.jbpm.workbench.ht.model.TaskKey;
@@ -71,6 +72,9 @@ public class TasksReassignmentPresenterTest {
     Event<TaskRefreshedEvent> taskRefreshedEvent = new EventSourceMock<>();
 
     @Spy
+    Event<DeselectAllItemsEvent> deselectAllItemsEvent = new EventSourceMock<>();
+
+    @Spy
     Event<NotificationEvent> notificationEvent = new EventSourceMock<>();
 
     private CallerMock<TaskService> remoteTaskServiceCaller;
@@ -90,6 +94,7 @@ public class TasksReassignmentPresenterTest {
     @Before
     public void setupMocks() {
         doNothing().when(taskRefreshedEvent).fire(any(TaskRefreshedEvent.class));
+        doNothing().when(deselectAllItemsEvent).fire(any(DeselectAllItemsEvent.class));
         doNothing().when(notificationEvent).fire(any());
         remoteTaskServiceCaller = new CallerMock<>(taskService);
         presenter.setTaskService(remoteTaskServiceCaller);
@@ -125,6 +130,9 @@ public class TasksReassignmentPresenterTest {
 
         final ArgumentCaptor<NotificationEvent> captor = ArgumentCaptor.forClass(NotificationEvent.class);
         verify(notificationEvent, times(2)).fire(captor.capture());
+        verify(deselectAllItemsEvent).fire(any(DeselectAllItemsEvent.class));
+        verify(taskRefreshedEvent).fire(any(TaskRefreshedEvent.class));
+        verify(placeManager).closePlace(place);
 
         assertEquals(2, captor.getAllValues().size());
         assertEquals(NotificationEvent.NotificationType.DEFAULT, captor.getAllValues().get(0).getType());

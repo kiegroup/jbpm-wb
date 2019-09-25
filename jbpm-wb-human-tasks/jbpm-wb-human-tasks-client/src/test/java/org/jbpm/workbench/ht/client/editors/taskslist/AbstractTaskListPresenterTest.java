@@ -241,6 +241,7 @@ public abstract class AbstractTaskListPresenterTest {
         getPresenter().bulkRelease(taskSummaries);
 
         verify(taskService, times(3)).releaseTask(anyString(), eq(TASK_DEPLOYMENT_ID), anyLong());
+        verify(extendedPagedTable).deselectAllItems();
     }
 
     @Test
@@ -265,6 +266,7 @@ public abstract class AbstractTaskListPresenterTest {
         getPresenter().bulkClaim(taskSummaries);
 
         verify(taskService, times(3)).claimTask(anyString(), eq(TASK_DEPLOYMENT_ID), anyLong());
+        verify(extendedPagedTable).deselectAllItems();
     }
 
     @Test
@@ -292,6 +294,7 @@ public abstract class AbstractTaskListPresenterTest {
         getPresenter().bulkResume(taskSummaries);
 
         verify(taskService, times(3)).resumeTask(anyString(), eq(TASK_DEPLOYMENT_ID), anyLong());
+        verify(extendedPagedTable).deselectAllItems();
     }
 
     @Test
@@ -321,6 +324,7 @@ public abstract class AbstractTaskListPresenterTest {
         verify(taskService).suspendTask(anyString(), eq(TASK_DEPLOYMENT_ID), eq(TASK_ID));
         verify(taskService).suspendTask(anyString(), eq(TASK_DEPLOYMENT_ID), eq(TASK_ID + 1));
         verify(taskService).suspendTask(anyString(), eq(TASK_DEPLOYMENT_ID), eq(TASK_ID + 2));
+        verify(extendedPagedTable).deselectAllItems();
     }
 
     @Test

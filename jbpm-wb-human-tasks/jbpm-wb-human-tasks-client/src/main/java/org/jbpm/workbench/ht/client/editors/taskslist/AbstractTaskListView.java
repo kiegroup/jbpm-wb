@@ -349,38 +349,23 @@ public abstract class AbstractTaskListView<P extends AbstractTaskListPresenter> 
     }
 
     protected Command getClaimCommand(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
-        return () -> {
-            presenter.bulkClaim(extendedPagedTable.getSelectedItems());
-            extendedPagedTable.deselectAllItems();
-        };
+        return () -> presenter.bulkClaim(extendedPagedTable.getSelectedItems());
     }
 
     protected Command getReleaseCommand(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
-        return () -> {
-            presenter.bulkRelease(extendedPagedTable.getSelectedItems());
-            extendedPagedTable.deselectAllItems();
-        };
+        return () -> presenter.bulkRelease(extendedPagedTable.getSelectedItems());
     }
 
     protected Command getResumeCommand(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
-        return () -> {
-            presenter.bulkResume(extendedPagedTable.getSelectedItems());
-            extendedPagedTable.deselectAllItems();
-        };
+        return () -> presenter.bulkResume(extendedPagedTable.getSelectedItems());
     }
 
     protected Command getSuspendCommand(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
-        return () -> {
-            presenter.bulkSuspend(extendedPagedTable.getSelectedItems());
-            extendedPagedTable.deselectAllItems();
-        };
+        return () -> presenter.bulkSuspend(extendedPagedTable.getSelectedItems());
     }
 
     protected Command getReassignCommand(final ExtendedPagedTable<TaskSummary> extendedPagedTable) {
-        return () -> {
-            presenter.bulkReassign(extendedPagedTable.getSelectedItems());
-            extendedPagedTable.deselectAllItems();
-        };
+        return () -> presenter.bulkReassign(extendedPagedTable.getSelectedItems());
     }
 
     protected Column<TaskSummary, ?> initGenericColumn(final String key) {
