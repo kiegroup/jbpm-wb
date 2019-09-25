@@ -342,8 +342,8 @@ public class ProcessInstanceListPresenterTest {
 
         presenter.bulkAbort(processInstanceSummaries);
 
-        verify(processService).abortProcessInstances(anyString(),
-                                                     eq(containerInstance));
+        verify(processService).abortProcessInstances(anyString(), eq(containerInstance));
+        verify(extendedPagedTable).deselectAllItems();
     }
 
     @Test

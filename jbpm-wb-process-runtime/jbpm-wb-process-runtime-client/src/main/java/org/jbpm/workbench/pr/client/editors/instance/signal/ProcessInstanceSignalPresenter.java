@@ -19,6 +19,7 @@ package org.jbpm.workbench.pr.client.editors.instance.signal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -26,6 +27,7 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jbpm.workbench.common.client.list.event.DeselectAllItemsEvent;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
 import org.jbpm.workbench.pr.service.ProcessService;
@@ -51,6 +53,9 @@ public class ProcessInstanceSignalPresenter {
 
     @Inject
     private PlaceManager placeManager;
+
+    @Inject
+    private Event<DeselectAllItemsEvent> deselectAllItemsEvent;
 
     @Inject
     private Event<ProcessInstancesUpdateEvent> processInstancesUpdatedEvent;
@@ -94,6 +99,7 @@ public class ProcessInstanceSignalPresenter {
         }
         processService.call((Void v) -> {
                                 processInstancesUpdatedEvent.fire(new ProcessInstancesUpdateEvent(0L));
+            deselectAllItemsEvent.fire(new DeselectAllItemsEvent());
                                 placeManager.closePlace(place);
                             }
         ).signalProcessInstances(serverTemplateId,

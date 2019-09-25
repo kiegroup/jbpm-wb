@@ -23,6 +23,7 @@ import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import com.google.gwt.view.client.Range;
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.jbpm.workbench.common.client.list.event.DeselectAllItemsEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -102,16 +103,28 @@ public class AbstractListPresenterTest {
 
     @Test
     public void testRefreshGrid() {
+        Range range = new Range(0, 5);
 
-        Range range = new Range(0,
-                                5);
-
-        when(viewMock.getListGrid()).thenReturn(extendedPagedTable);
         when(extendedPagedTable.getVisibleRange()).thenReturn(range);
 
         testListPresenter.refreshGrid();
 
-        verify(extendedPagedTable).setVisibleRangeAndClearData(range,
-                                                               true);
+        verify(extendedPagedTable).setVisibleRangeAndClearData(range, true);
+    }
+
+    @Test
+    public void testOnDeselectAllItemsEvent() {
+        testListPresenter.onDeselectAllItemsEvent(mock(DeselectAllItemsEvent.class));
+
+        verify(extendedPagedTable).deselectAllItems();
+        verifyNoMoreInteractions(extendedPagedTable);
+    }
+
+    @Test
+    public void testDeselectAllItems() {
+        testListPresenter.deselectAllItems();
+
+        verify(extendedPagedTable).deselectAllItems();
+        verifyNoMoreInteractions(extendedPagedTable);
     }
 }

@@ -17,9 +17,11 @@ package org.jbpm.workbench.pr.client.editors.instance.signal;
 
 import java.util.Arrays;
 import java.util.List;
+
 import javax.enterprise.event.Event;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.jbpm.workbench.common.client.list.event.DeselectAllItemsEvent;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.events.ProcessInstancesUpdateEvent;
 import org.jbpm.workbench.pr.service.ProcessService;
@@ -52,6 +54,9 @@ public class ProcessInstanceSignalPresenterTest {
     ConfirmPopup confirmPopup;
 
     @Spy
+    Event<DeselectAllItemsEvent> deselectAllItemsEvent = new EventSourceMock<>();
+
+    @Spy
     Event<ProcessInstancesUpdateEvent> processInstancesUpdatedEvent = new EventSourceMock<>();
 
     private CallerMock<ProcessService> remoteProcessServiceCaller;
@@ -70,6 +75,7 @@ public class ProcessInstanceSignalPresenterTest {
 
     @Before
     public void setupMocks() {
+        doNothing().when(deselectAllItemsEvent).fire(any(DeselectAllItemsEvent.class));
         doNothing().when(processInstancesUpdatedEvent).fire(any(ProcessInstancesUpdateEvent.class));
         remoteProcessServiceCaller = new CallerMock<ProcessService>(processService);
         presenter.setProcessService(remoteProcessServiceCaller);
@@ -103,8 +109,7 @@ public class ProcessInstanceSignalPresenterTest {
         when(view.getEventText()).thenReturn(eventText);
         presenter.signalProcessInstances(processInstanceIds);
 
-        verify(view,
-               times(processInstanceIds.size())).displayNotification(anyString());
+        verify(view, times(processInstanceIds.size())).displayNotification(anyString());
         verify(view).displayNotification(Constants.INSTANCE.Signaling_Process_Instance() + " (" + Constants.INSTANCE.Id() + " = " + PI_ID + ") " +
                                                  Constants.INSTANCE.Signal() + " = " + signalRef + " - " +
                                                  Constants.INSTANCE.Signal_Data() + " = " + eventText);
@@ -116,5 +121,8 @@ public class ProcessInstanceSignalPresenterTest {
                                                       eq(processInstanceIds),
                                                       eq(signalRef),
                                                       eq(eventText));
+        verify(placeManager).closePlace(eq(place));
+        verify(deselectAllItemsEvent).fire(any(DeselectAllItemsEvent.class));
+        verify(processInstancesUpdatedEvent).fire(any(ProcessInstancesUpdateEvent.class));
     }
 }

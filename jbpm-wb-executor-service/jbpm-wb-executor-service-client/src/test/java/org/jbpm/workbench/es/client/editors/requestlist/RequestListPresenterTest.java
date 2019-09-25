@@ -574,34 +574,19 @@ public class RequestListPresenterTest {
         Long jobId_3 = jobId_2 + 1;
 
         ArrayList<RequestSummary> requestSummaries = new ArrayList<>();
-        requestSummaries.add(createRequestSummary(jobId_1,
-                                                  key,
-                                                  deploymentId,
-                                                  RequestStatus.QUEUED));
-        requestSummaries.add(createRequestSummary(jobId_2,
-                                                  key,
-                                                  deploymentId,
-                                                  RequestStatus.RUNNING));
-        requestSummaries.add(createRequestSummary(jobId_3,
-                                                  key,
-                                                  deploymentId,
-                                                  RequestStatus.ERROR));
+        requestSummaries.add(createRequestSummary(jobId_1, key, deploymentId, RequestStatus.QUEUED));
+        requestSummaries.add(createRequestSummary(jobId_2, key, deploymentId, RequestStatus.RUNNING));
+        requestSummaries.add(createRequestSummary(jobId_3, key, deploymentId, RequestStatus.ERROR));
 
         presenter.bulkCancel(requestSummaries);
 
-        verify(executorServiceMock).cancelRequest(anyString(),
-                                                  anyString(),
-                                                  eq(jobId_1));
-        verify(executorServiceMock).cancelRequest(anyString(),
-                                                  anyString(),
-                                                  eq(jobId_2));
-        verify(executorServiceMock,
-               never()).cancelRequest(anyString(),
-                                      anyString(),
-                                      eq(jobId_3));
+        verify(executorServiceMock).cancelRequest(anyString(), anyString(), eq(jobId_1));
+        verify(executorServiceMock).cancelRequest(anyString(), anyString(), eq(jobId_2));
+        verify(executorServiceMock, never()).cancelRequest(anyString(), anyString(), eq(jobId_3));
         verify(viewMock).displayNotification(Constants.INSTANCE.RequestCanceled(jobId_1));
         verify(viewMock).displayNotification(Constants.INSTANCE.RequestCanceled(jobId_2));
         verify(viewMock).displayNotification(Constants.INSTANCE.Job_Can_Not_Be_Cancelled(jobId_3));
+        verify(extendedPagedTable).deselectAllItems();
     }
 
     @Test
@@ -615,33 +600,18 @@ public class RequestListPresenterTest {
         Long jobId_3 = jobId_2 + 1;
 
         ArrayList<RequestSummary> requestSummaries = new ArrayList<>();
-        requestSummaries.add(createRequestSummary(jobId_1,
-                                                  key,
-                                                  deploymentId,
-                                                  RequestStatus.ERROR));
-        requestSummaries.add(createRequestSummary(jobId_2,
-                                                  key,
-                                                  deploymentId,
-                                                  RequestStatus.RUNNING));
-        requestSummaries.add(createRequestSummary(jobId_3,
-                                                  key,
-                                                  deploymentId,
-                                                  RequestStatus.QUEUED));
+        requestSummaries.add(createRequestSummary(jobId_1, key, deploymentId, RequestStatus.ERROR));
+        requestSummaries.add(createRequestSummary(jobId_2, key, deploymentId, RequestStatus.RUNNING));
+        requestSummaries.add(createRequestSummary(jobId_3, key, deploymentId, RequestStatus.QUEUED));
 
         presenter.bulkRequeue(requestSummaries);
 
-        verify(executorServiceMock).requeueRequest(anyString(),
-                                                   anyString(),
-                                                   eq(jobId_1));
-        verify(executorServiceMock).requeueRequest(anyString(),
-                                                   anyString(),
-                                                   eq(jobId_2));
-        verify(executorServiceMock,
-               never()).requeueRequest(anyString(),
-                                       anyString(),
-                                       eq(jobId_3));
+        verify(executorServiceMock).requeueRequest(anyString(), anyString(), eq(jobId_1));
+        verify(executorServiceMock).requeueRequest(anyString(), anyString(), eq(jobId_2));
+        verify(executorServiceMock, never()).requeueRequest(anyString(), anyString(), eq(jobId_3));
         verify(viewMock).displayNotification(Constants.INSTANCE.RequestRequeued(jobId_1));
         verify(viewMock).displayNotification(Constants.INSTANCE.RequestRequeued(jobId_2));
         verify(viewMock).displayNotification(Constants.INSTANCE.Job_Can_Not_Be_Requeued(jobId_3));
+        verify(extendedPagedTable).deselectAllItems();
     }
 }
