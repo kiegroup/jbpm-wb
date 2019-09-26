@@ -360,6 +360,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                               selected.getJobId());
             }
         }
+        deselectAllItems();
     }
 
     public void bulkRequeue(List<RequestSummary> jobsSelected) {
@@ -375,6 +376,7 @@ public class RequestListPresenter extends AbstractMultiGridPresenter<RequestSumm
                                selected.getJobId());
             }
         }
+        deselectAllItems();
     }
 
     public interface RequestListView extends MultiGridView<RequestSummary, RequestListPresenter> {

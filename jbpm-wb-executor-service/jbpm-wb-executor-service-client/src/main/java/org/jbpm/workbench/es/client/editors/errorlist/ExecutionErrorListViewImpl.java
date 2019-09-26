@@ -101,10 +101,7 @@ public class ExecutionErrorListViewImpl extends AbstractMultiGridView<ExecutionE
             confirmPopup.show(constants.Bulk_Ack(),
                               constants.Acknowledge(),
                               constants.Bulk_Ack_confirm(),
-                              () -> {
-                                  presenter.bulkAcknowledge(extendedPagedTable.getSelectedItems());
-                                  extendedPagedTable.deselectAllItems();
-                              });
+                              () -> presenter.bulkAcknowledge(extendedPagedTable.getSelectedItems()));
         });
         return bulkAckNavLink;
     }

@@ -363,6 +363,7 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
         if (containerInstances.size() > 0) {
             abortProcessInstances(containerInstances);
         }
+        deselectAllItems();
     }
 
     @WorkbenchMenu

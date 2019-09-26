@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import com.google.gwt.core.client.GWT;
 import org.jboss.errai.bus.client.api.messaging.Message;
 import org.jboss.errai.common.client.api.Caller;
+import org.jbpm.workbench.common.client.list.event.DeselectAllItemsEvent;
 import org.jbpm.workbench.ht.client.resources.i18n.Constants;
 import org.jbpm.workbench.ht.model.TaskAssignmentSummary;
 import org.jbpm.workbench.ht.model.TaskKey;
@@ -55,6 +56,8 @@ public class TasksReassignmentPresenter {
 
     @Inject
     private PlaceManager placeManager;
+
+    private Event<DeselectAllItemsEvent> deselectAllItemsEvent;
 
     private Event<TaskRefreshedEvent> taskRefreshed;
 
@@ -98,6 +101,11 @@ public class TasksReassignmentPresenter {
     }
 
     @Inject
+    public void setDeselectAllItemsEvent(Event<DeselectAllItemsEvent> deselectAllItemsEvent) {
+        this.deselectAllItemsEvent = deselectAllItemsEvent;
+    }
+
+    @Inject
     public void setTaskRefreshedEvent(Event<TaskRefreshedEvent> taskRefreshedEvent) {
         this.taskRefreshed = taskRefreshedEvent;
     }
@@ -112,12 +120,14 @@ public class TasksReassignmentPresenter {
                                      displayUnsuccessfulNotification(constants.ReassignmentNotAllowedOn(String.valueOf(taskAssignmentSummary.getTaskId()), taskAssignmentSummary.getTaskName(), userId));
                                  }
                              });
-                             reassignments.forEach(taskAssignmentSummary -> {
-                                 if (taskAssignmentSummary.isDelegationAllowed()) {
-                                     taskRefreshed.fire(new TaskRefreshedEvent());
-                                     return;
-                                 }
-                             });
+                             reassignments.stream()
+                                     .filter(taskAssignmentSummary -> taskAssignmentSummary.isDelegationAllowed())
+                                     .findFirst()
+                                     .ifPresent(taskAssignmentSummary ->
+                                                        taskRefreshed.fire(new TaskRefreshedEvent(serverTemplateId,
+                                                                                                  taskAssignmentSummary.getDeploymentId(),
+                                                                                                  taskAssignmentSummary.getTaskId())));
+                             deselectAllItemsEvent.fire(new DeselectAllItemsEvent());
                              placeManager.closePlace(place);
                          },
                          new DefaultErrorCallback() {
