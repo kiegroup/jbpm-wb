@@ -16,6 +16,7 @@
 
   <!-- Uberfire Extensions -->
   <inherits name="org.uberfire.ext.widgets.core.UberfireWidgetsCore"/>
+  <inherits name="org.uberfire.ext.widgets.core.client.UberfireWidgetsEditors"/>
   <inherits name="org.uberfire.UberfireDocksClient"/>
   <inherits name="org.uberfire.ext.plugin.RuntimePluginClient"/>
   <inherits name="org.uberfire.ext.apps.UberfireAppsClient"/>
