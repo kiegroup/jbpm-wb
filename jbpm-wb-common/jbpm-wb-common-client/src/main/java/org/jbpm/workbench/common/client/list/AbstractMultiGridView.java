@@ -193,9 +193,10 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                 addNewTableToColumn(newListGrid);
 
                 listTable = newListGrid;
+                listTable.setPersistPreferencesOnChange(false);
 
                 reloadColumnSortList();
-                
+
                 readyCallback.accept(listTable);
             }).loadUserPreferences(key, UserPreferencesType.GRIDPREFERENCES);
         }, error -> new DefaultWorkbenchErrorCallback().error(error));
@@ -225,7 +226,7 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                                                       newListGrid);
     }
 
-    protected Column initGenericColumn(final String key){
+    protected Column initGenericColumn(final String key) {
         return null;
     }
 
@@ -250,12 +251,12 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
     public void initSelectionModel(final ListTable<T> extendedPagedTable) {
         extendedPagedTable.setEmptyTableCaption(getEmptyTableCaption());
         extendedPagedTable.setSelectionCallback((s) -> presenter.selectSummaryItem(s));
-        if(hasBulkActions()) {
+        if (hasBulkActions()) {
             initBulkActions(extendedPagedTable);
         }
     }
 
-    protected boolean hasBulkActions(){
+    protected boolean hasBulkActions() {
         return true;
     }
 

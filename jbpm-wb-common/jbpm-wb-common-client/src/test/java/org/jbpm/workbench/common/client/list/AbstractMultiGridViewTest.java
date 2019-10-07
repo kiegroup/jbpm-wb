@@ -228,7 +228,7 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
         getView().loadListTable("key", consumer);
     }
 
-    public static Column newColumnMock(final String dataStoreName){
+    public static Column newColumnMock(final String dataStoreName) {
         Column column = mock(Column.class);
         when(column.getCell()).thenReturn(mock(Cell.class));
         when(column.getDataStoreName()).thenReturn(dataStoreName);
@@ -321,5 +321,21 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
         //sort list with column
         assertEquals("test", getView().getSortColumn());
         assertEquals(true, getView().isSortAscending());
+    }
+
+    @Test
+    public void testSetPersistOnPreferencesChangeAfterLoadListTable() {
+        doAnswer((InvocationOnMock inv) -> {
+            ((ParameterizedCommand<ManagePreferences>) inv.getArguments()[0]).execute(new ManagePreferences().defaultValue(new ManagePreferences()));
+            return null;
+        }).when(preferences).load(any(ParameterizedCommand.class), any(ParameterizedCommand.class));
+
+        Consumer<ListTable> consumer = table -> {
+            assertEquals(ManagePreferences.DEFAULT_PAGINATION_OPTION.intValue(),
+                         table.getGridPreferencesStore().getPageSizePreferences());
+            assertFalse(table.isPersistingPreferencesOnChange());
+        };
+
+        getView().loadListTable("key", consumer);
     }
 }

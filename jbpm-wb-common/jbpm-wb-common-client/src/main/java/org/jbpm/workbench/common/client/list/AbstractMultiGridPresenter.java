@@ -272,7 +272,15 @@ public abstract class AbstractMultiGridPresenter<T extends GenericSummary, V ext
         settings.setTableName(filterName);
         settings.setTableDescription(filterName);
         filterSettingsManager.saveFilterIntoPreferences(settings,
-                                                        state -> callback.accept(state ? null : Constants.INSTANCE.FilterWithSameNameAlreadyExists()));
+                                                        state -> {
+                                                            if (state) {
+                                                                getListView().getListGrid().getGridPreferencesStore().setPreferenceKey(settings.getKey());
+                                                                getListView().getListGrid().saveGridToUserPreferences();
+                                                                callback.accept(null);
+                                                            } else {
+                                                                callback.accept(Constants.INSTANCE.FilterWithSameNameAlreadyExists());
+                                                            }
+                                                        });
     }
 
     protected Optional<String> getSearchParameter(final String parameterId) {
