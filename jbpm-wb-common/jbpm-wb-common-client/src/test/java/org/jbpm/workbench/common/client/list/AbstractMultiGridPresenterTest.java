@@ -42,6 +42,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.uberfire.ext.services.shared.preferences.GridPreferencesStore;
 import org.uberfire.ext.widgets.common.client.breadcrumbs.UberfireBreadcrumbs;
 import org.uberfire.mocks.EventSourceMock;
 
@@ -198,7 +199,6 @@ public class AbstractMultiGridPresenterTest {
         
         verify(dataSetQueryHelper, never()).setLastOrderedColumn(any());
         verify(dataSetQueryHelper, never()).setLastSortOrder(any());
-        
     }
 
     @Test
@@ -214,6 +214,26 @@ public class AbstractMultiGridPresenterTest {
 
         verify(dataSetQueryHelper).setLastOrderedColumn(column);
         verify(dataSetQueryHelper).setLastSortOrder(SortOrder.ASCENDING);
+    }
 
+    @Test
+    public void testSaveSearchFilterSettings() {
+        String key = "key";
+        ListTable listTable = mock(ListTable.class);
+        GridPreferencesStore gridPreferencesStore = mock(GridPreferencesStore.class);
+
+        when(dataSetQueryHelper.getCurrentTableSettings()).thenReturn(filterSettingsMock);
+        when(filterSettingsMock.getKey()).thenReturn(key);
+        when(listView.getListGrid()).thenReturn(listTable);
+        when(listTable.getGridPreferencesStore()).thenReturn(gridPreferencesStore);
+
+        presenter.saveSearchFilterSettings("filterName", mock(Consumer.class));
+
+        ArgumentCaptor<Consumer> booleanConsumerCaptor = ArgumentCaptor.forClass(Consumer.class);
+        verify(filterSettingsManager).saveFilterIntoPreferences(eq(filterSettingsMock),
+                                                                booleanConsumerCaptor.capture());
+        booleanConsumerCaptor.getValue().accept(true);
+        verify(gridPreferencesStore).setPreferenceKey(key);
+        verify(listTable).saveGridToUserPreferences();
     }
 }
