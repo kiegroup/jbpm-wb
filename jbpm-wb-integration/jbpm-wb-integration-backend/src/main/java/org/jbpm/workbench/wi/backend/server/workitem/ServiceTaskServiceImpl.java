@@ -23,6 +23,8 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -76,23 +78,64 @@ public class ServiceTaskServiceImpl implements ServiceTaskService {
         
         repoService = new RepoService(repositoryStorage, eventListener); 
     }
-    
+
+    protected void setRepoService(RepoService repoService) {
+        this.repoService = repoService;
+    }
+
     @Override
     public List<ServiceTaskSummary> getServiceTasks() {
-        return repoService.getServices().stream()
-                .map(repoData -> new ServiceTaskSummary(repoData.getId(), "fa fa-cogs", repoData.getName(), repoData.getDescription(), repoData.getActiontitle(), repoData.isEnabled(), repoData.getInstalledOn(), extractAuthParameters(repoData), repoData.getAuthreferencesite(), repoData.getInstalledOnBranch()))
+        List<ServiceTask> serviceTaskSummaries = repoService.getServices().stream()
+                .map(repoData -> new ServiceTask(repoData.getId(), "fa fa-cogs", repoData.getName(), repoData.getDescription(), repoData.getActiontitle(),
+                                                 repoData.isEnabled(), repoData.getInstalledOn(), extractAuthParameters(repoData), repoData.getAuthreferencesite(),
+                                                 repoData.getInstalledOnBranch(), getGAV(repoData)))
                 .sorted((service, service2) -> service.getName().compareTo(service2.getName()))
                 .collect(Collectors.toList());
-        
+
+        return removeOldVersionServiceTask(serviceTaskSummaries).stream()
+                .map(v -> ServiceTaskHelp.createServiceTaskSummary(v)).collect(Collectors.toList());
     }
-    
+
+    protected List<ServiceTask> removeOldVersionServiceTask(List<ServiceTask> serviceTaskSummaries) {
+        Map<String, List<ServiceTask>> groupingServiceTaskSummariesByGA = serviceTaskSummaries.stream().
+                collect(Collectors.groupingBy(ServiceTask::getGroupingConditionByGA, Collectors.toList()));
+
+        final List<ServiceTask> resultServiceTaskSummaries = new ArrayList<>();
+        groupingServiceTaskSummariesByGA.values()
+                .forEach(serviceTaskSummariesByGA -> {
+                    OptionalInt maxOptional = serviceTaskSummariesByGA.stream().mapToInt(value -> value.getCompareAbleVersion()).max();
+                    if (maxOptional.isPresent()) {
+                        resultServiceTaskSummaries.addAll(serviceTaskSummariesByGA.stream().filter(serviceTaskSummariesByV -> serviceTaskSummariesByV.getCompareAbleVersion() == maxOptional.getAsInt()).collect(Collectors.toList()));
+                    } else {
+                        resultServiceTaskSummaries.addAll(serviceTaskSummariesByGA);
+                    }
+                });
+        return resultServiceTaskSummaries;
+    }
+
+    protected String getGAV(RepoData repoData) {
+        return repoData.getGav() != null && !repoData.getGav().isEmpty() ? repoData.getGav() : getGAVFromMavenDependencies(repoData);
+    }
+
+    private String getGAVFromMavenDependencies(RepoData repoData) {
+        if (repoData.getMavenDependencies().size() > 0) {
+            return repoData.getMavenDependencies().get(0).getGroupId() + ":" + repoData.getMavenDependencies().get(0).getArtifactId() + ":" + repoData.getMavenDependencies().get(0).getVersion();
+        }
+        return null;
+    }
+
     @Override
     public List<ServiceTaskSummary> getEnabledServiceTasks(String branchName) {
-        return repoService.getServices().stream()
+        List<ServiceTask> enabledServiceTasks = repoService.getServices().stream()
                 .filter(service -> service.isEnabled())
-                .map(repoData -> new ServiceTaskSummary(repoData.getId(), "fa fa-cogs", repoData.getName(), repoData.getDescription(), repoData.getActiontitle(), repoData.isEnabled(), repoData.getInstalledOn(), extractAuthParameters(repoData), repoData.getAuthreferencesite(), repoData.getInstalledOnBranch()))
+                .map(repoData -> new ServiceTask(repoData.getId(), "fa fa-cogs", repoData.getName(), repoData.getDescription(), repoData.getActiontitle(),
+                                                 repoData.isEnabled(), repoData.getInstalledOn(), extractAuthParameters(repoData), repoData.getAuthreferencesite(),
+                                                 repoData.getInstalledOnBranch(), getGAV(repoData)))
                 .sorted((service, service2) -> service.getName().compareTo(service2.getName()))
                 .collect(Collectors.toList());
+
+        return removeOldVersionServiceTask(enabledServiceTasks).stream()
+                .map(v -> ServiceTaskHelp.createServiceTaskSummary(v)).collect(Collectors.toList());
         
     }
 
@@ -129,10 +172,25 @@ public class ServiceTaskServiceImpl implements ServiceTaskService {
         
     }
 
+    protected boolean compareRepoData(RepoData service, GAV gav) {
+        if (service.getGav() != null) {
+            return service.getGav().contains(gav.getGroupId() + ":" + gav.getArtifactId());
+        }
+        if (service.getMavenDependencies().size() > 0) {
+            return service.getMavenDependencies().get(0).getGroupId().equals(gav.getGroupId()) && service.getMavenDependencies().get(0).getArtifactId().equals(gav.getArtifactId());
+        }
+        return false;
+    }
+
+    protected void disableOldGAVServiceTask(GAV gav) {
+        repoService.getServices().stream().filter(repoService -> compareRepoData(repoService, gav)).forEach(repoService -> disableServiceTask(repoService.getId()));
+    }
+
     @Override
     public List<String> addServiceTasks(String gav) {
         List<String> installedServiceTasks = new ArrayList<>();
         GAV actualGav = new GAV(gav);
+        disableOldGAVServiceTask(actualGav);
         File uploadedServiceArtifact = m2Repository.getArtifactFileFromRepository(actualGav);
         if (uploadedServiceArtifact == null || !uploadedServiceArtifact.exists()) {
             throw new RuntimeException("No file found for artifact " + gav);
