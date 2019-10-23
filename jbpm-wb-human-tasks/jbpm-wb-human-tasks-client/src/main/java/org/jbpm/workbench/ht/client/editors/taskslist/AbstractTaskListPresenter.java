@@ -471,6 +471,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                         constants.ClaimNotAllowedOn(String.valueOf(taskSummary.getId()), taskSummary.getName()));
             }
         });
+        deselectAllItems();
     }
 
     public void bulkRelease(List<TaskSummary> taskSummaries) {
@@ -485,6 +486,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                         constants.ReleaseNotAllowedOn(String.valueOf(taskSummary.getId()), taskSummary.getName()));
             }
         });
+        deselectAllItems();
     }
 
     public void bulkResume(List<TaskSummary> taskSummaries) {
@@ -499,6 +501,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                         constants.ResumeNotAllowedOn(String.valueOf(taskSummary.getId()), taskSummary.getName()));
             }
         });
+        deselectAllItems();
     }
 
     public void bulkSuspend(List<TaskSummary> taskSummaries) {
@@ -513,6 +516,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                         constants.SuspendNotAllowedOn(String.valueOf(taskSummary.getId()), taskSummary.getName()));
             }
         });
+        deselectAllItems();
     }
 
     public void bulkReassign(List<TaskSummary> taskSummaries) {

@@ -122,7 +122,6 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
         view.getSignalCommand(table).execute();
 
         verify(presenter).bulkSignal(any());
-        verify(table).deselectAllItems();
     }
 
     @Test
@@ -137,7 +136,6 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
         view.getBulkSignal(table);
 
         verify(presenter).bulkSignal(any());
-        verify(table).deselectAllItems();
     }
 
     @Test
@@ -160,7 +158,6 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
         captor.getValue().execute();
 
         verify(presenter).bulkAbort(any());
-        verify(table).deselectAllItems();
     }
 
     @Test
@@ -170,7 +167,6 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
         view.getAbortCommand(table).execute();
 
         verify(presenter).bulkAbort(any());
-        verify(table).deselectAllItems();
     }
 
     @Test
@@ -193,14 +189,14 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
     }
 
     @Test
-    public void testRenameProcessVariableForInitColumns(){
-        GridGlobalPreferences gridPreferences = new GridGlobalPreferences("test",view.getInitColumns(),view.getBannedColumns());
+    public void testRenameProcessVariableForInitColumns() {
+        GridGlobalPreferences gridPreferences = new GridGlobalPreferences("test", view.getInitColumns(), view.getBannedColumns());
 
         ListTable<ProcessInstanceSummary> extendedPagedTable = new ListTable<ProcessInstanceSummary>(gridPreferences);
         List<GridColumnPreference> gridColumnPreferenceList = extendedPagedTable.getGridPreferencesStore().getColumnPreferences();
-        gridColumnPreferenceList.add(new GridColumnPreference("Name",-1,""));
-        gridColumnPreferenceList.add(new GridColumnPreference("Id",-1,""));
-        gridColumnPreferenceList.add(new GridColumnPreference("performance",-1,""));
+        gridColumnPreferenceList.add(new GridColumnPreference("Name", -1, ""));
+        gridColumnPreferenceList.add(new GridColumnPreference("Id", -1, ""));
+        gridColumnPreferenceList.add(new GridColumnPreference("performance", -1, ""));
 
         final ColumnMeta checkColumnMeta = view.initChecksColumn(extendedPagedTable);
         ColumnMeta<ProcessInstanceSummary> actionsColumnMeta = view.initActionsColumn();
@@ -209,23 +205,20 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
         extendedPagedTable.addSelectionIgnoreColumn(actionsColumnMeta.getColumn());
         extendedPagedTable.addSelectionIgnoreColumn(errorCountColumn);
         final Column<ProcessInstanceSummary, String> startColumn = view.createTextColumn(COLUMN_START,
-                                                                                    process -> DateUtils.getDateTimeStr(process.getStartTime()));
+                                                                                         process -> DateUtils.getDateTimeStr(process.getStartTime()));
 
         List<ColumnMeta<ProcessInstanceSummary>> columnMetas = view.getGeneralColumnMetas(extendedPagedTable,
-                                                                                                             startColumn,
-                                                                                                             checkColumnMeta,
-                                                                                                             actionsColumnMeta,
-                                                                                                             errorCountColumn);
-
-
+                                                                                          startColumn,
+                                                                                          checkColumnMeta,
+                                                                                          actionsColumnMeta,
+                                                                                          errorCountColumn);
 
         assertThat(columnMetas.stream()).extracting(columnMeta -> columnMeta.getCaption()).hasSize(14).doesNotContain("Var_Name")
                 .doesNotContain("Var_Id");
 
         columnMetas.addAll(view.renameVariables(extendedPagedTable, columnMetas));
 
-
-        assertThat(columnMetas.stream()).extracting(columnMeta -> columnMeta.getCaption()).hasSize(17).containsOnlyOnce( "Var_Name")
+        assertThat(columnMetas.stream()).extracting(columnMeta -> columnMeta.getCaption()).hasSize(17).containsOnlyOnce("Var_Name")
                 .containsOnlyOnce("Var_Id");
     }
 
@@ -250,11 +243,10 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
     public void testRemoveColumnMetaFromColumnsForAddDomainSpecifColumns() {
         GridGlobalPreferences gridPreferences = new GridGlobalPreferences("test", view.getInitColumns(), view.getBannedColumns());
 
-
         ListTable<ProcessInstanceSummary> extendedPagedTable = new ListTable<ProcessInstanceSummary>(gridPreferences);
         when(view.getListGrid()).thenReturn(extendedPagedTable);
 
-        extendedPagedTable.getGridPreferencesStore().getColumnPreferences().add(new GridColumnPreference("Extra",-1,""));
+        extendedPagedTable.getGridPreferencesStore().getColumnPreferences().add(new GridColumnPreference("Extra", -1, ""));
 
         Set<String> set = Sets.newHashSet("Extra");
 

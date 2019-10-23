@@ -216,17 +216,11 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     }
 
     protected Command getSignalCommand(final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable) {
-        return () -> {
-            presenter.bulkSignal(extendedPagedTable.getSelectedItems());
-            extendedPagedTable.deselectAllItems();
-        };
+        return () -> presenter.bulkSignal(extendedPagedTable.getSelectedItems());
     }
 
     protected Command getAbortCommand(final ExtendedPagedTable<ProcessInstanceSummary> extendedPagedTable) {
-        return () -> {
-            presenter.bulkAbort(extendedPagedTable.getSelectedItems());
-            extendedPagedTable.deselectAllItems();
-        };
+        return () -> presenter.bulkAbort(extendedPagedTable.getSelectedItems());
     }
 
     protected Column<ProcessInstanceSummary, ProcessInstanceSummary> initErrorCountColumn() {

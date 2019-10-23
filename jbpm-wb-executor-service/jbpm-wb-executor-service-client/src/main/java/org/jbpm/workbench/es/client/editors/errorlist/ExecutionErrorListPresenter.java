@@ -212,6 +212,7 @@ public class ExecutionErrorListPresenter extends AbstractMultiGridPresenter<Exec
                                           selected.getDeploymentId());
             }
         }
+        deselectAllItems();
     }
 
     @WorkbenchMenu
