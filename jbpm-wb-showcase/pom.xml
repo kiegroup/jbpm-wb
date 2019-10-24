@@ -1435,6 +1435,24 @@
       <scope>runtime</scope>
     </dependency>
 
+    <!-- TODO kogito needs refactoring out of jBPM-WB -->
+    <dependency>
+      <groupId>org.kie.workbench</groupId>
+      <artifactId>kie-wb-common-kogito-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.stunner</groupId>
+      <artifactId>kie-wb-common-stunner-kogito-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.stunner</groupId>
+      <artifactId>kie-wb-common-stunner-kogito-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- Stunner and BPMN set. -->
     <dependency>
       <groupId>org.kie.workbench.stunner</groupId>
@@ -1888,6 +1906,11 @@
             <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-jbpm-designer-integration-shared</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-jbpm-designer-integration-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-jbpm-designer-integration-client</compileSourcesArtifact>
+
+            <!-- TODO kogito needs refactoring out of jBPM-WB -->
+            <compileSourcesArtifact>org.kie.workbench:kie-wb-common-kogito-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-kogito-api</compileSourcesArtifact>
+            <compileSourcesArtifact>org.kie.workbench.stunner:kie-wb-common-stunner-kogito-client</compileSourcesArtifact>
 
             <!-- Dashbuilder -->
             <compileSourcesArtifact>org.kie.soup:kie-soup-json</compileSourcesArtifact>

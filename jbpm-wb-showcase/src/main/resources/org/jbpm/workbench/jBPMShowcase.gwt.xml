@@ -98,6 +98,8 @@
   <inherits name="org.kie.workbench.common.stunner.bpmn.integration.StunnerJBPMDesignerIntegrationShared"/>
   <inherits name="org.kie.workbench.common.stunner.bpmn.integration.StunnerJBPMDesignerIntegrationAPI"/>
   <inherits name="org.kie.workbench.common.stunner.bpmn.integration.StunnerJBPMDesignerIntegrationClient"/>
+  <!-- TODO kogito needs refactoring out of jBPM-WB -->
+  <inherits name="org.kie.workbench.common.stunner.kogito.StunnerKogitoClient"/>
 
   <!-- Specify the paths for translatable code -->
   <source path='client'/>
