@@ -148,6 +148,11 @@ public class ServiceTaskUploadFormViewImpl
     public String getSuccessInstallMessage() {
         return Constants.INSTANCE.AddTaskSuccess();
     }
+
+    @Override
+    public String getSkippedMessage(String serviceTaskNames) {
+        return Constants.INSTANCE.SkippedMessage(serviceTaskNames);
+    }
     
     private void showErrorMessage(final String message) {
         ErrorPopup.showMessage(message);

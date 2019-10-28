@@ -21,6 +21,7 @@ import static org.guvnor.m2repo.model.HTMLFileManagerFields.UPLOAD_UNABLE_TO_PAR
 import static org.guvnor.m2repo.utils.FileNameUtilities.isValid;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -40,6 +41,8 @@ import com.google.gwt.user.client.Command;
 public class ServiceTaskUploadFormPresenter implements ServiceTaskUploadFormView.Presenter {
     
     public static final String UPLOAD_FAILED = "ERROR";
+    protected static final String CREATED = "Created";
+    protected static final String SKIPPED = "Skipped";
 
     private ServiceTaskUploadFormView view;
     private Caller<ServiceTaskService> serviceTaskService;
@@ -79,12 +82,14 @@ public class ServiceTaskUploadFormPresenter implements ServiceTaskUploadFormView
             view.showUploadFailedError();
             view.hide();
         } else {            
-            serviceTaskService.call((List<String> serviceTasks) -> {                
+            serviceTaskService.call((Map<String, List<String>> serviceTasks) -> {
                 String addTaskSuccessMsg = view.getSuccessInstallMessage();
-                String addedServiceTasks = serviceTasks.stream().collect(Collectors.joining(","));
-                
-                notificationEvent.fire(new NotificationEvent(addTaskSuccessMsg + addedServiceTasks,
+                String skippedServiceTasks = view.getSkippedMessage(serviceTasks.get(SKIPPED).stream().collect(Collectors.joining(",")));
+                String addedServiceTasks = serviceTasks.get(CREATED).stream().collect(Collectors.joining(","));
+
+                notificationEvent.fire(new NotificationEvent(addTaskSuccessMsg + addedServiceTasks + "/n" + skippedServiceTasks,
                                                              NotificationEvent.NotificationType.SUCCESS));
+
                 onUploadCompleted.execute();
                 view.hide();
             }).addServiceTasks(event.getResults());

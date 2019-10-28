@@ -22,7 +22,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -76,7 +78,15 @@ public class ServiceTaskServiceImpl implements ServiceTaskService {
         
         repoService = new RepoService(repositoryStorage, eventListener); 
     }
-    
+
+    protected void setRepoService(RepoService repoService) {
+        this.repoService = repoService;
+    }
+
+    protected void setM2Repository(GuvnorM2Repository m2Repository){
+        this.m2Repository = m2Repository;
+    }
+
     @Override
     public List<ServiceTaskSummary> getServiceTasks() {
         return repoService.getServices().stream()
@@ -130,14 +140,16 @@ public class ServiceTaskServiceImpl implements ServiceTaskService {
     }
 
     @Override
-    public List<String> addServiceTasks(String gav) {
-        List<String> installedServiceTasks = new ArrayList<>();
+    public Map<String, List<String>> addServiceTasks(String gav) {
         GAV actualGav = new GAV(gav);
         File uploadedServiceArtifact = m2Repository.getArtifactFileFromRepository(actualGav);
         if (uploadedServiceArtifact == null || !uploadedServiceArtifact.exists()) {
             throw new RuntimeException("No file found for artifact " + gav);
         }
-        
+        Map<String, List<String>> resultMap = new HashMap<String, List<String>>();
+        resultMap.put(RepoService.CREATED, new ArrayList<String>());
+        resultMap.put(RepoService.SKIPPED, new ArrayList<String>());
+
         try {
             URL[] urls = new URL[] {uploadedServiceArtifact.toURI().toURL()};
             URLClassLoader classLoader = new URLClassLoader(urls, Wid.class.getClassLoader());
@@ -203,18 +215,22 @@ public class ServiceTaskServiceImpl implements ServiceTaskService {
                                    .collect(Collectors.toList()));
                     service.setTriggertitle(widInfo.serviceInfo().trigger().title());
                     
-                    installedServiceTasks.add(service.getName());
                     logger.debug("Adding service task with name {} of type {}", service.getName(), workItem);
-                    repoService.addService(service);
+                    repoService.addService(service, resultMap);
                 } else {
                     logger.warn("Wid annotation was not found on type {}", workItem);
                 }
             }
-            
-            return installedServiceTasks;
+            return resultMap;
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         } 
+    }
+
+    @Override
+    public String removeServiceTask(ServiceTaskSummary serviceTaskSummary) {
+        repoService.removeServiceTask(serviceTaskSummary.getId());
+        return serviceTaskSummary.getName();
     }
 
     @Override

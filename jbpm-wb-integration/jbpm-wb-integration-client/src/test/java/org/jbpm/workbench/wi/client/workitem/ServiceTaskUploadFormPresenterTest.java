@@ -29,7 +29,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.gwtbootstrap3.client.ui.base.form.AbstractForm;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
@@ -45,6 +49,8 @@ import org.uberfire.workbench.events.NotificationEvent;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ServiceTaskUploadFormPresenterTest {
+    private static final String ADD_TASK_SUCCESS = "Service tasks successfully added -";
+    private static final String SKIP_TASK_SUCCESS = "The following service tasks have been skipped as the repository already contains services with the same name as: SKIP.";
 
     private ServiceTaskUploadFormPresenter presenter;
     
@@ -60,14 +66,23 @@ public class ServiceTaskUploadFormPresenterTest {
     @Mock
     private SyncBeanManager iocManager;
 
+    private List<String> createdList = Collections.singletonList(ServiceTaskUploadFormPresenter.CREATED);
+    private List<String> skippedList = Collections.singletonList(ServiceTaskUploadFormPresenter.SKIPPED);
+
     @Before
     public void before() {
-        when(serviceTaskService.addServiceTasks(any())).thenReturn(new ArrayList<>());
+        Map<String, List<String>> resultMap = new HashMap<String, List<String>>();
+        resultMap.put(ServiceTaskUploadFormPresenter.CREATED, createdList);
+        resultMap.put(ServiceTaskUploadFormPresenter.SKIPPED, skippedList);
+        when(serviceTaskService.addServiceTasks(any())).thenReturn(resultMap);
         presenter = spy(new ServiceTaskUploadFormPresenter(view,
                                                            new CallerMock<ServiceTaskService>(serviceTaskService),
                                                            notificationEvent,
                                                            iocManager));
         presenter.init();
+
+        when(view.getSuccessInstallMessage()).thenReturn(ADD_TASK_SUCCESS);
+        when(view.getSkippedMessage(any())).thenReturn(SKIP_TASK_SUCCESS);
     }
     
     @Test
@@ -125,6 +140,7 @@ public class ServiceTaskUploadFormPresenterTest {
                 
         verify(view, times(1)).hide();
         verify(serviceTaskService, times(1)).addServiceTasks(eq(gav));
-        verify(notificationEvent, times(1)).fire(any());
+        verify(notificationEvent, times(1)).fire(new NotificationEvent(ADD_TASK_SUCCESS + createdList.stream().collect(Collectors.joining(",")) + "/n" +
+                                                                               SKIP_TASK_SUCCESS, NotificationEvent.NotificationType.SUCCESS));
     }
 }

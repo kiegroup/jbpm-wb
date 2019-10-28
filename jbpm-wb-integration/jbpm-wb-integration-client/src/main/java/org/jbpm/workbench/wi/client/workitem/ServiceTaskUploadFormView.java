@@ -51,6 +51,8 @@ public interface ServiceTaskUploadFormView extends UberView<Presenter> {
     
     String getSuccessInstallMessage();
 
+    String getSkippedMessage(String serviceTaskNames);
+
     void show();
 
     void hide();

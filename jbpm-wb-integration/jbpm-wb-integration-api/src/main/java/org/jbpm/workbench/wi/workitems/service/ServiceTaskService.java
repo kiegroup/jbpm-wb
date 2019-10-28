@@ -17,6 +17,7 @@
 package org.jbpm.workbench.wi.workitems.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.jbpm.workbench.wi.workitems.model.ServiceTaskSummary;
@@ -43,5 +44,7 @@ public interface ServiceTaskService {
 
     void saveConfiguration(ServiceTasksConfiguration configuration);
 
-    List<String> addServiceTasks(String location);
+    Map<String, List<String>> addServiceTasks(String location);
+
+    String removeServiceTask(ServiceTaskSummary serviceTaskSummary);
 }
