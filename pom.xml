@@ -32,6 +32,8 @@
   <description>jBPM Workbench Modules</description>
 
   <properties>
+    <!-- Version 2.0.1.Final which is coming from kie-parent is not compatible with appformer validation components -->
+    <version.javax.validation>1.0.0.GA</version.javax.validation>
     <checkstyle.header.template><![CDATA[
 ^\/\*$\n^
 \* Copyright \d\d\d\d Red Hat, Inc\. and\/or its affiliates\.$\n^
