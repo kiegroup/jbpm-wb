@@ -49,7 +49,6 @@
   <inherits name="org.kie.workbench.common.workbench.KieDefaultWorkbenchClient"/>
   <inherits name="org.kie.workbench.common.screens.library.LibraryClient"/>
   <inherits name="org.kie.workbench.common.screens.contributors.KieWorkbenchContributorsClient"/>
-  <inherits name="org.kie.workbench.common.screens.examples.KieWorkbenchCommonExamplesClient"/>
   <inherits name="org.kie.workbench.common.screens.home.KieWorkbenchHomeClient"/>
 
   <inherits name="org.drools.workbench.screens.drltext.DroolsWorkbenchDRLTextEditorClient"/>
