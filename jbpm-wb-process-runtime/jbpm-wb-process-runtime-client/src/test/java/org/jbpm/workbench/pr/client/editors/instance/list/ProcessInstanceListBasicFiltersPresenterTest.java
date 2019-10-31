@@ -33,6 +33,7 @@ import org.mockito.InjectMocks;
 
 import static com.google.common.collect.Maps.immutableEntry;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.COLUMN_PARENT_PROCESS_INSTANCE_ID;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -69,6 +70,7 @@ public class ProcessInstanceListBasicFiltersPresenterTest extends AbstractBasicF
         inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Name()), any(), any(), any(), any());
         inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Process_Definition_Id()), any(), any(), any(), any());
         inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.DeploymentId()), any(), any(), any(), any());
+        inOrder.verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Parent_Process_Instance_Id()), any(), any(), any(), any());
         inOrder.verify(getView()).addSelectFilter(eq(Constants.INSTANCE.SlaCompliance()), any(), any());
         inOrder.verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.Start_Date()), any(), any(), any());
         inOrder.verify(getView()).addDateRangeFilter(eq(Constants.INSTANCE.Last_Modification_Date()), any(), any(), any());
@@ -88,6 +90,16 @@ public class ProcessInstanceListBasicFiltersPresenterTest extends AbstractBasicF
                 immutableEntry(String.valueOf(ProcessInstance.SLA_MET), commonConstants.SlaMet()),
                 immutableEntry(String.valueOf(ProcessInstance.SLA_VIOLATED), commonConstants.SlaViolated()),
                 immutableEntry(String.valueOf(ProcessInstance.SLA_ABORTED), commonConstants.SlaAborted()));
+    }
+
+    @Test
+    public void testParentProcessIdFilter() {
+        presenter.addParentProcessIdFilter();
+        verify(getView()).addDataSetSelectFilter(eq(Constants.INSTANCE.Parent_Process_Instance_Id()),
+                                                 any(),
+                                                 eq(COLUMN_PARENT_PROCESS_INSTANCE_ID),
+                                                 eq(COLUMN_PARENT_PROCESS_INSTANCE_ID),
+                                                 any());
     }
 
     @Test

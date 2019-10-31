@@ -105,7 +105,7 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
 
     @Override
     public Integer getExpectedNumberOfColumns() {
-        return 14;
+        return 15;
     }
 
     @Before
@@ -213,12 +213,12 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
                                                                                           actionsColumnMeta,
                                                                                           errorCountColumn);
 
-        assertThat(columnMetas.stream()).extracting(columnMeta -> columnMeta.getCaption()).hasSize(14).doesNotContain("Var_Name")
+        assertThat(columnMetas.stream()).extracting(columnMeta -> columnMeta.getCaption()).hasSize(getExpectedNumberOfColumns()).doesNotContain("Var_Name")
                 .doesNotContain("Var_Id");
 
         columnMetas.addAll(view.renameVariables(extendedPagedTable, columnMetas));
 
-        assertThat(columnMetas.stream()).extracting(columnMeta -> columnMeta.getCaption()).hasSize(17).containsOnlyOnce("Var_Name")
+        assertThat(columnMetas.stream()).extracting(columnMeta -> columnMeta.getCaption()).hasSize(getExpectedNumberOfColumns() + 3).containsOnlyOnce("Var_Name")
                 .containsOnlyOnce("Var_Id");
     }
 
@@ -232,11 +232,11 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
         Set<String> set = Collections.singleton("Version");
         view.initColumns(extendedPagedTable);
 
-        assertThat(extendedPagedTable.getColumnMetaList()).extracting(columnMeta -> columnMeta.getCaption()).hasSize(14).doesNotContain("Var_Version");
+        assertThat(extendedPagedTable.getColumnMetaList()).extracting(columnMeta -> columnMeta.getCaption()).hasSize(getExpectedNumberOfColumns()).doesNotContain("Var_Version");
 
         view.addDomainSpecifColumns(set);
 
-        assertThat(extendedPagedTable.getColumnMetaList()).extracting(columnMeta -> columnMeta.getCaption()).hasSize(15).containsOnlyOnce("Var_Version");
+        assertThat(extendedPagedTable.getColumnMetaList()).extracting(columnMeta -> columnMeta.getCaption()).hasSize(getExpectedNumberOfColumns() + 1).containsOnlyOnce("Var_Version");
     }
 
     @Test
@@ -251,7 +251,7 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
         Set<String> set = Sets.newHashSet("Extra");
 
         view.initColumns(extendedPagedTable);
-        assertThat(extendedPagedTable.getColumnMetaList().size()).isEqualTo(15);
+        assertThat(extendedPagedTable.getColumnMetaList().size()).isEqualTo(getExpectedNumberOfColumns() + 1);
 
         view.addDomainSpecifColumns(set);
 
@@ -272,10 +272,10 @@ public class ProcessInstanceListViewImplTest extends AbstractMultiGridViewTest<P
 
         view.initColumns(extendedPagedTable);
 
-        assertThat(extendedPagedTable.getColumnMetaList()).hasSize(15).extracting(columnMeta -> columnMeta.getCaption()).containsOnlyOnce("Extra");
+        assertThat(extendedPagedTable.getColumnMetaList()).hasSize(getExpectedNumberOfColumns() + 1).extracting(columnMeta -> columnMeta.getCaption()).containsOnlyOnce("Extra");
         view.addDomainSpecifColumns(set);
 
-        assertThat(extendedPagedTable.getColumnMetaList()).hasSize(15).extracting(columnMeta -> columnMeta.getCaption()).doesNotContain("Extra").containsOnlyOnce("Extra_test");
+        assertThat(extendedPagedTable.getColumnMetaList()).hasSize(getExpectedNumberOfColumns() + 1).extracting(columnMeta -> columnMeta.getCaption()).doesNotContain("Extra").containsOnlyOnce("Extra_test");
         assertThat(set.size()).isEqualTo(1);
     }
 
