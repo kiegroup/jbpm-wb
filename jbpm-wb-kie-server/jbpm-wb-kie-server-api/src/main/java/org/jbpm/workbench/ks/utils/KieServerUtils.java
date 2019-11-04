@@ -44,7 +44,7 @@ public class KieServerUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(KieServerUtils.class);
 
     private static boolean KIE_SERVER_FORM_RENDERER = Boolean.parseBoolean(System.getProperty("org.jbpm.wb.forms.renderer.ext", "false"));
-    
+
     public static KieServicesClient createKieServicesClient(final String... capabilities) {
         final String kieServerEndpoint = System.getProperty(KieServerConstants.KIE_SERVER_LOCATION);
         checkNotNull(kieServerEndpoint,
@@ -121,8 +121,16 @@ public class KieServerUtils {
         return new CredentialsProvider() {
 
             KeyCloakTokenCredentialsProvider keyCloakProvider = new KeyCloakTokenCredentialsProvider();
-            SubjectCredentialsProvider subjectProvider = new SubjectCredentialsProvider();
-            
+            CredentialsProvider subjectProvider = subjectProvider();
+
+            private CredentialsProvider subjectProvider() {
+                if (System.getProperty(KieServerConstants.CFG_KIE_USE_ADMIN_CREDENTIALS) != null) {
+                    return getAdminCredentialsProvider();
+                } else {
+                    return new SubjectCredentialsProvider();
+                }
+            }
+
             @Override
             public String getHeaderName() {
                 return javax.ws.rs.core.HttpHeaders.AUTHORIZATION;
