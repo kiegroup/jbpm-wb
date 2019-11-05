@@ -149,6 +149,9 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_PROCESS_VERSION,
                                                           process -> process.getProcessVersion()),
                                          constants.Version()));
+        columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_PARENT_PROCESS_INSTANCE_ID,
+                                                          process -> process.getParentId() == -1 ? "" : process.getParentId().toString()),
+                                         constants.Parent_Process_Instance_Id()));
         columnMetas.add(new ColumnMeta<>(createTextColumn(COLUMN_STATUS,
                                                           process -> {
                                                               switch (process.getState()) {

@@ -120,6 +120,8 @@ public class ProcessInstanceListBasicFiltersPresenter extends BasicFiltersPresen
 
         addDeploymentIdFilter();
 
+        addParentProcessIdFilter();
+
         addSLAComplianceFilter();
 
         view.addDateRangeFilter(constants.Start_Date(),
@@ -167,6 +169,22 @@ public class ProcessInstanceListBasicFiltersPresenter extends BasicFiltersPresen
                                     COLUMN_PROCESS_ID,
                                     COLUMN_PROCESS_ID,
                                     f -> addSearchFilter(f, equalsTo(COLUMN_PROCESS_ID, f.getValue())));
+    }
+
+    protected void addParentProcessIdFilter() {
+        final DataSetLookup dataSetLookup = DataSetLookupFactory.newDataSetLookupBuilder()
+                .dataset(PROCESS_INSTANCE_DATASET)
+                .group(COLUMN_PARENT_PROCESS_INSTANCE_ID)
+                .column(COLUMN_PARENT_PROCESS_INSTANCE_ID)
+                .filter(COLUMN_PARENT_PROCESS_INSTANCE_ID, notEqualsTo(-1))
+                .sort(COLUMN_PARENT_PROCESS_INSTANCE_ID, SortOrder.ASCENDING)
+                .buildLookup();
+
+        view.addDataSetSelectFilter(constants.Parent_Process_Instance_Id(),
+                                    dataSetLookup,
+                                    COLUMN_PARENT_PROCESS_INSTANCE_ID,
+                                    COLUMN_PARENT_PROCESS_INSTANCE_ID,
+                                    f -> addSearchFilter(f, equalsTo(COLUMN_PARENT_PROCESS_INSTANCE_ID, f.getValue())));
     }
 
     protected void addDeploymentIdFilter() {
