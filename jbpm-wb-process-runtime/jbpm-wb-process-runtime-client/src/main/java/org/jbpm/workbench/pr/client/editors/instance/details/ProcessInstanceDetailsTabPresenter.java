@@ -18,16 +18,20 @@ package org.jbpm.workbench.pr.client.editors.instance.details;
 import java.util.List;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jboss.errai.common.client.api.Caller;
 import org.jbpm.workbench.common.client.util.SlaStatusConverter;
 import org.jbpm.workbench.pr.client.editors.instance.ProcessInstanceSummaryAware;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.client.util.ProcessInstanceStatusUtils;
+import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.model.NodeInstanceSummary;
+import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.UserTaskSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
@@ -41,6 +45,9 @@ public class ProcessInstanceDetailsTabPresenter implements ProcessInstanceSummar
 
     private Caller<ProcessRuntimeDataService> processRuntimeDataService;
 
+
+    private Event<ProcessInstanceSelectionEvent> processInstanceSelectionEvent;
+
     @Inject
     public void setView(final ProcessInstanceDetailsTabView view) {
         this.view = view;
@@ -49,6 +56,11 @@ public class ProcessInstanceDetailsTabPresenter implements ProcessInstanceSummar
     @Inject
     public void setProcessRuntimeDataService(final Caller<ProcessRuntimeDataService> processRuntimeDataService) {
         this.processRuntimeDataService = processRuntimeDataService;
+    }
+
+    @Inject
+    public void setProcessInstanceSelectionEvent(final Event<ProcessInstanceSelectionEvent> processInstanceSelectionEvent) {
+        this.processInstanceSelectionEvent = processInstanceSelectionEvent;
     }
 
     public IsWidget getWidget() {
@@ -61,19 +73,19 @@ public class ProcessInstanceDetailsTabPresenter implements ProcessInstanceSummar
         view.setProcessVersionText("");
         view.setProcessDeploymentText("");
         view.setCorrelationKeyText("");
-        view.setParentProcessInstanceIdText("");
         view.setActiveTasksListBox("");
         view.setStateText("");
         view.setCurrentActivitiesListBox("");
-
+        view.setParentProcessInstanceIdText("", false);
         view.setProcessDefinitionIdText(process.getProcessId());
         view.setProcessVersionText(process.getProcessVersion());
         view.setProcessDeploymentText(process.getDeploymentId());
         view.setCorrelationKeyText(process.getCorrelationKey());
         if (process.getParentId() > 0) {
-            view.setParentProcessInstanceIdText(process.getParentId().toString());
+            view.setParentProcessInstanceIdText(process.getParentId().toString(), true);
+            view.setProcessInstanceDetailsCallback(() -> onProcessInstanceIdSelected(process.getServerTemplateId(), process.getDeploymentId(), process.getParentId()));
         } else {
-            view.setParentProcessInstanceIdText(constants.No_Parent_Process_Instance());
+            view.setParentProcessInstanceIdText(constants.No_Parent_Process_Instance(), false);
         }
 
         view.setSlaComplianceText(new SlaStatusConverter().toWidgetValue(process.getSlaCompliance()));
@@ -100,6 +112,10 @@ public class ProcessInstanceDetailsTabPresenter implements ProcessInstanceSummar
         ).getProcessInstanceActiveNodes(process.getProcessInstanceKey());
     }
 
+    public void onProcessInstanceIdSelected(String serverTemplateId, String processDeploymentId, Long parentId) {
+        processInstanceSelectionEvent.fire(new ProcessInstanceSelectionEvent(new ProcessInstanceKey(serverTemplateId, processDeploymentId, parentId), false));
+    }
+
     public interface ProcessInstanceDetailsTabView extends IsWidget {
 
         void setCurrentActivitiesListBox(String value);
@@ -116,8 +132,10 @@ public class ProcessInstanceDetailsTabPresenter implements ProcessInstanceSummar
 
         void setCorrelationKeyText(String value);
 
-        void setParentProcessInstanceIdText(String value);
+        void setParentProcessInstanceIdText(String value, boolean hasParentProcessInstanceId);
 
         void setSlaComplianceText(String value);
+
+        void setProcessInstanceDetailsCallback(Command callback);
     }
 }

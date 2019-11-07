@@ -19,7 +19,9 @@ import java.util.Date;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
+import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.model.NodeInstanceSummary;
+import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.UserTaskSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
@@ -30,6 +32,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.uberfire.mocks.CallerMock;
+import org.uberfire.mocks.EventSourceMock;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,12 +60,16 @@ public class ProcessInstanceDetailsTabPresenterTest {
     @Mock
     private ProcessRuntimeDataService processRuntimeDataServiceMock;
 
+    @Mock
+    private EventSourceMock<ProcessInstanceSelectionEvent> processInstanceSelectionEventSourceMock;
+
     @InjectMocks
     private ProcessInstanceDetailsTabPresenter presenter;
 
     @Before
     public void setUp() {
         presenter.setProcessRuntimeDataService(new CallerMock<>(processRuntimeDataServiceMock));
+        presenter.setProcessInstanceSelectionEvent(processInstanceSelectionEventSourceMock);
         nodeInstanceSummary = getNodeInstanceSummary();
         processInstanceSummary = getProcessInstanceSummary();
         when(processRuntimeDataServiceMock.getProcessInstanceActiveNodes(processInstanceSummary.getProcessInstanceKey())).thenReturn(singletonList(nodeInstanceSummary));
@@ -77,9 +84,10 @@ public class ProcessInstanceDetailsTabPresenterTest {
         verify(view).setProcessDeploymentText(processInstanceSummary.getDeploymentId());
         verify(view).setProcessVersionText(processInstanceSummary.getProcessVersion());
         verify(view).setCorrelationKeyText(processInstanceSummary.getCorrelationKey());
-        verify(view).setParentProcessInstanceIdText(Constants.INSTANCE.No_Parent_Process_Instance());
         verify(view).setSlaComplianceText(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.SlaMet());
-
+        verify(view).setProcessInstanceDetailsCallback(any());
+        verify(view, times(1)).setParentProcessInstanceIdText("", false);
+        verify(view, times(1)).setParentProcessInstanceIdText("1", true);
         ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
         verify(view, times(2)).setActiveTasksListBox(argumentCaptor.capture());
 
@@ -120,7 +128,7 @@ public class ProcessInstanceDetailsTabPresenterTest {
         processInstanceSummary.setDeploymentId(DEPLOYMENT_ID);
         processInstanceSummary.setProcessVersion(PROCESS_VERSION);
         processInstanceSummary.setCorrelationKey(PROCESS_INSTANCE_ID.toString());
-        processInstanceSummary.setParentId(0L);
+        processInstanceSummary.setParentId(1L);
         processInstanceSummary.setActiveTasks(singletonList(getUserTaskSummary()));
         processInstanceSummary.setSlaCompliance(SLA_MET);
         return processInstanceSummary;
@@ -129,5 +137,12 @@ public class ProcessInstanceDetailsTabPresenterTest {
     private UserTaskSummary getUserTaskSummary() {
         userTaskSummary = new UserTaskSummary(1L, "Self Evaluation", "testuser", "Reserved");
         return userTaskSummary;
+    }
+
+    @Test
+    public void onProcessInstanceIdSelectedTest() {
+        ProcessInstanceKey processInstanceKey = new ProcessInstanceKey("serverTemplateId", "processDeploymentId", 1L);
+        presenter.onProcessInstanceIdSelected("serverTemplateId", "processDeploymentId", 1L);
+        verify(processInstanceSelectionEventSourceMock).fire(new ProcessInstanceSelectionEvent(processInstanceKey, false));
     }
 }
