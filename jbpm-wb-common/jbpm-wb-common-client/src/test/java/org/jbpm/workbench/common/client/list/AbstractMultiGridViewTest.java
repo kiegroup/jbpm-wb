@@ -297,6 +297,7 @@ public abstract class AbstractMultiGridViewTest<T extends GenericSummary> {
 
         ArgumentCaptor<GridSortedColumnPreference> captor = ArgumentCaptor.forClass(GridSortedColumnPreference.class);
         verify(gridPreferencesStore).setGridSortedColumnPreference(captor.capture());
+        verify(listTable, never()).saveGridPreferences();
         assertNotNull(captor.getValue());
         assertEquals("test", captor.getValue().getDataStoreName());
         assertEquals(true, captor.getValue().isAscending());
