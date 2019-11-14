@@ -19,6 +19,7 @@ package org.jbpm.workbench.wi.backend.server.casemgmt.service;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -76,7 +77,7 @@ public class CaseDemoProvisioningService {
     @PostConstruct
     public void init() {
         if ("true".equalsIgnoreCase(System.getProperty(ExamplesService.EXAMPLES_SYSTEM_PROPERTY))) {
-            final Set<ImportProject> projects = libraryService.getExampleProjects();
+            final Set<ImportProject> projects = libraryService.getExampleProjects(libraryService.getDefaultOrganizationalUnit());
             projects.stream().filter(p -> "itorders".equals(p.getName())).findFirst().ifPresent(p -> {
                 LOGGER.info("Importing IT Orders case management demo project...");
                 newProject = projectImportService.importProject(libraryService.getDefaultOrganizationalUnit(),
