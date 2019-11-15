@@ -196,4 +196,18 @@ public interface Constants extends Messages {
     String Installing();
     
     String InstallServiceTaskParams();
+
+    String SkippedMessage(String serviceTaskNames);
+
+    String RemoveTaskSuccess(String serviceTask);
+
+    String RemoveServiceTaskAction();
+
+    String RemoveServiceTaskTitle();
+
+    String RemoveServiceTaskConfirmMessage(String serviceTask);
+
+    String CanNotRemoveServiceTaskMessage(String serviceTask);
+
+    String Ok();
 }
