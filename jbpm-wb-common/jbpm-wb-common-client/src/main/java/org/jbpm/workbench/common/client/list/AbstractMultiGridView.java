@@ -214,7 +214,6 @@ public abstract class AbstractMultiGridView<T extends GenericSummary, V extends 
                     gridPreferencesStore.setGridSortedColumnPreference(gridSortedColumnPreference);
                 }
             }
-            listTable.saveGridPreferences();
         });
     }
 
