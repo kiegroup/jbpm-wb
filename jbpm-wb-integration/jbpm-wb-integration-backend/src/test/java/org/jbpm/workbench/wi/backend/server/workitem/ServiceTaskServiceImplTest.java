@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.m2repo.backend.server.GuvnorM2Repository;
@@ -49,7 +48,6 @@ public class ServiceTaskServiceImplTest {
 
     private static final String GAV = "org.jbpm.workitem.test:workitem.test:1.0";
     private static final String WORKITEMNAME = "Test";
-    private static final int SERVICETASKSSIZE = 94;
 
     @Mock
     private IOService ioService;
@@ -66,6 +64,7 @@ public class ServiceTaskServiceImplTest {
     private RepoService repoService;
 
     private ServiceTaskServiceImpl serviceTaskServiceImpl;
+    private int serviceTaskSize = 0;
 
     @Mock
     private GuvnorM2Repository m2Repository;
@@ -80,7 +79,7 @@ public class ServiceTaskServiceImplTest {
         serviceTaskServiceImpl = new ServiceTaskServiceImpl();
         serviceTaskServiceImpl.setRepoService(repoService);
         serviceTaskServiceImpl.setM2Repository(m2Repository);
-
+        serviceTaskSize = repoService.getServices().size();
         File file = new File(ServiceTaskServiceImplTest.class.getResource("/workitem.test-1.0.jar").getFile());
         when(m2Repository.getArtifactFileFromRepository(new GAV(GAV))).thenReturn(file);
     }
@@ -99,9 +98,9 @@ public class ServiceTaskServiceImplTest {
     public void testAddServiceTasksByCreated() {
         List<RepoData> currentServices = new ArrayList<>();
         loadServices("Test1", currentServices);
-        assertEquals(SERVICETASKSSIZE, serviceTaskServiceImpl.getServiceTasks().size());
+        assertEquals(serviceTaskSize + 1, serviceTaskServiceImpl.getServiceTasks().size());
         Map<String, List<String>> resultMap = serviceTaskServiceImpl.addServiceTasks(GAV);
-        assertEquals(SERVICETASKSSIZE + 1, serviceTaskServiceImpl.getServiceTasks().size());
+        assertEquals(serviceTaskSize + 2, serviceTaskServiceImpl.getServiceTasks().size());
         assertEquals(WORKITEMNAME, resultMap.get(RepoService.CREATED).get(0));
         assertTrue(resultMap.get(RepoService.SKIPPED).isEmpty());
         Optional optional = serviceTaskServiceImpl.getServiceTasks().stream().filter(serviceTaskSummary -> serviceTaskSummary.getName().equals(WORKITEMNAME)).findFirst();
@@ -112,9 +111,9 @@ public class ServiceTaskServiceImplTest {
     public void testAddServiceTasksBySkipped() {
         List<RepoData> currentServices = new ArrayList<>();
         loadServices("Test", currentServices);
-        assertEquals(SERVICETASKSSIZE, serviceTaskServiceImpl.getServiceTasks().size());
+        assertEquals(serviceTaskSize + 1, serviceTaskServiceImpl.getServiceTasks().size());
         Map<String, List<String>> resultMap = serviceTaskServiceImpl.addServiceTasks(GAV);
-        assertEquals(SERVICETASKSSIZE, serviceTaskServiceImpl.getServiceTasks().size());
+        assertEquals(serviceTaskSize + 1, serviceTaskServiceImpl.getServiceTasks().size());
         assertEquals(WORKITEMNAME, resultMap.get(RepoService.SKIPPED).get(0));
         assertTrue(resultMap.get(RepoService.CREATED).isEmpty());
         Optional optional = serviceTaskServiceImpl.getServiceTasks().stream().filter(serviceTaskSummary -> serviceTaskSummary.getName().equals(WORKITEMNAME)).findFirst();
@@ -131,10 +130,10 @@ public class ServiceTaskServiceImplTest {
         st.setName(rd.getName());
         st.setId(rd.getId());
         st.setInstalledOn(Collections.emptySet());
-        assertEquals(SERVICETASKSSIZE, serviceTaskServiceImpl.getServiceTasks().size());
+        assertEquals(serviceTaskSize + 1, serviceTaskServiceImpl.getServiceTasks().size());
         assertEquals(stName, serviceTaskServiceImpl.removeServiceTask(st));
         List<ServiceTaskSummary> afterRemoveAction = serviceTaskServiceImpl.getServiceTasks();
-        assertEquals(SERVICETASKSSIZE - 1, afterRemoveAction.size());
+        assertEquals(serviceTaskSize, afterRemoveAction.size());
         Optional<ServiceTaskSummary> optionalServiceTaskSummary = afterRemoveAction.stream().filter(s -> s.getName().equals(stName)).findFirst();
         assertFalse(optionalServiceTaskSummary.isPresent());
     }
