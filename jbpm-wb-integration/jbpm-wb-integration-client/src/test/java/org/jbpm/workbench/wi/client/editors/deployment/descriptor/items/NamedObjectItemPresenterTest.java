@@ -53,8 +53,7 @@ public class NamedObjectItemPresenterTest {
     @Before
     public void before() {
         namedObjectItemPresenter = spy(new NamedObjectItemPresenter(view,
-                                                                    parametersModal,
-                                                                    resolversSelect));
+                                                                    parametersModal));
     }
 
     @Test
@@ -64,12 +63,12 @@ public class NamedObjectItemPresenterTest {
         namedObjectItemPresenter.setup(model, mock(DeploymentsSectionPresenter.class));
 
         verify(model, never()).setParameters(any());
+        verify(view).setupResolverSelect(any(), any());
         verify(view).init(eq(namedObjectItemPresenter));
         verify(view).setValue(eq("Value"));
         verify(view).setName(eq("Name"));
         verify(view).setParametersCount(eq(1));
         verify(parametersModal).setup(any(), any());
-        verify(resolversSelect).setup(any(), any(), eq(Resolver.MVEL), any());
     }
 
     @Test

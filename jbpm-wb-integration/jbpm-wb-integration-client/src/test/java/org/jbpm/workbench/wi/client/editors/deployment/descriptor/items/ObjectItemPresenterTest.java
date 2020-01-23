@@ -53,8 +53,7 @@ public class ObjectItemPresenterTest {
     @Before
     public void before() {
         objectItemPresenter = spy(new ObjectItemPresenter(view,
-                                                          parametersModal,
-                                                          resolversSelect));
+                                                          parametersModal));
     }
 
     @Test
@@ -64,11 +63,11 @@ public class ObjectItemPresenterTest {
         objectItemPresenter.setup(model, mock(DeploymentsSectionPresenter.class));
 
         verify(model, never()).setParameters(any());
+        verify(view).setupResolverSelect(any(), any());
         verify(view).init(eq(objectItemPresenter));
         verify(view).setValue(eq("Value"));
         verify(view).setParametersCount(eq(1));
         verify(parametersModal).setup(any(), any());
-        verify(resolversSelect).setup(any(), any(), eq(Resolver.REFLECTION), any());
     }
 
     @Test

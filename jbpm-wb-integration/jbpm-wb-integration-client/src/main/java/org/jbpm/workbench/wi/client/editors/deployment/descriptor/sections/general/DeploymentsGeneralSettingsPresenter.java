@@ -22,24 +22,17 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import elemental2.promise.Promise;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.AuditMode;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.PersistenceMode;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.RuntimeStrategy;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.kie.workbench.common.screens.library.client.settings.SettingsSectionChange;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.MenuItem;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionView;
-import org.kie.workbench.common.screens.library.client.settings.util.select.KieEnumSelectElement;
 import org.uberfire.client.promise.Promises;
 
 @Dependent
 public class DeploymentsGeneralSettingsPresenter extends Section<DeploymentDescriptorModel> {
 
     private final DeploymentsGeneralSettingsView view;
-    private final KieEnumSelectElement<RuntimeStrategy> runtimeStrategiesSelect;
-    private final KieEnumSelectElement<PersistenceMode> persistenceModesSelect;
-    private final KieEnumSelectElement<AuditMode> auditModesSelect;
 
     protected DeploymentDescriptorModel model;
 
@@ -47,16 +40,10 @@ public class DeploymentsGeneralSettingsPresenter extends Section<DeploymentDescr
     public DeploymentsGeneralSettingsPresenter(final Event<SettingsSectionChange<DeploymentDescriptorModel>> settingsSectionChangeEvent,
                                                final MenuItem<DeploymentDescriptorModel> menuItem,
                                                final Promises promises,
-                                               final DeploymentsGeneralSettingsView view,
-                                               final KieEnumSelectElement<RuntimeStrategy> runtimeStrategiesSelect,
-                                               final KieEnumSelectElement<PersistenceMode> persistenceModesSelect,
-                                               final KieEnumSelectElement<AuditMode> auditModesSelect) {
+                                               final DeploymentsGeneralSettingsView view) {
 
         super(settingsSectionChangeEvent, menuItem, promises);
         this.view = view;
-        this.runtimeStrategiesSelect = runtimeStrategiesSelect;
-        this.persistenceModesSelect = persistenceModesSelect;
-        this.auditModesSelect = auditModesSelect;
     }
 
     @PostConstruct
@@ -79,36 +66,15 @@ public class DeploymentsGeneralSettingsPresenter extends Section<DeploymentDescr
     }
 
     void setupAuditModeSelect(final DeploymentDescriptorModel model) {
-        auditModesSelect.setup(
-                view.getAuditModesContainer(),
-                AuditMode.values(),
-                AuditMode.valueOf(model.getAuditMode()),
-                auditMode -> {
-                    model.setAuditMode(auditMode.name());
-                    fireChangeEvent();
-                });
+        view.setupAuditModeSelect(model);
     }
 
     void setupPersistenceModesSelect(final DeploymentDescriptorModel model) {
-        persistenceModesSelect.setup(
-                view.getPersistenceModesContainer(),
-                PersistenceMode.values(),
-                PersistenceMode.valueOf(model.getPersistenceMode()),
-                persistenceMode -> {
-                    model.setPersistenceMode(persistenceMode.name());
-                    fireChangeEvent();
-                });
+        view.setupPersistenceModesSelect(model);
     }
 
     void setupRuntimeStrategiesSelect(final DeploymentDescriptorModel model) {
-        runtimeStrategiesSelect.setup(
-                view.getRuntimeStrategiesContainer(),
-                RuntimeStrategy.values(),
-                RuntimeStrategy.valueOf(model.getRuntimeStrategy()),
-                runtimeStrategy -> {
-                    model.setRuntimeStrategy(runtimeStrategy.name());
-                    fireChangeEvent();
-                });
+        view.setupRuntimeStrategiesSelect(model);
     }
 
     public void setPersistenceUnitName(final String persistenceUnitName) {

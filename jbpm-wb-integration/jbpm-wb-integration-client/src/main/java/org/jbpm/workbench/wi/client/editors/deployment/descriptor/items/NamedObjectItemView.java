@@ -20,10 +20,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import elemental2.dom.Element;
 import elemental2.dom.Event;
 import elemental2.dom.HTMLAnchorElement;
-import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import elemental2.dom.HTMLInputElement;
 import org.jboss.errai.ui.client.local.api.elemental2.IsElement;
@@ -31,6 +29,10 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
+import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
+import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
+import org.kie.workbench.common.screens.library.client.settings.util.select.KieEnumSelectElement;
 
 @Templated("#root")
 public class NamedObjectItemView implements NamedObjectItemPresenter.View,
@@ -46,7 +48,7 @@ public class NamedObjectItemView implements NamedObjectItemPresenter.View,
 
     @Inject
     @DataField("resolvers")
-    private HTMLDivElement resolversContainer;
+    private KieEnumSelectElement<Resolver> resolversSelect;
 
     @Inject
     @DataField("parameters-link")
@@ -96,8 +98,15 @@ public class NamedObjectItemView implements NamedObjectItemPresenter.View,
     }
 
     @Override
-    public Element getResolversContainer() {
-        return resolversContainer;
+    public void setupResolverSelect(final ItemObjectModel model,
+                                    final Section<?> parentPresenter) {
+        resolversSelect.setup(
+                Resolver.values(),
+                Resolver.valueOf(model.getResolver().toUpperCase()),
+                resolver -> {
+                    model.setResolver(resolver.name().toLowerCase());
+                    parentPresenter.fireChangeEvent();
+                });
     }
 
     @EventHandler("value")

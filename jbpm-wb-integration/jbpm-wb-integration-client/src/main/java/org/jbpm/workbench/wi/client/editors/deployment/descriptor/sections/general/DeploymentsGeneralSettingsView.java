@@ -20,14 +20,17 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
-import elemental2.dom.Element;
-import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLHeadingElement;
 import elemental2.dom.HTMLInputElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.AuditMode;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.PersistenceMode;
+import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.RuntimeStrategy;
+import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.SectionView;
+import org.kie.workbench.common.screens.library.client.settings.util.select.KieEnumSelectElement;
 
 @Templated
 public class DeploymentsGeneralSettingsView implements SectionView<DeploymentsGeneralSettingsPresenter> {
@@ -39,7 +42,7 @@ public class DeploymentsGeneralSettingsView implements SectionView<DeploymentsGe
 
     @Inject
     @DataField("runtime-strategies")
-    private HTMLDivElement runtimeStrategies;
+    private KieEnumSelectElement<RuntimeStrategy> runtimeStrategiesSelect;
 
     @Inject
     @DataField("persistence-unit-name")
@@ -47,7 +50,7 @@ public class DeploymentsGeneralSettingsView implements SectionView<DeploymentsGe
 
     @Inject
     @DataField("persistence-modes")
-    private HTMLDivElement persistenceModes;
+    private KieEnumSelectElement<PersistenceMode> persistenceModesSelect;
 
     @Inject
     @DataField("audit-persistence-unit-name")
@@ -55,7 +58,7 @@ public class DeploymentsGeneralSettingsView implements SectionView<DeploymentsGe
 
     @Inject
     @DataField("audit-modes")
-    private HTMLDivElement auditModes;
+    private KieEnumSelectElement<AuditMode> auditModesSelect;
 
     private DeploymentsGeneralSettingsPresenter presenter;
 
@@ -82,16 +85,34 @@ public class DeploymentsGeneralSettingsView implements SectionView<DeploymentsGe
         this.auditPersistenceUnitName.value = auditPersistenceUnitName;
     }
 
-    public Element getRuntimeStrategiesContainer() {
-        return runtimeStrategies;
+    public void setupAuditModeSelect(final DeploymentDescriptorModel model) {
+        auditModesSelect.setup(
+                AuditMode.values(),
+                AuditMode.valueOf(model.getAuditMode()),
+                auditMode -> {
+                    model.setAuditMode(auditMode.name());
+                    presenter.fireChangeEvent();
+                });
     }
 
-    public Element getAuditModesContainer() {
-        return auditModes;
+    public void setupPersistenceModesSelect(final DeploymentDescriptorModel model) {
+        persistenceModesSelect.setup(
+                PersistenceMode.values(),
+                PersistenceMode.valueOf(model.getPersistenceMode()),
+                persistenceMode -> {
+                    model.setPersistenceMode(persistenceMode.name());
+                    presenter.fireChangeEvent();
+                });
     }
 
-    public Element getPersistenceModesContainer() {
-        return persistenceModes;
+    public void setupRuntimeStrategiesSelect(final DeploymentDescriptorModel model) {
+        runtimeStrategiesSelect.setup(
+                RuntimeStrategy.values(),
+                RuntimeStrategy.valueOf(model.getRuntimeStrategy()),
+                runtimeStrategy -> {
+                    model.setRuntimeStrategy(runtimeStrategy.name());
+                    presenter.fireChangeEvent();
+                });
     }
 
     @Override
