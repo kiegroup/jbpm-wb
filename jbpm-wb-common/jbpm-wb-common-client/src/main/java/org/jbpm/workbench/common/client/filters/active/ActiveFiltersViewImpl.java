@@ -17,6 +17,7 @@
 package org.jbpm.workbench.common.client.filters.active;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 import javax.annotation.PostConstruct;
@@ -178,7 +179,11 @@ public class ActiveFiltersViewImpl implements ActiveFiltersView {
         if (useCallback == false) {
             activeFiltersList.getModel().forEach(f -> f.setCallback(null));
         }
-        activeFiltersList.getModel().clear();
+        final Iterator<ActiveFilterItem> iterator = activeFiltersList.getModel().iterator();
+        while (iterator.hasNext()) {
+            iterator.next();
+            iterator.remove();
+        }
     }
 
     @Override
