@@ -33,7 +33,7 @@ import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.promise.SyncPromises;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -67,10 +67,7 @@ public class DeploymentsGeneralSettingsPresenterTest {
         presenter = spy(new DeploymentsGeneralSettingsPresenter(settingsSectionChangeEvent,
                                                             menuItem,
                                                             promises,
-                                                            view,
-                                                            runtimeStrategiesSelect,
-                                                            persistenceModesSelect,
-                                                            auditModesSelect));
+                                                            view));
     }
 
     @Test
@@ -84,8 +81,7 @@ public class DeploymentsGeneralSettingsPresenterTest {
         model.setRuntimeStrategy("SINGLETON");
 
         presenter.setupRuntimeStrategiesSelect(model);
-
-        verify(runtimeStrategiesSelect).setup(any(), any(), any(), any());
+        verify(view).setupRuntimeStrategiesSelect(eq(model));
     }
 
     @Test
@@ -94,8 +90,7 @@ public class DeploymentsGeneralSettingsPresenterTest {
         model.setPersistenceMode("JPA");
 
         presenter.setupPersistenceModesSelect(model);
-
-        verify(persistenceModesSelect).setup(any(), any(), any(), any());
+        verify(view).setupPersistenceModesSelect(eq(model));
     }
 
     @Test
@@ -104,8 +99,7 @@ public class DeploymentsGeneralSettingsPresenterTest {
         model.setAuditMode("JPA");
 
         presenter.setupAuditModeSelect(model);
-
-        verify(auditModesSelect).setup(any(), any(), any(), any());
+        verify(view).setupAuditModeSelect(eq(model));
     }
 
     @Test

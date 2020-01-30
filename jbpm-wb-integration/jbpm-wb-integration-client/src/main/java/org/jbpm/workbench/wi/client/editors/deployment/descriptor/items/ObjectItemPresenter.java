@@ -21,11 +21,8 @@ import java.util.ArrayList;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import elemental2.dom.Element;
-import org.jbpm.workbench.wi.client.editors.deployment.descriptor.model.Resolver;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.kie.workbench.common.screens.library.client.settings.util.sections.Section;
-import org.kie.workbench.common.screens.library.client.settings.util.select.KieEnumSelectElement;
 import org.kie.workbench.common.widgets.client.widget.ListItemPresenter;
 import org.kie.workbench.common.widgets.client.widget.ListItemView;
 
@@ -33,18 +30,15 @@ import org.kie.workbench.common.widgets.client.widget.ListItemView;
 public class ObjectItemPresenter extends ListItemPresenter<ItemObjectModel, Section<?>, ObjectItemPresenter.View> implements ObjectPresenter {
 
     private final ParametersModal parametersModal;
-    private final KieEnumSelectElement<Resolver> resolversSelect;
 
     ItemObjectModel model;
     Section<?> parentPresenter;
 
     @Inject
     public ObjectItemPresenter(final View view,
-                               final ParametersModal parametersModal,
-                               final KieEnumSelectElement<Resolver> resolversSelect) {
+                               final ParametersModal parametersModal) {
         super(view);
         this.parametersModal = parametersModal;
-        this.resolversSelect = resolversSelect;
     }
 
     @Override
@@ -59,14 +53,7 @@ public class ObjectItemPresenter extends ListItemPresenter<ItemObjectModel, Sect
 
         parametersModal.setup(model.getParameters(), this);
 
-        resolversSelect.setup(
-                view.getResolversContainer(),
-                Resolver.values(),
-                Resolver.valueOf(model.getResolver().toUpperCase()),
-                resolver -> {
-                    model.setResolver(resolver.name().toLowerCase());
-                    parentPresenter.fireChangeEvent();
-                });
+        view.setupResolverSelect(model, parentPresenter);
 
         view.init(this);
 
@@ -109,10 +96,11 @@ public class ObjectItemPresenter extends ListItemPresenter<ItemObjectModel, Sect
 
     public interface View extends ListItemView<ObjectItemPresenter> {
 
-        Element getResolversContainer();
-
         void setValue(final String value);
 
         void setParametersCount(final int size);
+
+        void setupResolverSelect(final ItemObjectModel model,
+                                 final Section<?> parentPresenter);
     }
 }
