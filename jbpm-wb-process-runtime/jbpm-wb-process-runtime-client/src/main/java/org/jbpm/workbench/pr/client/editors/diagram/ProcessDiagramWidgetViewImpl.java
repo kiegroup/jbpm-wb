@@ -18,15 +18,21 @@ package org.jbpm.workbench.pr.client.editors.diagram;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.RequiresResize;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
+import org.gwtbootstrap3.client.ui.Anchor;
+import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.jbpm.workbench.pr.events.ProcessDiagramExpandEvent;
 import org.uberfire.client.callbacks.Callback;
 import org.uberfire.client.views.pfly.widgets.D3;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
@@ -54,11 +60,20 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
     private HTMLDivElement alert;
 
     @Inject
+    @DataField("expand-diagram")
+    private Anchor expandAnchor;
+
+    @Inject
     private ZoomControlView zoomControlView;
+
+    @Inject
+    private Event<ProcessDiagramExpandEvent> processDiagramExpandEvent;
 
     private Callback<String> nodeSelectionCallback;
 
     private D3 d3;
+
+    private boolean isExpand = false;
 
     public void setD3Component(D3 d3) {
         this.d3 = d3;
@@ -67,6 +82,7 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
     @PostConstruct
     public void init() {
         d3 = D3.Builder.get();
+        expandAnchor.setIcon(IconType.EXPAND);
     }
 
     @Override
@@ -76,7 +92,6 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
 
     @Override
     public void displayImage(final String svgContent) {
-
         processDiagramDiv.innerHTML = svgContent;
 
         final D3 svg = d3.select("#processDiagramDiv svg");
@@ -194,5 +209,26 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
     public void expandDiagramContainer() {
         diagramContainerDiv.classList.remove("col-md-10");
         diagramContainerDiv.classList.add("col-md-12");
+        isExpand = true;
+    }
+
+    @EventHandler("expand-diagram")
+    protected void onClickExpandDiagram(final ClickEvent event) {
+        if (isExpand) {
+            diagramContainerDiv.classList.add("col-md-10");
+            diagramContainerDiv.classList.remove("col-md-12");
+            isExpand = false;
+            expandAnchor.setIcon(IconType.EXPAND);
+        } else {
+            expandDiagramContainer();
+            isExpand = true;
+            expandAnchor.setIcon(IconType.COMPRESS);
+        }
+        processDiagramExpandEvent.fire(new ProcessDiagramExpandEvent(isExpand));
+    }
+
+    @Override
+    public void disableExpandAnchor() {
+        expandAnchor.setEnabled(false);
     }
 }

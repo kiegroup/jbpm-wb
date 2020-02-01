@@ -23,6 +23,7 @@ public class ProcessInstanceSelectionEvent {
 
     private ProcessInstanceKey processInstanceKey;
     private boolean forLog;
+    private boolean isFromDiagram = false;
 
     public ProcessInstanceSelectionEvent() {
     }
@@ -42,6 +43,19 @@ public class ProcessInstanceSelectionEvent {
                                     deploymentId,
                                     processInstanceId),
              forLog);
+    }
+
+    public ProcessInstanceSelectionEvent(ProcessInstanceKey processInstanceKey,
+                                         boolean forLog,
+                                         boolean isFromDiagram) {
+
+        this.processInstanceKey = processInstanceKey;
+        this.forLog = forLog;
+        this.isFromDiagram = isFromDiagram;
+    }
+
+    public boolean isFromDiagram() {
+        return isFromDiagram;
     }
 
     public Long getProcessInstanceId() {

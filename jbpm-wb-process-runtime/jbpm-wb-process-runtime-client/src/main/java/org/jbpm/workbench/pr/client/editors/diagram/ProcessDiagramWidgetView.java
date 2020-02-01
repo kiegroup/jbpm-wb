@@ -31,4 +31,6 @@ public interface ProcessDiagramWidgetView extends HasBusyIndicator,
 
     void setOnDiagramNodeSelectionCallback(Callback<String> callback);
 
+    void disableExpandAnchor();
+
 }

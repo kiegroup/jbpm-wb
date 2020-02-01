@@ -396,14 +396,14 @@ public class RemoteProcessRuntimeDataServiceImplTest {
         Integer state = org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE;
         String processName = "process";
 
-        when(queryServicesClient.findProcessInstanceById(processInstanceId)).thenReturn(ProcessInstance.builder().id(processInstanceId).containerId(containerId).processId(processId).state(state).processName(processName).build());
+        when(queryServicesClient.findProcessInstanceById(processInstanceId)).thenReturn(ProcessInstance.builder().id(processInstanceId).containerId(containerId).processId(processId).state(state).parentInstanceId(-1L).processName(processName).build());
         when(processImageService.getProcessInstanceDiagram(serverTemplateId, containerId, processInstanceId, "", "", "")).thenReturn(svgContent);
 
-        List<NodeDefinition> processNodes = Arrays.asList(NodeDefinition.builder().id(1l).name("name-1").type("HumanTask").uniqueId("_1").build(),
-                                                          NodeDefinition.builder().id(2l).name(" ").type("Split").uniqueId("_2").build());
+        List<NodeDefinition> processNodes = Arrays.asList(NodeDefinition.builder().id(1L).name("name-1").type("HumanTask").uniqueId("_1").build(),
+                                                          NodeDefinition.builder().id(2L).name(" ").type("Split").uniqueId("_2").build());
 
-        List<TimerDefinition> timers = Arrays.asList(TimerDefinition.builder().id(1l).nodeId(2l).nodeName("name-1").uniqueId("_1").build(),
-                                                     TimerDefinition.builder().id(2l).nodeId(0l).nodeName(" ").uniqueId("_2").build());
+        List<TimerDefinition> timers = Arrays.asList(TimerDefinition.builder().id(1L).nodeId(2L).nodeName("name-1").uniqueId("_1").build(),
+                                                     TimerDefinition.builder().id(2L).nodeId(0L).nodeName(" ").uniqueId("_2").build());
 
         when(processServicesClient.getProcessDefinition(containerId, processId)).thenReturn(ProcessDefinition.builder().id(processId).nodes(processNodes).timers(timers).build());
 
@@ -412,13 +412,13 @@ public class RemoteProcessRuntimeDataServiceImplTest {
 
         when(queryServicesClient.findActiveNodeInstances(processInstanceId, 0, Integer.MAX_VALUE)).thenReturn(activeNodeInstances);
 
-        List<NodeInstance> completedNodeInstances = Arrays.asList(NodeInstance.builder().id(3l).name("name-3").nodeType("HumanTask").completed(true).build(),
-                                                                  NodeInstance.builder().id(4l).name(" ").nodeType("End").completed(true).build());
+        List<NodeInstance> completedNodeInstances = Arrays.asList(NodeInstance.builder().id(3L).name("name-3").nodeType("HumanTask").completed(true).build(),
+                                                                  NodeInstance.builder().id(4L).name(" ").nodeType("End").completed(true).build());
 
         when(queryServicesClient.findCompletedNodeInstances(processInstanceId, 0, Integer.MAX_VALUE)).thenReturn(completedNodeInstances);
 
-        List<TimerInstance> timerInstances = Arrays.asList(TimerInstance.builder().id(1l).timerId(1l).timerName("timer1").processInstanceId(processInstanceId).repeatLimit(1).period(2l).delay(1).build(),
-                                                           TimerInstance.builder().id(2l).timerId(2l).timerName("time2").processInstanceId(processInstanceId).repeatLimit(1).period(1l).delay(2).build());
+        List<TimerInstance> timerInstances = Arrays.asList(TimerInstance.builder().id(1L).timerId(1L).timerName("timer1").processInstanceId(processInstanceId).repeatLimit(1).period(2l).delay(1).build(),
+                                                           TimerInstance.builder().id(2L).timerId(2l).timerName("time2").processInstanceId(processInstanceId).repeatLimit(1).period(1l).delay(2).build());
 
         when(processAdminServicesClient.getTimerInstances(containerId, processInstanceId)).thenReturn(timerInstances);
 
@@ -463,7 +463,7 @@ public class RemoteProcessRuntimeDataServiceImplTest {
         Integer state = org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED;
         String processName = "process";
 
-        when(queryServicesClient.findProcessInstanceById(processInstanceId)).thenReturn(ProcessInstance.builder().id(processInstanceId).processId(processId).containerId(containerId).state(state).processName(processName).build());
+        when(queryServicesClient.findProcessInstanceById(processInstanceId)).thenReturn(ProcessInstance.builder().id(processInstanceId).processId(processId).containerId(containerId).state(state).parentInstanceId(-1L).processName(processName).build());
 
         when(processImageService.getProcessInstanceDiagram(serverTemplateId, containerId, processInstanceId, "", "", "")).thenReturn(svgContent);
 

@@ -17,6 +17,7 @@
 package org.jbpm.workbench.pr.client.editors.instance.diagram;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -476,5 +477,62 @@ public class ProcessInstanceDiagramPresenterTest {
         summary.setNodeInstances(nodeInstances);
         summary.setTimerInstances(emptyList());
         return summary;
+    }
+
+    @Test
+    public void testLoadProcessInstanceDetails() {
+        ProcessInstanceDiagramSummary summary = createHumanTaskProcessInstanceDiagramSummary(null);
+
+        ProcessInstanceSummary processInstance = ProcessInstanceSummary.builder().withServerTemplateId("serverTemplateId").withDeploymentId("containerId").withProcessInstanceId(1L).withState(ProcessInstance.STATE_ACTIVE).build();
+
+        String completeNodeColor = "#888888";
+        String completeNodeBorderColor = "#888887";
+        String activeNodeBorderColor = "#888886";
+        when(preferences.getProcessInstanceDiagramCompletedNodeColor()).thenReturn(completeNodeColor);
+        when(preferences.getProcessInstanceDiagramCompletedNodeBorderColor()).thenReturn(completeNodeBorderColor);
+        when(preferences.getProcessInstanceDiagramActiveNodeBorderColor()).thenReturn(activeNodeBorderColor);
+        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString())).thenReturn(summary);
+
+        presenter.setProcessInstance(processInstance);
+
+        verify(view, times(2)).setProcessNodes(any());
+        verify(view).setShowOrHideNodeActionsCommand(any());
+        verify(view).setShowOrHideParentAndSubProcessPanelCommand(any());
+        verify(view).showOrHideParentAndSubProcessPanelTriggered();
+        verify(view, never()).expandDiagram();
+        verify(view, never()).disableExpandAnchor();
+        verify(view).showOrHideNodeActionsTriggered();
+    }
+
+    @Test
+    public void testShowOrHideNodeActions() {
+        ProcessInstanceSummary processInstanceActive = ProcessInstanceSummary.builder().withServerTemplateId("serverTemplateId").withDeploymentId("containerId").withState(ProcessInstance.STATE_ACTIVE).build();
+        presenter.showOrHideNodeActions(false, processInstanceActive);
+
+        verify(view).showNodeActions();
+
+        ProcessInstanceSummary processInstanceCompleted = ProcessInstanceSummary.builder().withServerTemplateId("serverTemplateId").withDeploymentId("containerId").withState(ProcessInstance.STATE_COMPLETED).build();
+        presenter.showOrHideNodeActions(false, processInstanceCompleted);
+        verify(view).hideNodeActions();
+    }
+
+    @Test
+    public void testShowOrHideParentAndSubProcessPanel() {
+        ProcessInstanceDiagramSummary summary = createHumanTaskProcessInstanceDiagramSummary(null);
+
+        ProcessInstanceSummary processInstance = ProcessInstanceSummary.builder().withServerTemplateId("serverTemplateId").withDeploymentId("containerId").withProcessInstanceId(1l).withState(ProcessInstance.STATE_ACTIVE).build();
+
+        summary.setParentProcessInstanceSummary(ProcessInstanceSummary.builder().withServerTemplateId("serverTemplateId").withDeploymentId("containerId")
+                                                        .withProcessInstanceId(10l).withProcessName("parentProcess").build());
+        List<ProcessInstanceSummary> list = Arrays.asList(ProcessInstanceSummary.builder().withParentId(10l).withServerTemplateId("serverTemplateId").withDeploymentId("containerId")
+                                                                  .withProcessId("sub-process-one").withProcessInstanceId(11l).withProcessName("sub-process-one").build(),
+                                                          ProcessInstanceSummary.builder().withParentId(10l).withServerTemplateId("serverTemplateId").withDeploymentId("containerId")
+                                                                  .withProcessId("sub-process-two").withProcessInstanceId(12l).withProcessName("sub-process-two").build());
+
+        presenter.showOrHideParentAndSubProcessPanel(processInstance, list);
+        verify(view).showParentAndSubProcessPanel();
+
+        presenter.showOrHideParentAndSubProcessPanel(null, Collections.emptyList());
+        verify(view).hideParentAndSubProcessPanel();
     }
 }

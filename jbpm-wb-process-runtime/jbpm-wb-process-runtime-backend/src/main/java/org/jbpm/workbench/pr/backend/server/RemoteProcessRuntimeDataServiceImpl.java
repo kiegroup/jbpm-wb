@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.pr.backend.server;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -70,6 +71,23 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
         ProcessInstance processInstance = queryServicesClient.findProcessInstanceById(processInstanceKey.getProcessInstanceId());
 
         return new ProcessInstanceSummaryMapper(processInstanceKey.getServerTemplateId()).apply(processInstance);
+    }
+
+    private List<ProcessInstanceSummary> getProcessInstancesByParentId(ProcessInstanceKey processInstanceKey, String containerId) {
+        if (processInstanceKey == null || !processInstanceKey.isValid()) {
+            return null;
+        }
+
+        ProcessServicesClient processServicesClient = getClient(processInstanceKey.getServerTemplateId(), ProcessServicesClient.class);
+        List<ProcessInstance> processInstances = processServicesClient.findProcessInstancesByParent(containerId, processInstanceKey.getProcessInstanceId(),
+                                                                                                    Arrays.asList(org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE,
+                                                                                                                  org.kie.api.runtime.process.ProcessInstance.STATE_COMPLETED,
+                                                                                                                  org.kie.api.runtime.process.ProcessInstance.STATE_ABORTED,
+                                                                                                                  org.kie.api.runtime.process.ProcessInstance.STATE_PENDING,
+                                                                                                                  org.kie.api.runtime.process.ProcessInstance.STATE_SUSPENDED), 0, Integer.MAX_VALUE);
+
+        ProcessInstanceSummaryMapper processInstanceSummaryMapper = new ProcessInstanceSummaryMapper(processInstanceKey.getServerTemplateId());
+        return processInstances.stream().map(processInstanceSummaryMapper).collect(toList());
     }
 
     @Override
@@ -127,6 +145,16 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
         summary.setProcessDefinition(getProcess(new ProcessDefinitionKey(processInstance.getServerTemplateId(),
                                                                          processInstance.getDeploymentId(),
                                                                          processInstance.getProcessId())));
+
+        summary.setSubProcessInstances(getProcessInstancesByParentId(processInstanceKey, processInstanceKey.getDeploymentId()));
+
+        if (processInstance.getParentId() != -1) {
+            QueryServicesClient queryServicesClient = getClient(processInstanceKey.getServerTemplateId(), QueryServicesClient.class);
+            summary.setParentProcessInstanceSummary(new ProcessInstanceSummaryMapper(processInstanceKey.getServerTemplateId())
+                                                            .apply(queryServicesClient.findProcessInstanceById(processInstance.getParentId())));
+        } else {
+            summary.setParentProcessInstanceSummary(null);
+        }
 
         if (processInstance.getState() == org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE) {
             List<NodeInstanceSummary> nodeInstances = getProcessInstanceActiveNodes(processInstanceKey);

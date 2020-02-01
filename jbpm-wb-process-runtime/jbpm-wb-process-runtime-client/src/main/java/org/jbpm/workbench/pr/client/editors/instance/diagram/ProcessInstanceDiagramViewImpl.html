@@ -1,7 +1,23 @@
 <!DOCTYPE html>
 <div class="row kie-process-instance-nodes" style="overflow:auto; padding-top: 20px;">
-    <div class="col-md-2" data-field="node-actions-panel">
-        <div class="panel panel-default">
+    <div class="col-md-2" data-field="diagram-details">
+        <div class="panel panel-default" data-field="parent-sub-process">
+            <div class="panel-heading">
+                <h3 class="panel-title" data-i18n-key="ParentProcessInstance"></h3>
+            </div>
+            <div class="panel-body">
+                <a class="btn-link form-control-static" data-field="parent-process-name" ></a>
+            </div>
+            <div class="panel-heading">
+                <h3 class="panel-title" data-i18n-key="SubProcessInstances"></h3>
+            </div>
+            <div class="panel-body">
+                <div data-field="sub-process-instances"></div>
+                <p class="form-control-static" data-field="none-sub-process"></p>
+            </div>
+        </div>
+
+        <div class="panel panel-default" data-field="node-actions-panel">
             <div class="panel-heading">
                 <h3 class="panel-title" data-i18n-key="NodeActions"></h3>
             </div>

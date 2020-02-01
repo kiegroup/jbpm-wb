@@ -24,20 +24,26 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
 import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLParagraphElement;
+import org.gwtbootstrap3.client.ui.Anchor;
 import org.jboss.errai.common.client.dom.Event;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.ForEvent;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.pr.client.editors.diagram.ProcessDiagramWidgetViewImpl;
+import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 import org.jbpm.workbench.pr.model.NodeInstanceSummary;
+import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessNodeSummary;
 import org.jbpm.workbench.pr.model.TimerInstanceSummary;
 import org.uberfire.client.callbacks.Callback;
 import org.uberfire.client.views.pfly.widgets.D3;
 import org.uberfire.client.views.pfly.widgets.Select;
+import com.google.gwt.user.client.Command;
 
 @Dependent
 @Templated(stylesheet = "ProcessInstanceDiagram.css")
@@ -50,6 +56,10 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
     @Inject
     @DataField("available-nodes")
     private Select processNodes;
+
+    @Inject
+    @DataField("diagram-details")
+    private HTMLDivElement diagramDetails;
 
     @Inject
     @DataField("node-details-panel")
@@ -68,17 +78,42 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
     private HTMLDivElement nodeActionsPanel;
 
     @Inject
+    @DataField("parent-sub-process")
+    private HTMLDivElement parentAndSubProcessDiv;
+
+    @Inject
     private NodeCounterView nodeCounterView;
 
+    @Inject
+    @DataField("sub-process-instances")
+    private SubProcessInstancesView subProcessInstancesView;
+
+    @Inject
+    @DataField("parent-process-name")
+    private Anchor parentProcessAnchor;
+
+    @Inject
+    @DataField("none-sub-process")
+    private HTMLParagraphElement noneSubProcess;
+
     private Callback<String> onProcessNodeSelectedCallback;
+
+    private Command parentSelectedCommand;
 
     private boolean renderBadges = true;
 
     private Map<String, Long> badges = new HashMap<>();
 
+    private Constants constants = Constants.INSTANCE;
+
+    private Command showOrHideParentAndSubProcessPanelCommand;
+
+    private Command showOrHideNodeActionsCommand;
+
     @PostConstruct
     public void init(){
         nodeCounterView.setCallback(() -> showHideBadges());
+        noneSubProcess.classList.add("hidden");
     }
 
     @Override
@@ -89,6 +124,11 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
     @Override
     public void setOnDiagramNodeSelectionCallback(Callback<String> callback) {
         diagram.setOnDiagramNodeSelectionCallback(callback);
+    }
+
+    @Override
+    public void setParentSelectedCommand(Command parentSelectedCommand) {
+        this.parentSelectedCommand = parentSelectedCommand;
     }
 
     @Override
@@ -126,6 +166,52 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
     }
 
     @Override
+    public void showParentAndSubProcessPanel() {
+        parentAndSubProcessDiv.classList.remove("hidden");
+    }
+
+    @Override
+    public void hideParentAndSubProcessPanel() {
+        parentAndSubProcessDiv.classList.add("hidden");
+    }
+
+    @Override
+    public void setShowOrHideParentAndSubProcessPanelCommand(Command command) {
+        this.showOrHideParentAndSubProcessPanelCommand = command;
+    }
+
+    @Override
+    public void showOrHideParentAndSubProcessPanelTriggered() {
+        if (showOrHideParentAndSubProcessPanelCommand != null) {
+            showOrHideParentAndSubProcessPanelCommand.execute();
+        }
+    }
+
+    @Override
+    public void setSubProcessInstances(final List<ProcessInstanceSummary> subProcessInstances) {
+        if (subProcessInstances.isEmpty()) {
+            subProcessInstancesView.getElement().classList.add("hidden");
+            noneSubProcess.classList.remove("hidden");
+            noneSubProcess.textContent = constants.None();
+        } else {
+            subProcessInstancesView.getElement().classList.remove("hidden");
+            subProcessInstancesView.setValue(subProcessInstances);
+            noneSubProcess.classList.add("hidden");
+        }
+    }
+
+    @Override
+    public void setParentProcessInstance(final ProcessInstanceSummary parentProcessInstance) {
+        if (parentProcessInstance == null) {
+            parentProcessAnchor.setText(constants.None());
+            parentProcessAnchor.setEnabled(false);
+        } else {
+            parentProcessAnchor.setText(constants.ProcessInstanceIdAndName(parentProcessInstance.getProcessInstanceId().toString(), parentProcessInstance.getProcessName()));
+            parentProcessAnchor.setEnabled(true);
+        }
+    }
+
+    @Override
     public void setTimerInstances(final List<TimerInstanceSummary> timers) {
         if(timers.isEmpty()){
             timerInstancesView.getElement().classList.add("hidden");
@@ -145,9 +231,30 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
     }
 
     @Override
+    public void showNodeActions() {
+        nodeActionsPanel.classList.remove("hidden");
+    }
+
+    @Override
     public void hideNodeActions() {
-        nodeActionsPanel.classList.remove("col-md-2");
         nodeActionsPanel.classList.add("hidden");
+    }
+
+    @Override
+    public void setShowOrHideNodeActionsCommand(final Command command) {
+        this.showOrHideNodeActionsCommand = command;
+    }
+
+    @Override
+    public void showOrHideNodeActionsTriggered() {
+        if (showOrHideNodeActionsCommand != null) {
+            showOrHideNodeActionsCommand.execute();
+        }
+    }
+
+    @Override
+    public void expandDiagram() {
+        diagramDetails.classList.add("hidden");
         diagram.expandDiagramContainer();
     }
 
@@ -246,5 +353,16 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
     @Override
     public void hideBusyIndicator() {
         diagram.hideBusyIndicator();
+    }
+
+    @EventHandler("parent-process-name")
+    protected void onClickParentInstanceName(final ClickEvent event) {
+        if (parentSelectedCommand != null) {
+            parentSelectedCommand.execute();
+        }
+    }
+
+    public void disableExpandAnchor() {
+        diagram.disableExpandAnchor();
     }
 }

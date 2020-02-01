@@ -33,9 +33,11 @@ import org.jbpm.workbench.common.client.util.DateUtils;
 import org.jbpm.workbench.common.preferences.ManagePreferences;
 import org.jbpm.workbench.pr.client.editors.instance.ProcessInstanceSummaryAware;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
+import org.jbpm.workbench.pr.events.ProcessDiagramExpandEvent;
 import org.jbpm.workbench.pr.events.ProcessInstanceSelectionEvent;
 import org.jbpm.workbench.pr.model.NodeInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessInstanceDiagramSummary;
+import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessNodeSummary;
 import org.jbpm.workbench.pr.model.TimerInstanceSummary;
@@ -119,6 +121,7 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
 
             view.setProcessNodes(processNodes);
 
+            view.setShowOrHideParentAndSubProcessPanelCommand(() -> showOrHideParentAndSubProcessPanel(summary.getParentProcessInstanceSummary(), summary.getSubProcessInstances()));
             nodeInstances = summary.getNodeInstances().stream().sorted(comparing(NodeInstanceSummary::getName, String.CASE_INSENSITIVE_ORDER).thenComparingLong(NodeInstanceSummary::getId)).collect(toList());
 
             nodeInstances.forEach(ni -> {
@@ -136,6 +139,12 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
 
             view.setNodeInstances(nodeInstances);
 
+            view.showOrHideParentAndSubProcessPanelTriggered();
+            view.setSubProcessInstances(summary.getSubProcessInstances());
+            view.setParentProcessInstance(summary.getParentProcessInstanceSummary());
+
+            view.setParentSelectedCommand(() -> listenParentProcessInstanceSelected());
+
             timerInstances = summary.getTimerInstances().stream().sorted(comparing(TimerInstanceSummary::getName, String.CASE_INSENSITIVE_ORDER).thenComparingLong(TimerInstanceSummary::getId)).collect(toList());
 
             timerInstances.forEach(ti -> {
@@ -150,17 +159,33 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
 
             view.setTimerInstances(timerInstances);
 
+            view.setShowOrHideNodeActionsCommand(() -> showOrHideNodeActions(forLog, processInstance));
+
             timers = summary.getProcessDefinition().getTimers().stream().collect(toList());
 
-            if (forLog || processInstance.getState() != ProcessInstance.STATE_ACTIVE) {
-                view.hideNodeActions();
-            }
+            view.showOrHideNodeActionsTriggered();
+            expandDiagram(processInstance, summary);
 
             view.onShow();
         }).getProcessInstanceDiagramSummary(processInstance.getProcessInstanceKey(),
                                             preferences.getProcessInstanceDiagramCompletedNodeColor(),
                                             preferences.getProcessInstanceDiagramCompletedNodeBorderColor(),
                                             preferences.getProcessInstanceDiagramActiveNodeBorderColor());
+    }
+
+    protected void expandDiagram(ProcessInstanceSummary processInstance, ProcessInstanceDiagramSummary summary) {
+        if ((forLog || processInstance.getState() != ProcessInstance.STATE_ACTIVE) && summary.getSubProcessInstances().isEmpty() && summary.getParentProcessInstanceSummary() == null) {
+            view.expandDiagram();
+            view.disableExpandAnchor();
+        }
+    }
+
+    protected void showOrHideParentAndSubProcessPanel(ProcessInstanceSummary parentProcessInstance, List<ProcessInstanceSummary> subProcessInstances) {
+        if (subProcessInstances.isEmpty() && parentProcessInstance == null) {
+            view.hideParentAndSubProcessPanel();
+        } else {
+            view.showParentAndSubProcessPanel();
+        }
     }
 
     public void displayImage(final String svgContent, final String containerId) {
@@ -224,6 +249,11 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
                                                                     forLog));
     }
 
+    public void listenParentProcessInstanceSelected() {
+        processInstanceEvent.fire(new ProcessInstanceSelectionEvent(new ProcessInstanceKey(processInstance.getServerTemplateId(),
+                                                                                           processInstance.getDeploymentId(), processInstance.getParentId()), false, true));
+    }
+
     public void onNodeInstanceReTrigger(final NodeInstanceSummary node) {
         processService.call((Void) -> {
             notification.fire(new NotificationEvent(constants.NodeInstanceReTriggered(node.getLabel()),
@@ -268,5 +298,23 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
     @Inject
     public void setProcessService(final Caller<ProcessRuntimeDataService> processService) {
         this.processService = processService;
+    }
+
+    public void onProcessDiagramExpandEvent(@Observes ProcessDiagramExpandEvent event) {
+        if (event.isExpand()) {
+            view.hideNodeActions();
+            view.hideParentAndSubProcessPanel();
+        } else {
+            view.showOrHideNodeActionsTriggered();
+            view.showOrHideParentAndSubProcessPanelTriggered();
+        }
+    }
+
+    protected void showOrHideNodeActions(boolean forLog, ProcessInstanceSummary processInstance) {
+        if (forLog || processInstance.getState() != ProcessInstance.STATE_ACTIVE) {
+            view.hideNodeActions();
+        } else {
+            view.showNodeActions();
+        }
     }
 }

@@ -183,6 +183,11 @@ public class ProcessInstanceDetailsViewImpl extends Composite implements Process
     }
 
     @Override
+    public void showDiagramTab(){
+        diagramTab.showTab();
+    }
+
+    @Override
     public void displayNotification(String text) {
         notification.fire(new NotificationEvent(text));
     }

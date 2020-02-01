@@ -23,9 +23,11 @@ import java.util.Map;
 
 import org.jboss.errai.common.client.api.annotations.NonPortable;
 import org.jboss.errai.common.client.api.annotations.Portable;
+import org.jboss.errai.databinding.client.api.Bindable;
 import org.jbpm.workbench.common.model.GenericErrorSummary;
 
 @Portable
+@Bindable
 public class ProcessInstanceSummary extends GenericErrorSummary<Long> {
 
     private String serverTemplateId;
