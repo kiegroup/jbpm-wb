@@ -337,6 +337,8 @@ public interface Constants extends Messages {
 
     String NA();
 
+    String ProcessDiagram();
+
     String Seconds();
 
     String Reschedule();
@@ -352,4 +354,12 @@ public interface Constants extends Messages {
     String Default_Process_Definition_Name();
 
     String FilterAll();
+
+    String SubProcessInstances();
+
+    String ParentProcessInstance();
+
+    String None();
+
+    String ProcessInstanceIdAndName(String id, String processName);
 }

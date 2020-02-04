@@ -178,6 +178,10 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
             view.resetTabs(event.isForLog());
         }
         refreshProcessInstance();
+
+        if (event.isFromDiagram()) {
+            view.showDiagramTab();
+        }
     }
 
     protected void refreshProcessInstance(){
@@ -288,5 +292,7 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
         void resetTabs(boolean onlyLogTab);
 
         void displayNotification(String text);
+
+        void showDiagramTab();
     }
 }

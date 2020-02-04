@@ -45,6 +45,7 @@ public class ProcessDiagramPresenter {
 
     public void onProcessSelectionEvent(@Observes final ProcessDefSelectionEvent event) {
         view.showBusyIndicator(constants.Loading());
+        view.disableExpandAnchor();
         String containerId = event.getDeploymentId();
         String serverTemplateId = event.getServerTemplateId();
         String processId = event.getProcessId();

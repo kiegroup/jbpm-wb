@@ -404,6 +404,10 @@ public class ProcessInstanceListPresenter extends AbstractMultiGridPresenter<Pro
                                                                              false));
     }
 
+    public void refreshDetailBreadcrumb(@Observes ProcessInstanceSelectionEvent event) {
+        setupDetailBreadcrumb(constants.ProcessInstanceBreadcrumb(event.getProcessInstanceKey().getProcessInstanceId()));
+    }
+
     public void formClosed(@Observes BeforeClosePlaceEvent closed) {
         if (ProcessInstanceSignalPresenter.SIGNAL_PROCESS_POPUP.equals(closed.getPlace().getIdentifier())) {
             refreshGrid();

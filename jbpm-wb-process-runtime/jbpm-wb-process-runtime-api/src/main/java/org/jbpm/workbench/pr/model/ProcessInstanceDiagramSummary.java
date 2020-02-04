@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.pr.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.errai.common.client.api.annotations.NonPortable;
@@ -32,6 +33,18 @@ public class ProcessInstanceDiagramSummary extends GenericSummary<Long> {
     private ProcessSummary processDefinition;
 
     private List<TimerInstanceSummary> timerInstances;
+
+    private List<ProcessInstanceSummary> subProcessInstances = new ArrayList<>();
+
+    private ProcessInstanceSummary parentProcessInstanceSummary;
+
+    public ProcessInstanceSummary getParentProcessInstanceSummary() {
+        return parentProcessInstanceSummary;
+    }
+
+    public void setParentProcessInstanceSummary(ProcessInstanceSummary parentProcessInstanceSummary) {
+        this.parentProcessInstanceSummary = parentProcessInstanceSummary;
+    }
 
     public ProcessInstanceDiagramSummary() {
     }
@@ -66,6 +79,14 @@ public class ProcessInstanceDiagramSummary extends GenericSummary<Long> {
 
     public List<TimerInstanceSummary> getTimerInstances() {
         return timerInstances;
+    }
+
+    public List<ProcessInstanceSummary> getSubProcessInstances() {
+        return subProcessInstances;
+    }
+
+    public void setSubProcessInstances(List<ProcessInstanceSummary> subProcessInstances) {
+        this.subProcessInstances = subProcessInstances;
     }
 
     @Override
@@ -120,6 +141,16 @@ public class ProcessInstanceDiagramSummary extends GenericSummary<Long> {
 
         public Builder withTimerInstances(List<TimerInstanceSummary> timerInstances) {
             summary.setTimerInstances(timerInstances);
+            return this;
+        }
+
+        public Builder withSubProcessInstances(List<ProcessInstanceSummary> subProcessInstances){
+            summary.setSubProcessInstances(subProcessInstances);
+            return this;
+        }
+
+        public Builder withParentProcessInstanceSummary(ProcessInstanceSummary parentProcessInstance) {
+            summary.setParentProcessInstanceSummary(parentProcessInstance);
             return this;
         }
 

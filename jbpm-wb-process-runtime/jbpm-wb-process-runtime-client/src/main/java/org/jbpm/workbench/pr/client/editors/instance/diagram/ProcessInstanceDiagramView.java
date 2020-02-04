@@ -19,9 +19,11 @@ package org.jbpm.workbench.pr.client.editors.instance.diagram;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import org.jbpm.workbench.pr.model.NodeInstanceSummary;
+import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.ProcessNodeSummary;
 import org.jbpm.workbench.pr.model.TimerInstanceSummary;
 import org.uberfire.client.callbacks.Callback;
@@ -45,9 +47,33 @@ public interface ProcessInstanceDiagramView extends HasBusyIndicator,
 
     void setOnDiagramNodeSelectionCallback(Callback<String> callback);
 
+    void showNodeActions();
+
     void hideNodeActions();
+
+    void setShowOrHideNodeActionsCommand(Command command);
+
+    void showOrHideNodeActionsTriggered();
 
     void setNodeBadges(Map<String, Long> badges);
 
     void onShow();
+
+    void setSubProcessInstances(List<ProcessInstanceSummary> subProcessInstance);
+
+    void setParentProcessInstance(ProcessInstanceSummary parentProcessInstance);
+
+    void setParentSelectedCommand(Command parentSelectedCommand);
+
+    void showParentAndSubProcessPanel();
+
+    void hideParentAndSubProcessPanel();
+
+    void setShowOrHideParentAndSubProcessPanelCommand(Command command);
+
+    void showOrHideParentAndSubProcessPanelTriggered();
+
+    void expandDiagram();
+
+    void disableExpandAnchor();
 }
