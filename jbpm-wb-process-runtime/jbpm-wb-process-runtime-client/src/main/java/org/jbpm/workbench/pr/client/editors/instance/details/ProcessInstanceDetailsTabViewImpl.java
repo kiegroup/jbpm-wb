@@ -20,10 +20,14 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Composite;
 import elemental2.dom.HTMLLabelElement;
 import elemental2.dom.HTMLParagraphElement;
+import org.gwtbootstrap3.client.ui.Anchor;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.pr.client.resources.i18n.Constants;
 
@@ -54,10 +58,6 @@ public class ProcessInstanceDetailsTabViewImpl extends Composite implements Proc
     @Inject
     @DataField
     public HTMLLabelElement parentProcessInstanceIdLabel;
-
-    @Inject
-    @DataField
-    public HTMLParagraphElement parentProcessInstanceIdText;
 
     @Inject
     @DataField
@@ -103,7 +103,13 @@ public class ProcessInstanceDetailsTabViewImpl extends Composite implements Proc
     @DataField
     public HTMLLabelElement activeTasksListLabel;
 
+    @Inject
+    @DataField("parent-process-instanceId")
+    private Anchor parentAnchor;
+
     private Constants constants = Constants.INSTANCE;
+
+    private Command callback;
 
     @PostConstruct
     public void init() {
@@ -116,6 +122,11 @@ public class ProcessInstanceDetailsTabViewImpl extends Composite implements Proc
         activeTasksListLabel.textContent = constants.Active_Tasks();
         currentActivitiesListLabel.textContent = constants.Current_Activities();
         parentProcessInstanceIdLabel.textContent = constants.Parent_Process_Instance();
+    }
+
+    @Override
+    public void setProcessInstanceDetailsCallback(Command callback) {
+        this.callback = callback;
     }
 
     @Override
@@ -149,8 +160,13 @@ public class ProcessInstanceDetailsTabViewImpl extends Composite implements Proc
     }
 
     @Override
-    public void setParentProcessInstanceIdText(final String value) {
-        parentProcessInstanceIdText.textContent = value;
+    public void setParentProcessInstanceIdText(final String value, final boolean hasParentProcessInstanceId) {
+        if (!hasParentProcessInstanceId) {
+            parentAnchor.setEnabled(false);
+        } else {
+            parentAnchor.setEnabled(true);
+        }
+        parentAnchor.setText(value);
     }
 
     @Override
@@ -161,5 +177,12 @@ public class ProcessInstanceDetailsTabViewImpl extends Composite implements Proc
     @Override
     public void setSlaComplianceText(final String value) {
         slaComplianceText.textContent = value;
+    }
+
+    @EventHandler("parent-process-instanceId")
+    protected void onClickParentInstanceId(final ClickEvent event) {
+        if (callback != null) {
+            callback.execute();
+        }
     }
 }

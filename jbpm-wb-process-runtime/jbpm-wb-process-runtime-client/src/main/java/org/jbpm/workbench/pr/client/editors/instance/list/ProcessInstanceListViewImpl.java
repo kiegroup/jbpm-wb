@@ -243,7 +243,6 @@ public class ProcessInstanceListViewImpl extends AbstractMultiGridView<ProcessIn
     }
 
     protected Column<ProcessInstanceSummary, Integer> initSlaComplianceColumn() {
-
         Column<ProcessInstanceSummary, Integer> column = new Column<ProcessInstanceSummary, Integer>(
                 new SLAComplianceCell()) {
 
