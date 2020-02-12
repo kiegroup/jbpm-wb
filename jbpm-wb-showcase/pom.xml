@@ -164,6 +164,12 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>appformer-js-bridge</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
+      <artifactId>appformer-kogito-bridge</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.kie.soup</groupId>
@@ -1849,6 +1855,7 @@
             <compileSourcesArtifact>org.uberfire:uberfire-ssh-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-ssh-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:appformer-js-bridge</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:appformer-kogito-bridge</compileSourcesArtifact>
 
             <compileSourcesArtifact>org.kie.soup:kie-soup-commons</compileSourcesArtifact>
 
