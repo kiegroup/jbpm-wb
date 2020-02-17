@@ -44,8 +44,10 @@ import org.jbpm.workbench.pr.model.TimerInstanceSummary;
 import org.jbpm.workbench.pr.model.TimerSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
 import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.workbench.common.widgets.client.popups.alert.AlertPopupView;
 import org.uberfire.client.annotations.WorkbenchPartTitle;
 import org.uberfire.client.annotations.WorkbenchPartView;
+import org.uberfire.client.views.pfly.widgets.ConfirmPopup;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import static java.util.Collections.emptyList;
@@ -80,11 +82,26 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
     @Inject
     protected ManagePreferences preferences;
 
+    private ConfirmPopup confirmPopup;
+
+    private AlertPopupView alertPopup;
+
     @PostConstruct
     public void init() {
         view.setOnProcessNodeSelectedCallback(id -> onDiagramNodeSelected(id));
         view.setOnDiagramNodeSelectionCallback(id -> onDiagramNodeSelected(id));
+        view.setOnDiagramNodeSelectionDoubleClick(id -> onDiagramNodeSelectedByDoubleClick(id));
         preferences.load();
+    }
+
+    @Inject
+    protected void setConfirmPopup(final ConfirmPopup confirmPopup) {
+        this.confirmPopup = confirmPopup;
+    }
+
+    @Inject
+    protected void setAlertPopup(final AlertPopupView alertPopup){
+        this.alertPopup = alertPopup;
     }
 
     @Override
@@ -207,6 +224,30 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
             view.setNodeInstances(nodeInstances.stream().filter(node -> node.getNodeUniqueName().equals(nodeId)).collect(toList()));
             view.setTimerInstances(getTimerInstanceForNode(nodeId));
         }
+    }
+
+    protected void onDiagramNodeSelectedByDoubleClick(final String nodeId) {
+        List<NodeInstanceSummary> nodeInstanceSummaries = nodeInstances.stream().filter(node -> node.getNodeUniqueName().equals(nodeId)).collect(toList());
+        List<NodeInstanceSummary> nodeInstancesSubProcess = nodeInstanceSummaries.stream().filter(node -> node.getType().equals("SubProcessNode")).collect(toList());
+        if (nodeInstancesSubProcess.size() == 1) {
+            openNavigationConfirmPopup(nodeInstancesSubProcess.get(0));
+        }
+        if (nodeInstancesSubProcess.size() > 1) {
+            alertPopup.alert(constants.AlertPopupTitle(), constants.AlertPopupMessage());
+        }
+        if (nodeInstancesSubProcess.size() < 1) {
+            view.setNodeInstances(nodeInstanceSummaries);
+            view.setTimerInstances(getTimerInstanceForNode(nodeId));
+        }
+        view.setValue(processNodes.stream().filter(node -> node.getUniqueId().equals(nodeId)).findFirst().orElseGet(() -> new ProcessNodeSummary()));
+    }
+
+    protected void openNavigationConfirmPopup(NodeInstanceSummary nodeInstance) {
+        confirmPopup.show(constants.NavigationConfirmTitle(), constants.NavigationConfirmOkButtonText(), constants.NavigationConfirmMessage(),
+                          () -> {
+                              ProcessInstanceKey processInstanceKey = new ProcessInstanceKey(processInstance.getProcessInstanceKey().getServerTemplateId(), processInstance.getProcessInstanceKey().getDeploymentId(), nodeInstance.getReferenceId());
+                              processInstanceEvent.fire(new ProcessInstanceSelectionEvent(processInstanceKey, forLog, true));
+                          });
     }
 
     protected List<TimerInstanceSummary> getTimerInstanceForNode(final String nodeId) {

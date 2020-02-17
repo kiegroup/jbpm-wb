@@ -127,6 +127,11 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
     }
 
     @Override
+    public void setOnDiagramNodeSelectionDoubleClick(Callback<String> callback) {
+        diagram.setOnNodeSelectionDoubleClick(callback);
+    }
+
+    @Override
     public void setParentSelectedCommand(Command parentSelectedCommand) {
         this.parentSelectedCommand = parentSelectedCommand;
     }

@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.RequiresResize;
 import elemental2.dom.HTMLDivElement;
@@ -71,9 +72,13 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
 
     private Callback<String> nodeSelectionCallback;
 
+    private Callback<String> nodeSelectionDoubleClick;
+
     private D3 d3;
 
     private boolean isExpand = false;
+
+    boolean isDoubleClick;
 
     public void setD3Component(D3 d3) {
         this.d3 = d3;
@@ -83,11 +88,17 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
     public void init() {
         d3 = D3.Builder.get();
         expandAnchor.setIcon(IconType.EXPAND);
+        this.isDoubleClick = false;
     }
 
     @Override
     public void setOnDiagramNodeSelectionCallback(final Callback<String> callback) {
         this.nodeSelectionCallback = callback;
+    }
+
+    @Override
+    public void setOnNodeSelectionDoubleClick(final Callback<String> callback) {
+        this.nodeSelectionDoubleClick = callback;
     }
 
     @Override
@@ -146,6 +157,8 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
         }
 
         final D3.Selection selectAll = select();
+        d3.select("svg").on("dblclick.zoom", () -> {
+        });
         selectAll.on("mouseenter", () -> {
             Object target = D3.Builder.get().getEvent().getCurrentTarget();
             D3 node = d3.select(target);
@@ -158,10 +171,20 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
             node.style("cursor", "default");
             node.attr("opacity", 1);
         });
+        DoubleClickTimer timer = new DoubleClickTimer();
         selectAll.on("click", () -> {
+            isDoubleClick = false;
             Object target = D3.Builder.get().getEvent().getCurrentTarget();
             D3 node = d3.select(target);
-            nodeSelectionCallback.callback((String) node.attr("bpmn2nodeid"));
+            timer.setTarget(node);
+            timer.schedule(50);
+        });
+        selectAll.on("dblclick", () -> {
+            isDoubleClick = true;
+            timer.cancel();
+            Object target = D3.Builder.get().getEvent().getCurrentTarget();
+            D3 node = d3.select(target);
+            nodeSelectionDoubleClick.callback((String) node.attr("bpmn2nodeid"));
         });
     }
 
@@ -230,5 +253,21 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
     @Override
     public void disableExpandAnchor() {
         expandAnchor.setEnabled(false);
+    }
+
+    private class DoubleClickTimer extends Timer {
+
+        public D3 node;
+
+        public void setTarget(D3 node) {
+            this.node = node;
+        }
+
+        @Override
+        public void run() {
+            if(!isDoubleClick) {
+                nodeSelectionCallback.callback((String) node.attr("bpmn2nodeid"));
+            }
+        }
     }
 }
