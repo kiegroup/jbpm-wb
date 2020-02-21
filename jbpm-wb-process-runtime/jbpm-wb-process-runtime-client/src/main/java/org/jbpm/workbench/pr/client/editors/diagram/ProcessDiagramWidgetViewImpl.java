@@ -146,6 +146,8 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
         }
 
         final D3.Selection selectAll = select();
+        d3.select("svg").on("dblclick.zoom", () -> {
+        });
         selectAll.on("mouseenter", () -> {
             Object target = D3.Builder.get().getEvent().getCurrentTarget();
             D3 node = d3.select(target);
