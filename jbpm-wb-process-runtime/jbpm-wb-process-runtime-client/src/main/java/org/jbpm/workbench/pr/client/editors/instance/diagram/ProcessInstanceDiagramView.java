@@ -76,4 +76,6 @@ public interface ProcessInstanceDiagramView extends HasBusyIndicator,
     void expandDiagram();
 
     void disableExpandAnchor();
+
+    void setOnDiagramNodeSelectionDoubleClick(Callback<String> callback);
 }

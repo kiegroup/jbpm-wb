@@ -362,4 +362,14 @@ public interface Constants extends Messages {
     String None();
 
     String ProcessInstanceIdAndName(String id, String processName);
+
+    String NavigationConfirmTitle();
+
+    String NavigationConfirmOkButtonText();
+
+    String NavigationConfirmMessage();
+
+    String AlertPopupTitle();
+
+    String AlertPopupMessage();
 }

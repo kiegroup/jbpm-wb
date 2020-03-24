@@ -37,12 +37,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.workbench.common.widgets.client.popups.alert.AlertPopupView;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.uberfire.client.views.pfly.widgets.ConfirmPopup;
 import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.workbench.events.NotificationEvent;
+import org.uberfire.mvp.Command;
 
 import static com.google.common.collect.Maps.immutableEntry;
 import static java.util.Collections.emptyList;
@@ -75,6 +78,12 @@ public class ProcessInstanceDiagramPresenterTest {
 
     @Mock
     protected ManagePreferences preferences;
+
+    @Mock
+    ConfirmPopup confirmPopup;
+
+    @Mock
+    AlertPopupView alertPopup;
 
     @InjectMocks
     ProcessInstanceDiagramPresenter presenter;
@@ -288,6 +297,66 @@ public class ProcessInstanceDiagramPresenterTest {
         verify(view).setTimerInstances(singletonList(timerInstance));
         verify(view).setNodeBadges(any());
         verify(view).onShow();
+    }
+
+    @Test
+    public void testOnDiagramNodeSelectedByDoubleClick() {
+        ProcessInstanceSummary processInstance = ProcessInstanceSummary.builder().withServerTemplateId("serverTemplateId").withDeploymentId("containerId").withProcessInstanceId(1L).withState(ProcessInstance.STATE_ACTIVE).build();
+
+        ProcessNodeSummary timerNode = new ProcessNodeSummary(1L, "name-1", "Timer", "_11");
+        List<ProcessNodeSummary> nodes = Arrays.asList(new ProcessNodeSummary(0L, " ", "Start", "_0"), timerNode,
+                                                       new ProcessNodeSummary(2L, " ", "Split", "_2"));
+
+        NodeInstanceSummary timerNodeInstance = NodeInstanceSummary.builder().withId(1l).withName("name-1").withNodeUniqueName("_2").withType("Timer").withCompleted(false).build();
+
+        List<NodeInstanceSummary> nodeInstances = Arrays.asList(
+                timerNodeInstance,
+                NodeInstanceSummary.builder().withId(2L).withName(" ").withNodeUniqueName("_1").withType("SubProcessNode").withCompleted(false).build(),
+                NodeInstanceSummary.builder().withId(3L).withName("name-3").withNodeUniqueName("_3").withType("HumanTask").withCompleted(true).build(),
+                NodeInstanceSummary.builder().withId(4L).withName(" ").withNodeUniqueName("_4").withType("End").withCompleted(true).build()
+        );
+
+        TimerInstanceSummary timerInstance = TimerInstanceSummary.builder().withId(1l).withTimerId(0l).withName("t1").build();
+
+        List<TimerInstanceSummary> timerInstances = Arrays.asList(
+                timerInstance,
+                TimerInstanceSummary.builder().withId(2L).withTimerId(1l).withName("t2").build()
+        );
+
+        ProcessInstanceDiagramSummary summary = new ProcessInstanceDiagramSummary();
+        summary.setProcessDefinition(ProcessSummary.builder().nodes(nodes).timers(singletonList(TimerSummary.builder().id(0l).uniqueId("_1").build())).build());
+        summary.setNodeInstances(nodeInstances);
+        summary.setTimerInstances(timerInstances);
+
+        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString())).thenReturn(summary);
+
+        presenter.setProcessInstance(processInstance);
+
+        presenter.onDiagramNodeSelectedByDoubleClick("_1");
+
+        verify(view, never()).setNodeInstances(singletonList(timerNodeInstance));
+        ArgumentCaptor<Command> captureCommand = ArgumentCaptor.forClass(Command.class);
+        verify(confirmPopup).show(any(), any(), any(), captureCommand.capture());
+        captureCommand.getValue().execute();
+        verify(processInstanceEvent).fire(any());
+        verify(view, never()).setTimerInstances(singletonList(timerInstance));
+        verify(view).onShow();
+
+        List<NodeInstanceSummary> nodeInstancesMultipleSubProcess = Arrays.asList(
+                timerNodeInstance,
+                NodeInstanceSummary.builder().withId(2L).withName("one").withNodeUniqueName("_1").withType("SubProcessNode").withCompleted(false).build(),
+                NodeInstanceSummary.builder().withId(5L).withName("two").withNodeUniqueName("_1").withType("SubProcessNode").withCompleted(false).build(),
+                NodeInstanceSummary.builder().withId(3L).withName("name-3").withNodeUniqueName("_3").withType("HumanTask").withCompleted(true).build(),
+                NodeInstanceSummary.builder().withId(4L).withName(" ").withNodeUniqueName("_4").withType("End").withCompleted(true).build()
+        );
+        summary.setNodeInstances(nodeInstancesMultipleSubProcess);
+        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString())).thenReturn(summary);
+        presenter.setProcessInstance(processInstance);
+
+        presenter.onDiagramNodeSelectedByDoubleClick("_1");
+        verify(view, never()).setNodeInstances(singletonList(timerNodeInstance));
+        verify(alertPopup).alert(any(), any());
+        verify(view, never()).setTimerInstances(singletonList(timerInstance));
     }
 
     @Test
