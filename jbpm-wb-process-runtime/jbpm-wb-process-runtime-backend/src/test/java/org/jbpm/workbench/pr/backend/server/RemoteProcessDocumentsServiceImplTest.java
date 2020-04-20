@@ -19,6 +19,7 @@ package org.jbpm.workbench.pr.backend.server;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import org.jbpm.document.Document;
@@ -65,10 +66,7 @@ public class RemoteProcessDocumentsServiceImplTest {
 
     @Test
     public void testGetData() {
-        PageResponse<ProcessVariableSummary> variablesResponse = new PageResponse<>();
-        variablesResponse.setPageRowList(singletonList(newDocumentVariable()));
-
-        when(processVariablesService.getData(any())).thenReturn(variablesResponse);
+        when(processVariablesService.getProcessVariables(any())).thenReturn(singletonList(newDocumentVariable()));
 
         QueryFilter queryFilter = new PortableQueryFilter(0,
                                                           10,
@@ -93,12 +91,10 @@ public class RemoteProcessDocumentsServiceImplTest {
     @Test
     public void testGetDataPaginated() {
         int totalItems = 12;
-
-        PageResponse<ProcessVariableSummary> variablesResponse = new PageResponse<>();
-        variablesResponse.setPageRowList(new ArrayList<>());
-        IntStream.range(0, totalItems).forEach(i -> variablesResponse.getPageRowList().add(newDocumentVariable()));
-
-        when(processVariablesService.getData(any())).thenReturn(variablesResponse);
+        List<ProcessVariableSummary> processVariableSummaries = new ArrayList<>();
+        IntStream.range(0, totalItems).forEach(i -> processVariableSummaries.add(newDocumentVariable()));
+        processVariableSummaries.add(new ProcessVariableSummary("", "", 9L, "", "test", 0l, "test"));
+        when(processVariablesService.getProcessVariables(any())).thenReturn(processVariableSummaries);
 
         QueryFilter queryFilter = new PortableQueryFilter(0,
                                                           10,
@@ -111,6 +107,8 @@ public class RemoteProcessDocumentsServiceImplTest {
 
         final PageResponse<DocumentSummary> response = processDocumentsService.getData(queryFilter);
 
+        assertEquals(13, processVariableSummaries.size());
+        assertEquals(10, response.getPageRowList().size());
         assertEquals(totalItems,
                      response.getTotalRowSize());
         assertEquals(0,

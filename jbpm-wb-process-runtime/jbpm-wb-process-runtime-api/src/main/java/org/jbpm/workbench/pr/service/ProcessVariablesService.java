@@ -19,6 +19,7 @@ package org.jbpm.workbench.pr.service;
 import java.util.List;
 
 import org.jboss.errai.bus.server.annotations.Remote;
+import org.jbpm.workbench.common.model.QueryFilter;
 import org.jbpm.workbench.common.service.GenericServiceEntryPoint;
 import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessVariableKey;
@@ -29,4 +30,6 @@ public interface ProcessVariablesService extends GenericServiceEntryPoint<Proces
 
     List<ProcessVariableSummary> getVariableHistory(ProcessInstanceKey processInstance,
                                                     String variableName);
+
+    List<ProcessVariableSummary> getProcessVariables(QueryFilter filter);
 }

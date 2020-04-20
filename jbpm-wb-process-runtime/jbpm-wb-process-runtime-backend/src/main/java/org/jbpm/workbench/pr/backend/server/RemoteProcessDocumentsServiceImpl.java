@@ -76,8 +76,7 @@ public class RemoteProcessDocumentsServiceImpl implements ProcessDocumentsServic
     private List<DocumentSummary> getDocuments(QueryFilter filter) throws NumberFormatException {
 
         String serverTemplateId = (String) filter.getParams().get("serverTemplateId");
-
-        Collection<ProcessVariableSummary> processVariables = processVariablesService.getData(filter).getPageRowList();
+        Collection<ProcessVariableSummary> processVariables = processVariablesService.getProcessVariables(filter);
         SimpleDateFormat sdf = new SimpleDateFormat(Document.DOCUMENT_DATE_PATTERN);
         List<DocumentSummary> documents = new ArrayList<DocumentSummary>();
         for (ProcessVariableSummary pv : processVariables) {

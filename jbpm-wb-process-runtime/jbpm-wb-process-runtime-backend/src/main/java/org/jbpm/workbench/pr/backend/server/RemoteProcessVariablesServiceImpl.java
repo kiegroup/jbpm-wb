@@ -66,7 +66,8 @@ public class RemoteProcessVariablesServiceImpl extends AbstractKieServerService 
         return response;
     }
 
-    protected List<ProcessVariableSummary> getProcessVariables(QueryFilter filter) {
+    @Override
+    public List<ProcessVariableSummary> getProcessVariables(QueryFilter filter) {
         Long processInstanceId = null;
         String processId = "";
         String deploymentId = "";
