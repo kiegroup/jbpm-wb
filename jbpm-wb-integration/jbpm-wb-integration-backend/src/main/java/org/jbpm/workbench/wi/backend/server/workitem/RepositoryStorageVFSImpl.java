@@ -32,7 +32,7 @@ import org.guvnor.structure.repositories.RepositoryRemovedEvent;
 import org.jbpm.process.workitem.repository.service.RepoData;
 import org.jbpm.process.workitem.repository.storage.InMemoryRepositoryStorage;
 import org.jbpm.workbench.wi.workitems.model.ServiceTasksConfiguration;
-import org.kie.soup.commons.xstream.XStreamUtils;
+import org.kie.soup.xstream.XStreamUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.io.IOService;
