@@ -1,6 +1,6 @@
 # jBPM Case Management Showcase
 
-Showcase application for managing Case instances backed by a running [Kie Server](https://docs.jboss.org/drools/release/6.5.0.Final/drools-docs/html_single/index.html#d0e24201).
+Showcase application for managing Case instances backed by a running [Kie Server](https://docs.jboss.org/drools/release/latest/drools-docs/html_single/#_ch.kie.server
 
 ## Getting Started
 
@@ -20,8 +20,8 @@ The default login for the showcase app is admin/admin
 There are a few supported ways for you to connect and authenticate to a running Kie Server.
 These settings are provded using system variables to the running application server where the Case Management application is runnig.
 If running on Wildfly, please check the different ways you can provide these settings:
-- [General configuration concepts](https://docs.jboss.org/author/display/WFLY10/General+configuration+concepts)
-- [Command line parameters](https://docs.jboss.org/author/display/WFLY10/Command+line+parameters)
+- [A quick tour](https://docs.wildfly.org/18/Getting_Started_Guide.html#wildfly---a-quick-tour)
+- [Starting Wildfly](https://docs.wildfly.org/18/Getting_Started_Guide.html#starting-wildfly-10)
 
 ### General settings
 
@@ -52,7 +52,7 @@ This can be done via two different methods:
 
     *org.kie.server.token*=kieserver1!
 
-For more information about how to set up and operate the Kie Server, please read the upstream [documentation](https://docs.jboss.org/drools/release/6.5.0.Final/drools-docs/html_single/index.html#d0e24201).
+For more information about how to set up and operate the Kie Server, please read the upstream [documentation](https://docs.jboss.org/drools/release/latest/drools-docs/html_single/#_ch.kie.server).
 
 ### Authentication setup
 
@@ -73,9 +73,9 @@ The development mode allows you to manage Case instances using an in memory data
 To start the showcase in development mode, please make sure the system property *org.kie.server.location* is not provided.
 In order to create case instances, a list of case definitions is set via JSON format [case_definitions.json](./src/main/resources/case_definitions.json).
 
-## Deploying to Wildfly 10
+## Deploying to Wildfly 18
 
-Download and unzip the WildFly 10 distribution. Let's call the root of the distribution WILDFLY_HOME. This directory is named after the WildFly version, so for example wildfly-10.0.0.Final.
+Download and unzip the WildFly 18 distribution. Let's call the root of the distribution WILDFLY_HOME. This directory is named after the WildFly version, so for example wildfly-18.0.1.Final.
 
 Build the jbpm-wb-case-mgmt-showcase project using the following Maven command
 ```
@@ -97,4 +97,4 @@ Start the server by running:
 
 Verify the application is running. Go to http://SERVER:PORT/jbpm-wb-case-mgmt-showcase/ and type the specified username and password. You should see simple XML message with basic information about the server.
 
-For more details, please check the [Getting Started Guide](https://docs.jboss.org/author/display/WFLY10/Getting+Started+Guide).
+For more details, please check the [Getting Started Guide](https://docs.wildfly.org/18//Getting+Started+Guide).
