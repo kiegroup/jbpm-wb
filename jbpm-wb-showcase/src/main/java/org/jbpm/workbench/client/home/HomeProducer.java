@@ -27,7 +27,7 @@ import org.kie.workbench.common.screens.home.model.HomeModelProvider;
 import org.kie.workbench.common.screens.home.model.ModelUtils;
 import org.uberfire.client.mvp.PlaceManager;
 
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.*;
+import static org.kie.workbench.common.services.shared.resources.PerspectiveIds.*;
 import static org.uberfire.workbench.model.ActivityResourceType.PERSPECTIVE;
 
 @ApplicationScoped

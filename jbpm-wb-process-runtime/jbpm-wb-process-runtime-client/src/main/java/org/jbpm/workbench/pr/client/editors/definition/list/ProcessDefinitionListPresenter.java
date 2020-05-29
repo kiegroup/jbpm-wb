@@ -24,6 +24,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+
 import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
 import org.jboss.errai.bus.client.api.messaging.Message;
@@ -59,11 +60,10 @@ import org.uberfire.workbench.model.menu.Menus;
 import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
 import static org.jbpm.workbench.common.client.util.DataSetUtils.getColumnStringValue;
 import static org.jbpm.workbench.pr.model.ProcessDefinitionDataSetConstants.*;
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.PROCESS_INSTANCES;
-
+import static org.kie.workbench.common.services.shared.resources.PerspectiveIds.PROCESS_INSTANCES;
 @Dependent
 @WorkbenchScreen(identifier = PerspectiveIds.PROCESS_DEFINITION_LIST_SCREEN)
-public class ProcessDefinitionListPresenter extends AbstractMultiGridPresenter<ProcessSummary,ProcessDefinitionListPresenter.ProcessDefinitionListView> {
+public class ProcessDefinitionListPresenter extends AbstractMultiGridPresenter<ProcessSummary, ProcessDefinitionListPresenter.ProcessDefinitionListView> {
 
     @Inject
     PopupFormDisplayerView formDisplayPopUp;
@@ -85,7 +85,7 @@ public class ProcessDefinitionListPresenter extends AbstractMultiGridPresenter<P
     }
 
     @Inject
-    public void setProcessDefinitionListBasicFiltersPresenter(final ProcessDefinitionListBasicFiltersPresenter processDefinitionListBasicFiltersPresenter){
+    public void setProcessDefinitionListBasicFiltersPresenter(final ProcessDefinitionListBasicFiltersPresenter processDefinitionListBasicFiltersPresenter) {
         this.processDefinitionListBasicFiltersPresenter = processDefinitionListBasicFiltersPresenter;
     }
 
@@ -157,6 +157,7 @@ public class ProcessDefinitionListPresenter extends AbstractMultiGridPresenter<P
     }
 
     private final List<ProcessSummary> myProcessDefinitionsFromDataSet = new ArrayList<ProcessSummary>();
+
     @Override
     protected DataSetReadyCallback getDataSetReadyCallback(Integer startRange, FilterSettings tableSettings) {
         return errorHandlerBuilder.get().withUUID(tableSettings.getUUID()).withDataSetCallback(
@@ -271,5 +272,4 @@ public class ProcessDefinitionListPresenter extends AbstractMultiGridPresenter<P
     public interface ProcessDefinitionListView extends MultiGridView<ProcessSummary, ProcessDefinitionListPresenter> {
 
     }
-
 }

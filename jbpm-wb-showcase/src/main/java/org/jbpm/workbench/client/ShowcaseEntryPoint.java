@@ -45,7 +45,7 @@ import org.uberfire.workbench.model.menu.MenuFactory;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
 
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.*;
+import static org.kie.workbench.common.services.shared.resources.PerspectiveIds.*;
 
 @EntryPoint
 @Bundle("i18n/HomeConstants.properties")

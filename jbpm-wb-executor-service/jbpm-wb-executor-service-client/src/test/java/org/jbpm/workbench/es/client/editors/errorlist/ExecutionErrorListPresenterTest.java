@@ -70,7 +70,7 @@ import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_P
 import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_TASK_ID;
 import static org.jbpm.workbench.es.model.ExecutionErrorDataSetConstants.*;
 import static org.junit.Assert.*;
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.*;
+import static org.kie.workbench.common.services.shared.resources.PerspectiveIds.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
