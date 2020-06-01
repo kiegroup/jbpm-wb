@@ -39,6 +39,11 @@ public class HomeProducer implements HomeModelProvider {
     @Inject
     private TranslationService translationService;
 
+    @Override
+    public void initialize(Runnable done) {
+        done.run();
+    }
+
     public HomeModel get(ProfilePreferences profilePreferences) {
         final HomeModel model = new HomeModel(translationService.format(HomeConstants.Heading),
                                               translationService.format(HomeConstants.SubHeading),
