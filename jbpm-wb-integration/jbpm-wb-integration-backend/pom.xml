@@ -246,7 +246,13 @@
       <groupId>org.mvel</groupId>
       <artifactId>mvel2</artifactId>
     </dependency>
-
+    
+    <dependency>
+      <groupId>org.jboss.spec.javax.servlet</groupId>
+      <artifactId>jboss-servlet-api_3.1_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
     <!-- Test dependencies -->
     <dependency>
       <groupId>ch.qos.logback</groupId>
