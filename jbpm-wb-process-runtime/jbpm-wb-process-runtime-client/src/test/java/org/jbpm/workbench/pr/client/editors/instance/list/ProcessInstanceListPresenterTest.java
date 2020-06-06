@@ -82,10 +82,10 @@ import static org.dashbuilder.dataset.filter.FilterFactory.lowerOrEqualsTo;
 import static org.jbpm.workbench.common.client.PerspectiveIds.*;
 import static org.jbpm.workbench.pr.model.ProcessInstanceDataSetConstants.*;
 import static org.junit.Assert.*;
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.EXECUTION_ERRORS;
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.JOBS;
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.TASKS;
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.TASKS_ADMIN;
+import static org.kie.workbench.common.services.shared.resources.PerspectiveIds.EXECUTION_ERRORS;
+import static org.kie.workbench.common.services.shared.resources.PerspectiveIds.JOBS;
+import static org.kie.workbench.common.services.shared.resources.PerspectiveIds.TASKS;
+import static org.kie.workbench.common.services.shared.resources.PerspectiveIds.TASKS_ADMIN;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)

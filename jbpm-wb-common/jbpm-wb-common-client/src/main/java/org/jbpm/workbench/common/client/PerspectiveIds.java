@@ -16,7 +16,7 @@
 
 package org.jbpm.workbench.common.client;
 
-public interface PerspectiveIds extends org.kie.workbench.common.workbench.client.PerspectiveIds {
+public interface PerspectiveIds extends org.kie.workbench.common.services.shared.resources.PerspectiveIds {
 
     String SEARCH_PARAMETER_PROCESS_INSTANCE_ID = "processInstanceId";
     String SEARCH_PARAMETER_PROCESS_DEFINITION_ID = "processDefinitionId";

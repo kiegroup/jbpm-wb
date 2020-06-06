@@ -65,7 +65,7 @@ import org.uberfire.workbench.model.ActivityResourceType;
 import static java.util.Collections.emptyList;
 import static org.jbpm.workbench.common.client.PerspectiveIds.SEARCH_PARAMETER_PROCESS_DEFINITION_ID;
 import static org.junit.Assert.*;
-import static org.kie.workbench.common.workbench.client.PerspectiveIds.PROCESS_INSTANCES;
+import static org.kie.workbench.common.services.shared.resources.PerspectiveIds.PROCESS_INSTANCES;
 import static org.mockito.Mockito.*;
 
 @RunWith(GwtMockitoTestRunner.class)
