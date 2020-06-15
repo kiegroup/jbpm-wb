@@ -32,7 +32,7 @@
   <properties>
     <gwt.memory.settings>-Xmx3g -Xms1g -Xss1M</gwt.memory.settings>
     <!-- Add the absolute path for $JBOSS_HOME below to manage another instance -->
-    <jboss.home>${project.build.directory}/wildfly-${version.org.jboss.errai.wildfly}</jboss.home>
+    <jboss.home>${project.build.directory}/wildfly-${version.org.wildfly}</jboss.home>
   </properties>
 
   <dependencies>
@@ -776,7 +776,7 @@
                   <goal>exec</goal>
                 </goals>
                 <configuration>
-                  <executable>${project.build.directory}/wildfly-${version.org.jboss.errai.wildfly}/bin/jboss-cli.sh</executable>
+                  <executable>${project.build.directory}/wildfly-${version.org.wildfly}/bin/jboss-cli.sh</executable>
                   <arguments>
                     <argument>--file=${project.basedir}/src/main/config/jbpm-custom.cli</argument>
                   </arguments>
