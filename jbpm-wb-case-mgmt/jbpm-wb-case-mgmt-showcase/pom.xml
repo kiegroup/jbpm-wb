@@ -716,7 +716,7 @@
             </goals>
             <configuration>
               <systemPropertyVariables>
-                <wildfly.war>${project.build.finalName}-wildfly18.war</wildfly.war>
+                <wildfly.war>${project.build.finalName}-wildfly19.war</wildfly.war>
                 <arquillian.launch>wildfly-managed</arquillian.launch>
                 <jboss.home>${jboss.home}</jboss.home>
                 <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
