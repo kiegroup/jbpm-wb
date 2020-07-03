@@ -282,7 +282,8 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
 
     protected void showHideBadges(){
         final D3 d3 = D3.Builder.get();
-        final D3 nodes = d3.selectAll("#processDiagramDiv svg [jbpm-node-badge]");
+        final String processDiagramDivId = diagram.getProcessDiagramDivId();
+        final D3 nodes = d3.selectAll("#" + processDiagramDivId + " svg [jbpm-node-badge]");
         nodes.attr("visibility", nodeCounterView.showBadges() ? "visible" : "hidden");
     }
 
@@ -292,8 +293,8 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
         }
 
         final D3 d3 = D3.Builder.get();
-
-        final D3.Selection svg = d3.select("#processDiagramDiv svg");
+        final String processDiagramDivId = diagram.getProcessDiagramDivId();
+        final D3.Selection svg = d3.select("#" + processDiagramDivId + " svg");
 
         if(svg.empty()){
             //Couldn't find SVG element
@@ -308,7 +309,7 @@ public class ProcessInstanceDiagramViewImpl extends Composite implements Process
 
         final boolean isOryx = svg.attr(":xmlns:oryx") != null;
         badges.forEach((nodeId, count) -> {
-            final String path = "#processDiagramDiv svg [bpmn2nodeid='" + nodeId + "'] " + (isOryx ? ".stencils" : "");
+            final String path = "#" + processDiagramDivId + " svg [bpmn2nodeid='" + nodeId + "'] " + (isOryx ? ".stencils" : "");
             final D3 node = d3.select(path);
             if (((D3.Selection) node).empty()){
                 return;

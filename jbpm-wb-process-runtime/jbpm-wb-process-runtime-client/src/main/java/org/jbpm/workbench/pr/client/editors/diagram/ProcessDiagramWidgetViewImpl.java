@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.RequiresResize;
@@ -78,7 +79,7 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
 
     private boolean isExpand = false;
 
-    boolean isDoubleClick;
+    protected boolean isDoubleClick;
 
     public void setD3Component(D3 d3) {
         this.d3 = d3;
@@ -89,6 +90,8 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
         d3 = D3.Builder.get();
         expandAnchor.setIcon(IconType.EXPAND);
         this.isDoubleClick = false;
+
+        processDiagramDiv.id = DOM.createUniqueId();
     }
 
     @Override
@@ -105,7 +108,7 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
     public void displayImage(final String svgContent) {
         processDiagramDiv.innerHTML = svgContent;
 
-        final D3 svg = d3.select("#processDiagramDiv svg");
+        final D3 svg = d3.select("#" + processDiagramDiv.id + " svg");
 
         String[] viewBoxValues = svg.attr("viewBox").toString().split(" ");
 
@@ -269,5 +272,9 @@ public class ProcessDiagramWidgetViewImpl extends Composite implements ProcessDi
                 nodeSelectionCallback.callback((String) node.attr("bpmn2nodeid"));
             }
         }
+    }
+
+    public String getProcessDiagramDivId() {
+        return processDiagramDiv.id;
     }
 }
