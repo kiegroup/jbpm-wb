@@ -18,6 +18,7 @@ package org.jbpm.workbench.pr.client.editors.diagram;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import elemental2.dom.HTMLDivElement;
+import org.gwtbootstrap3.client.ui.Anchor;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +28,8 @@ import org.mockito.Mock;
 import org.uberfire.client.views.pfly.widgets.D3;
 import org.uberfire.client.views.pfly.widgets.D3.ZoomEvent;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -45,6 +48,9 @@ public class ProcessDiagramWidgetViewTest {
 
     @Mock
     private HTMLDivElement alertDiv;
+
+    @Mock
+    Anchor expandAnchor;
 
     @Mock
     private ZoomControlView zoomControlView;
@@ -86,6 +92,13 @@ public class ProcessDiagramWidgetViewTest {
         scaleExtent[1] = 3;
 
         verify(zoomMock).scaleExtent(eq(scaleExtent));
+    }
+
+    @Test
+    public void testInit() {
+        view.init();
+        assertFalse(view.isDoubleClick);
+        assertNotNull(view.getProcessDiagramDivId());
     }
 
     @Test
