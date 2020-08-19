@@ -16,6 +16,6 @@ Please make sure your code conforms to these rules, before submitting pull reque
  * Java source files indentation is 4 spaces (no tabs!)
  * HTML and XML files indentation is 2 spaces (again no tabs)
  * maximum line length is 128 characters
- * license header in every source file
+ * license header in every source file.
  * do not use @author javadoc annotations (see the kiegroup guidelines for more info)
  * use Unix style line endings (\n)
