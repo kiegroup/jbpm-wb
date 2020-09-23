@@ -76,7 +76,11 @@ public class ProcessInstanceDetailsTabPresenterTest {
     }
 
     @Test
-    public void setProcessInstanceDetailsTest() {
+    public void setProcessInstanceDetailsTestWihtParentProcessInstance() {
+        ProcessInstanceSummary parentProcessInstanceSummary = getProcessInstanceSummary();
+        parentProcessInstanceSummary.setParentId(null);
+        parentProcessInstanceSummary.setProcessInstanceId(1L);
+        when(processRuntimeDataServiceMock.getProcessInstance(any())).thenReturn(getProcessInstanceSummary());
         presenter.setProcessInstance(processInstanceSummary);
 
         verify(view).setProcessDefinitionIdText(processInstanceSummary.getProcessId());
@@ -86,8 +90,8 @@ public class ProcessInstanceDetailsTabPresenterTest {
         verify(view).setCorrelationKeyText(processInstanceSummary.getCorrelationKey());
         verify(view).setSlaComplianceText(org.jbpm.workbench.common.client.resources.i18n.Constants.INSTANCE.SlaMet());
         verify(view).setProcessInstanceDetailsCallback(any());
-        verify(view, times(1)).setParentProcessInstanceIdText("", false);
-        verify(view, times(1)).setParentProcessInstanceIdText("1", true);
+        verify(view).setParentProcessInstanceIdText("", false);
+        verify(view).setParentProcessInstanceIdText("1", true);
         ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
         verify(view, times(2)).setActiveTasksListBox(argumentCaptor.capture());
 
@@ -109,6 +113,15 @@ public class ProcessInstanceDetailsTabPresenterTest {
                           String.valueOf(nodeInstanceSummary.getId()),
                           nodeInstanceSummary.getName(),
                           nodeInstanceSummary.getType());
+    }
+
+    @Test
+    public void setProcessInstanceDetailsTestWihtoutParentProcessInstance() {
+        when(processRuntimeDataServiceMock.getProcessInstance(any())).thenReturn(null);
+        presenter.setProcessInstance(processInstanceSummary);
+
+        verify(view).setParentProcessInstanceIdText("", false);
+        verify(view).setParentProcessInstanceIdText("1", false);
     }
 
     private NodeInstanceSummary getNodeInstanceSummary() {

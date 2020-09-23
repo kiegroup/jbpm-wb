@@ -82,8 +82,7 @@ public class ProcessInstanceDetailsTabPresenter implements ProcessInstanceSummar
         view.setProcessDeploymentText(process.getDeploymentId());
         view.setCorrelationKeyText(process.getCorrelationKey());
         if (process.getParentId() > 0) {
-            view.setParentProcessInstanceIdText(process.getParentId().toString(), true);
-            view.setProcessInstanceDetailsCallback(() -> onProcessInstanceIdSelected(process.getServerTemplateId(), process.getDeploymentId(), process.getParentId()));
+            setParentInstance(process);
         } else {
             view.setParentProcessInstanceIdText(constants.No_Parent_Process_Instance(), false);
         }
@@ -110,6 +109,17 @@ public class ProcessInstanceDetailsTabPresenter implements ProcessInstanceSummar
                     view.setCurrentActivitiesListBox(safeHtmlBuilder.toSafeHtml().asString());
                 }
         ).getProcessInstanceActiveNodes(process.getProcessInstanceKey());
+    }
+
+    protected void setParentInstance(ProcessInstanceSummary process) {
+        processRuntimeDataService.call((ProcessInstanceSummary pi) -> {
+            if (pi != null) {
+                view.setParentProcessInstanceIdText(process.getParentId().toString(), true);
+                view.setProcessInstanceDetailsCallback(() -> onProcessInstanceIdSelected(process.getServerTemplateId(), process.getDeploymentId(), process.getParentId()));
+            } else {
+                view.setParentProcessInstanceIdText(process.getParentId().toString(), false);
+            }
+        }).getProcessInstance(new ProcessInstanceKey(process.getServerTemplateId(), "", process.getParentId()));
     }
 
     public void onProcessInstanceIdSelected(String serverTemplateId, String processDeploymentId, Long parentId) {
