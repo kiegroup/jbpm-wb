@@ -149,7 +149,9 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
         summary.setSubProcessInstances(getProcessInstancesByParentId(processInstanceKey, processInstanceKey.getDeploymentId()));
 
         if (processInstance.getParentId() != -1) {
-            summary.setParentProcessInstanceSummary(getProcessInstance(new ProcessInstanceKey(processInstanceKey.getServerTemplateId(), "", processInstance.getParentId())));
+            QueryServicesClient queryServicesClient = getClient(processInstanceKey.getServerTemplateId(), QueryServicesClient.class);
+            summary.setParentProcessInstanceSummary(new ProcessInstanceSummaryMapper(processInstanceKey.getServerTemplateId())
+                                                            .apply(queryServicesClient.findProcessInstanceById(processInstance.getParentId())));
         } else {
             summary.setParentProcessInstanceSummary(null);
         }
