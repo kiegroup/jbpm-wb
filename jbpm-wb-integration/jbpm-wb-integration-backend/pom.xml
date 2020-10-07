@@ -184,6 +184,12 @@
     <dependency>
       <groupId>org.kie.workbench</groupId>
       <artifactId>kie-wb-common-ala-openshift-provider</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
