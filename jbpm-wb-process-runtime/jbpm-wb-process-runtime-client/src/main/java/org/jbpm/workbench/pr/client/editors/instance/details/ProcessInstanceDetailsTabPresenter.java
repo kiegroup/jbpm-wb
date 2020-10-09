@@ -119,7 +119,7 @@ public class ProcessInstanceDetailsTabPresenter implements ProcessInstanceSummar
             } else {
                 view.setParentProcessInstanceIdText(process.getParentId().toString(), false);
             }
-        }).getProcessInstance(new ProcessInstanceKey(process.getServerTemplateId(), "", process.getParentId()));
+        }).getProcessInstance(new ProcessInstanceKey(process.getServerTemplateId(), process.getDeploymentId(), process.getParentId()));
     }
 
     public void onProcessInstanceIdSelected(String serverTemplateId, String processDeploymentId, Long parentId) {
