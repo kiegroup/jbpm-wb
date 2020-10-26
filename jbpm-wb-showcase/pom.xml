@@ -1765,7 +1765,7 @@
         <artifactId>gwt-maven-plugin</artifactId>
         <configuration>
           <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
-          <extraJvmArgs>-Xms1g -Xmx6g -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${jboss.home} -Derrai.dynamic_validation.enabled=true -Dorg.kie.demo=false -Dorg.kie.clean.onstartup=true -Dorg.kie.git.deployments=true -Dorg.uberfire.async.executor.safemode=true -Derrai.dev.context=jbpm-wb-showcase -Dorg.jbpm.wb.forms.renderer.ext=true</extraJvmArgs>
+          <extraJvmArgs>-Xms1g -Xmx6g -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${jboss.home} -Derrai.dynamic_validation.enabled=true -Dorg.kie.demo=false -Dorg.kie.clean.onstartup=true -Dorg.kie.git.deployments=true -Dorg.uberfire.async.executor.safemode=true -Derrai.dev.context=jbpm-wb-showcase -Dorg.jbpm.wb.forms.renderer.ext=true -Ddashbuilder.components.enable=true</extraJvmArgs>
           <module>org.jbpm.workbench.FastCompilejBPMShowcase</module>
           <logLevel>INFO</logLevel>
           <noServer>false</noServer>
