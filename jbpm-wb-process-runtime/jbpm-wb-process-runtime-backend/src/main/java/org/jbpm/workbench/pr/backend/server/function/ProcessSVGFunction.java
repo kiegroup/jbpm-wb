@@ -27,9 +27,9 @@ import org.jbpm.workbench.pr.backend.server.RemoteProcessImageServiceImpl;
 @Dependent
 public class ProcessSVGFunction  implements BackendComponentFunction {
     
-    final static String CONTAINERID_PARAM = "containerId";
-    final static String PROCESSID_PARAM = "processId";
-    final static String SERVER_TEMPLATE_PARAM = "serverTemplate";
+    private final String CONTAINERID_PARAM = "containerId";
+    private final static String PROCESSID_PARAM = "processId";
+    private final static String SERVER_TEMPLATE_PARAM = "serverTemplate";
     
     @Inject
     RemoteProcessImageServiceImpl remoteProccessImageService;
