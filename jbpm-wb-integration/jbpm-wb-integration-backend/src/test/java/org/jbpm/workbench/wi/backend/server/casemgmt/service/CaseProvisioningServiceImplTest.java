@@ -61,7 +61,7 @@ public class CaseProvisioningServiceImplTest {
     public void setUp() {
         ExecutorService executorService = Executors.newCachedThreadPool(new DescriptiveThreadFactory());
         doAnswer(invocationOnMock -> {
-            executorService.execute(invocationOnMock.getArgumentAt(0,
+            executorService.execute(invocationOnMock.getArgument(0,
                                                                    Runnable.class));
             return null;
         }).when(this.executorService).execute(any(Runnable.class));
