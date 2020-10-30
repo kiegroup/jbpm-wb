@@ -264,7 +264,7 @@ public class KieServerDataSetProviderTest {
         
         kieServerDataSetProvider.performQuery(dataSetDef, dataSetLookup, queryServicesClient, filterSpec);
         
-        verify(kieServerIntegration).broadcastToKieServers(anyString(),
+        verify(kieServerIntegration).broadcastToKieServers(any(),
                                                            any());
         verify(dataSetLookup, times(1)).testMode();
         
@@ -311,13 +311,13 @@ public class KieServerDataSetProviderTest {
         
         when(dataSetDef.getColumns()).thenReturn(null, new ArrayList<>());
         when(dataSetDef.getServerTemplateId()).thenReturn("servereTemplateId");
-        when(queryServicesClient.getQuery(anyString())).thenReturn(definition);        
+        when(queryServicesClient.getQuery(any())).thenReturn(definition);
         
         kieServerDataSetProvider.getDataSetMetadata(dataSetDef);
         
         verify(dataSetDef, times(1)).addColumn(eq("test"), eq(ColumnType.NUMBER));
         
-        verify(queryServicesClient).getQuery(anyString());
+        verify(queryServicesClient).getQuery(any());
     }
     
     @Test
@@ -334,8 +334,7 @@ public class KieServerDataSetProviderTest {
         DataSetLookup dataSetLookup = Mockito.mock(DataSetLookup.class);
         when(dataSetDef.getDataSetFilter()).thenReturn(Mockito.mock(DataSetFilter.class));
         when(dataSetDef.getServerTemplateId()).thenReturn("servereTemplateId");
-        when(dataSetLookup.cloneInstance()).thenReturn(dataSetLookup);
-        
+
         ConsoleDataSetLookup adopted = kieServerDataSetProvider.adoptLookup(dataSetDef, dataSetLookup);
         
         verify(dataSetDef, times(1)).getServerTemplateId(); 

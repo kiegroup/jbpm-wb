@@ -116,7 +116,6 @@ public class CaseRolesValidationsTest {
         final CaseRoleAssignmentSummary caseRoleAssignmentSummaryMock = mock(CaseRoleAssignmentSummary.class);
         final List<CaseRoleAssignmentSummary> roles = singletonList(caseRoleAssignmentSummaryMock);
         when(caseRoleAssignmentSummaryMock.getName()).thenReturn(caseRole);
-        when(caseRoleAssignmentSummaryMock.getUsers()).thenReturn(null);
 
         try{
             caseRolesValidations.validateRolesAssignments(cds,

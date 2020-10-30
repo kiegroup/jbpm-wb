@@ -70,7 +70,7 @@ public class RemoteDataSetDefAttributesEditorTest {
     public void testInit() {
         presenter.init();
         verify(view, times(1)).init(presenter);
-        verify(view, times(1)).initWidgets(any(DropDownEditor.View.class), any(DropDownEditor.View.class), any(ValueBoxEditor.View.class), any(ValueBoxEditor.View.class));
+        verify(view, times(1)).initWidgets(any(), any(), any(), any());
         verify(dataSource, times(1)).addHelpContent(anyString(), anyString(), any(Placement.class));
         verify(queryTarget, times(1)).addHelpContent(anyString(), anyString(), any(Placement.class));
         verify(serverTemplates, times(1)).addHelpContent(anyString(), anyString(), any(Placement.class));

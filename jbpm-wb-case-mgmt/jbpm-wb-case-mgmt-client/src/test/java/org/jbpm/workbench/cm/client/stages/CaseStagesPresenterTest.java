@@ -27,13 +27,21 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static java.util.Arrays.asList;
-import static org.jbpm.workbench.cm.util.CaseStageStatus.*;
-import static org.mockito.Mockito.*;
+import static org.jbpm.workbench.cm.util.CaseStageStatus.ACTIVE;
+import static org.jbpm.workbench.cm.util.CaseStageStatus.AVAILABLE;
+import static org.jbpm.workbench.cm.util.CaseStageStatus.CANCELED;
+import static org.jbpm.workbench.cm.util.CaseStageStatus.COMPLETED;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class CaseStagesPresenterTest extends AbstractCaseInstancePresenterTest {
 
     private CaseStageItemViewImpl caseStageItemViewMock;

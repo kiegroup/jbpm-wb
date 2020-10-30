@@ -114,8 +114,6 @@ public abstract class AbstractFormProvidingEngineTest<SETTINGS extends Rendering
 
         multipleSubFormFieldValueMarshaller.setRegistry(registry);
 
-        when(modelReaderService.getModelReader(any())).thenReturn(new RuntimeDMOModelReader(this.getClass().getClassLoader(), new RawMVELEvaluator()));
-
         dynamicBPMNFormGenerator = new DynamicBPMNFormGeneratorImpl(new BPMNRuntimeFormGeneratorService(modelReaderService, new TestFieldManager()));
 
         contextManager = new BackendFormRenderingContextManagerImpl(registry, new ContextModelConstraintsExtractorImpl());

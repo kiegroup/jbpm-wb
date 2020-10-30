@@ -83,11 +83,10 @@ public class DDConfigUpdaterTest {
         KieModule module = Mockito.mock(KieModule.class);
         when(module.getRootPath()).thenReturn(rootPath);
 
-        when(ioService.exists(any(org.uberfire.java.nio.file.Path.class))).thenReturn(true);
-        when(configUpdaterHelper.isPersistenceFile(any(Path.class))).thenReturn(true);
-        when(configUpdaterHelper.buildJPAMarshallingStrategyValue(any(KieModule.class))).thenReturn(JPA_MARSHALLING_STRATEGY);
-        when(moduleService.resolveModule(any(Path.class))).thenReturn(module);
-        when(ddEditorService.load(any(Path.class))).thenReturn(model);
+        when(configUpdaterHelper.isPersistenceFile(any())).thenReturn(true);
+        when(configUpdaterHelper.buildJPAMarshallingStrategyValue(any())).thenReturn(JPA_MARSHALLING_STRATEGY);
+        when(moduleService.resolveModule(any())).thenReturn(module);
+        when(ddEditorService.load(any())).thenReturn(model);
         doNothing().when(ddEditorService).createIfNotExists(any());
     }
 
@@ -313,9 +312,6 @@ public class DDConfigUpdaterTest {
 
     @Test
     public void bpmPostBuildHandlerCreatesDefaultDescriptor_whenDeploymentDescriptorDoesNotExist() {
-        when(ioService.exists(any()))
-                .thenReturn(false);
-
         BPMPostBuildHandler handler = new BPMPostBuildHandler();
         handler.setDeploymentDescriptorService(ddEditorService);
         handler.setIoService(ioService);
@@ -332,7 +328,7 @@ public class DDConfigUpdaterTest {
         verify(results,
                times(1))
                 .addParameter(eq("RuntimeStrategy"),
-                              anyString());
+                              any());
     }
 
     @Test

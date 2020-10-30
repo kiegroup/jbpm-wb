@@ -32,16 +32,31 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
-import static java.util.Collections.*;
-import static org.junit.Assert.*;
+import static java.util.Collections.EMPTY_LIST;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
+import static org.jbpm.workbench.cm.client.resources.i18n.Constants.ASSIGN;
+import static org.jbpm.workbench.cm.client.resources.i18n.Constants.EDIT;
+import static org.jbpm.workbench.cm.client.resources.i18n.Constants.PLEASE_INTRO_USER_OR_GROUP_TO_CREATE_ASSIGNMENT;
+import static org.jbpm.workbench.cm.client.resources.i18n.Constants.REMOVE_ALL_ASSIGNMENTS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
-import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyListOf;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
 
     private static final String USER = "User";
@@ -558,12 +573,12 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
                                         0,
                                         1,
                                         1);
-        verify(caseManagementService).removeUserFromRole(anyString(),
-                                                         anyString(),
+        verify(caseManagementService).removeUserFromRole(any(),
+                                                         any(),
                                                          anyString(),
                                                          eq("test_user"));
-        verify(caseManagementService).removeGroupFromRole(anyString(),
-                                                          anyString(),
+        verify(caseManagementService).removeGroupFromRole(any(),
+                                                          any(),
                                                           anyString(),
                                                           eq("test_group"));
     }
@@ -585,20 +600,20 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
                                         1,
                                         1);
 
-        verify(caseManagementService).assignUserToRole(anyString(),
-                                                       anyString(),
+        verify(caseManagementService).assignUserToRole(any(),
+                                                       any(),
                                                        anyString(),
                                                        eq(USER));
-        verify(caseManagementService).assignGroupToRole(anyString(),
-                                                        anyString(),
+        verify(caseManagementService).assignGroupToRole(any(),
+                                                        any(),
                                                         anyString(),
                                                         eq(GROUP));
-        verify(caseManagementService).removeUserFromRole(anyString(),
-                                                         anyString(),
+        verify(caseManagementService).removeUserFromRole(any(),
+                                                         any(),
                                                          anyString(),
                                                          eq("test_user"));
-        verify(caseManagementService).removeGroupFromRole(anyString(),
-                                                          anyString(),
+        verify(caseManagementService).removeGroupFromRole(any(),
+                                                          any(),
                                                           anyString(),
                                                           eq("test_group"));
     }
@@ -607,20 +622,20 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
                                                  int timesAddGroup,
                                                  int timesRemoveUser,
                                                  int timesRemoveGroup) {
-        verify(caseManagementService, times(timesAddUser)).assignUserToRole(anyString(),
-                                                                            anyString(),
+        verify(caseManagementService, times(timesAddUser)).assignUserToRole(any(),
+                                                                            any(),
                                                                             anyString(),
                                                                             anyString());
-        verify(caseManagementService, times(timesAddGroup)).assignGroupToRole(anyString(),
-                                                                              anyString(),
+        verify(caseManagementService, times(timesAddGroup)).assignGroupToRole(any(),
+                                                                              any(),
                                                                               anyString(),
                                                                               anyString());
-        verify(caseManagementService, times(timesRemoveUser)).removeUserFromRole(anyString(),
-                                                                                 anyString(),
+        verify(caseManagementService, times(timesRemoveUser)).removeUserFromRole(any(),
+                                                                                 any(),
                                                                                  anyString(),
                                                                                  anyString());
-        verify(caseManagementService, times(timesRemoveGroup)).removeGroupFromRole(anyString(),
-                                                                                   anyString(),
+        verify(caseManagementService, times(timesRemoveGroup)).removeGroupFromRole(any(),
+                                                                                   any(),
                                                                                    anyString(),
                                                                                    anyString());
     }
@@ -637,8 +652,8 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
 
         presenter.removeUserFromRole(USER, roleAssignments);
 
-        verify(caseManagementService).removeUserFromRole(anyString(),
-                                                         anyString(),
+        verify(caseManagementService).removeUserFromRole(any(),
+                                                         any(),
                                                          eq(CASE_ROLE),
                                                          eq(USER));
         assertTrue(roleAssignments.getUsers().isEmpty());
@@ -657,8 +672,8 @@ public class CaseRolesPresenterTest extends AbstractCaseInstancePresenterTest {
 
         presenter.removeGroupFromRole(GROUP, roleAssignments);
 
-        verify(caseManagementService).removeGroupFromRole(anyString(),
-                                                          anyString(),
+        verify(caseManagementService).removeGroupFromRole(any(),
+                                                          any(),
                                                           eq(CASE_ROLE),
                                                           eq(GROUP));
         assertTrue(roleAssignments.getGroups().isEmpty());

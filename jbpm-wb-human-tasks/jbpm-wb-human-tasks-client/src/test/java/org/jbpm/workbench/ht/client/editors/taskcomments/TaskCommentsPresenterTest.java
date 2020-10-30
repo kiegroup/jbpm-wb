@@ -99,7 +99,7 @@ public class TaskCommentsPresenterTest extends AbstractTaskPresenterTest {
         CommentSummary commentSummary2 = new CommentSummary(2L, COMMENT_2_TEXT, "user1", new Date(currentTime + 400000));
         CommentSummary commentSummary3 = new CommentSummary(3L, COMMENT_3_TEXT, "user1", new Date(currentTime + 600000));
 
-        when(commentsService.getTaskComments(anyString(), anyString(), anyLong()))
+        when(commentsService.getTaskComments(any(), any(), any()))
                 .thenReturn(Arrays.asList(commentSummary1, commentSummary2, commentSummary3));
         doNothing().when(notificationEventMock).fire(any());
     }
@@ -154,7 +154,7 @@ public class TaskCommentsPresenterTest extends AbstractTaskPresenterTest {
         getPresenter().refreshCommentsView();
 
         verify(getPresenter().getTaskCommentView()).clearCommentInputForm();
-        verify(commentsService).getTaskComments(anyString(), anyString(), anyLong());
+        verify(commentsService).getTaskComments(any(), any(), any());
         assertEquals(1, getPresenter().getCurrentPage());
     }
 
@@ -165,7 +165,7 @@ public class TaskCommentsPresenterTest extends AbstractTaskPresenterTest {
 
         getPresenter().loadMoreTaskComments();
 
-        verify(commentsService).getTaskComments(anyString(), anyString(), anyLong());
+        verify(commentsService).getTaskComments(any(), any(), any());
         assertEquals(currentPage + 1, getPresenter().getCurrentPage());
     }
 
@@ -174,7 +174,7 @@ public class TaskCommentsPresenterTest extends AbstractTaskPresenterTest {
         String comment = "Working on it, man.";
         getPresenter().addTaskComment(comment);
 
-        verify(commentsService).addTaskComment(anyString(), anyString(), anyLong(), eq(comment), any(Date.class));
+        verify(commentsService).addTaskComment(any(), any(), any(), eq(comment), any(Date.class));
         verify(getPresenter().getTaskCommentView()).clearCommentInputForm();
     }
 
@@ -182,8 +182,8 @@ public class TaskCommentsPresenterTest extends AbstractTaskPresenterTest {
     public void removeCommentAddedTest() {
         getPresenter().removeTaskComment(COMMENT_ID);
 
-        verify(commentsService).deleteTaskComment(anyString(), anyString(), anyLong(), eq(COMMENT_ID));
-        verify(commentsService).getTaskComments(anyString(), anyString(), anyLong());
+        verify(commentsService).deleteTaskComment(any(), any(), any(), eq(COMMENT_ID));
+        verify(commentsService).getTaskComments(any(), any(), any());
         verify(getPresenter().getTaskCommentView()).clearCommentInputForm();
         assertEquals(1, getPresenter().getCurrentPage());
     }
@@ -288,7 +288,7 @@ public class TaskCommentsPresenterTest extends AbstractTaskPresenterTest {
         for (int i = 0; i < numberOfComments; i++) {
             comments.add(new CommentSummary(id + i, "comment" + i, "user", new Date(currentTime + i * 200000)));
         }
-        when(commentsService.getTaskComments(anyString(), anyString(), anyLong()))
+        when(commentsService.getTaskComments(any(), any(), any()))
                 .thenReturn(comments);
     }
 

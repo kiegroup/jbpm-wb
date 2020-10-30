@@ -109,7 +109,6 @@ public class DeploymentsSectionPresenterTest {
         when(project.getRootPath().toURI()).thenReturn("root");
 
         when(deploymentsSections.getList()).thenReturn(Arrays.asList(section1, section2));
-        when(sectionManager.goTo(any())).thenReturn(promises.resolve());
         when(section1.setup(any())).thenReturn(promises.resolve());
         when(section2.setup(any())).thenReturn(promises.resolve());
 
@@ -163,7 +162,7 @@ public class DeploymentsSectionPresenterTest {
 
     @Test
     public void testLoadDeploymentDescriptor() {
-        doReturn(mock(Path.class)).when(ddEditorService).load(any());
+        doReturn(mock(DeploymentDescriptorModel.class)).when(ddEditorService).load(any());
 
         presenter.loadDeploymentDescriptor().catch_(i -> {
             Assert.fail("Promise should've been resolved!");
