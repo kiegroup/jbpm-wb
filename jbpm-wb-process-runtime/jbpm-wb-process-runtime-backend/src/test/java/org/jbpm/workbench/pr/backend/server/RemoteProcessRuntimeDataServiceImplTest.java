@@ -393,10 +393,11 @@ public class RemoteProcessRuntimeDataServiceImplTest {
     public void testGetProcessInstanceDiagramSummary() {
         ProcessInstanceKey instanceKey = new ProcessInstanceKey(serverTemplateId, containerId, processInstanceId);
         String svgContent = "<svg></svg>";
+        Long parentId = 2L;
         Integer state = org.kie.api.runtime.process.ProcessInstance.STATE_ACTIVE;
         String processName = "process";
 
-        when(queryServicesClient.findProcessInstanceById(processInstanceId)).thenReturn(ProcessInstance.builder().id(processInstanceId).containerId(containerId).processId(processId).state(state).parentInstanceId(-1L).processName(processName).build());
+        when(queryServicesClient.findProcessInstanceById(processInstanceId)).thenReturn(ProcessInstance.builder().id(processInstanceId).containerId(containerId).processId(processId).state(state).parentInstanceId(parentId).processName(processName).build());
         when(processImageService.getProcessInstanceDiagram(serverTemplateId, containerId, processInstanceId, "", "", "")).thenReturn(svgContent);
 
         List<NodeDefinition> processNodes = Arrays.asList(NodeDefinition.builder().id(1L).name("name-1").type("HumanTask").uniqueId("_1").build(),
@@ -422,13 +423,16 @@ public class RemoteProcessRuntimeDataServiceImplTest {
 
         when(processAdminServicesClient.getTimerInstances(containerId, processInstanceId)).thenReturn(timerInstances);
 
+        when(queryServicesClient.findProcessInstanceById(parentId)).thenReturn(ProcessInstance.builder().id(parentId).containerId(containerId).processId(processId).state(state).parentInstanceId(-1L).processName(processName).build());
+
         ProcessInstanceDiagramSummary summary = service.getProcessInstanceDiagramSummary(instanceKey, "", "", "");
 
         assertEquals(processInstanceId, summary.getId());
         assertEquals(processName, summary.getName());
         assertEquals(svgContent, summary.getSvgContent());
         assertNotNull(summary.getProcessDefinition());
-
+        assertNotNull(summary.getParentProcessInstanceSummary());
+        assertEquals(parentId, summary.getParentProcessInstanceSummary().getProcessInstanceId());
         assertThat(summary.getProcessDefinition().getNodes()).hasSize(2).containsExactly(new ProcessNodeSummary(1l,
                                                                                                                 "name-1",
                                                                                                                 "HumanTask",
