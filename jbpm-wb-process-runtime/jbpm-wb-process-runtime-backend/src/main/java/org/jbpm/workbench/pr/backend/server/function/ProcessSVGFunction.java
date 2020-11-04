@@ -25,7 +25,7 @@ import org.dashbuilder.external.impl.BackendComponentFunction;
 import org.jbpm.workbench.pr.service.ProcessImageService;
 
 @Dependent
-public class ProcessSVGFunction implements BackendComponentFunction {
+public class ProcessSVGFunction implements BackendComponentFunction<String> {
 
     private final String CONTAINERID_PARAM = "containerId";
     private final static String PROCESSID_PARAM = "processId";
@@ -35,7 +35,7 @@ public class ProcessSVGFunction implements BackendComponentFunction {
     ProcessImageService remoteProccessImageService;
 
     @Override
-    public Object exec(Map<String, Object> params) {
+    public String exec(Map<String, Object> params) {
         String containerId = getRequiredParam(CONTAINERID_PARAM, params);
         String processId = getRequiredParam(PROCESSID_PARAM, params);
         String serverTemplateId = getRequiredParam(SERVER_TEMPLATE_PARAM, params);
