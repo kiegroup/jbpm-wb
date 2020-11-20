@@ -140,7 +140,7 @@ public class ServiceTaskUploadFormPresenterTest {
                 
         verify(view, times(1)).hide();
         verify(serviceTaskService, times(1)).addServiceTasks(eq(gav));
-        verify(notificationEvent, times(1)).fire(new NotificationEvent(ADD_TASK_SUCCESS + createdList.stream().collect(Collectors.joining(",")) + "/n" +
+        verify(notificationEvent, times(1)).fire(new NotificationEvent(ADD_TASK_SUCCESS + createdList.stream().collect(Collectors.joining(",")) + " " +
                                                                                SKIP_TASK_SUCCESS, NotificationEvent.NotificationType.SUCCESS));
     }
 }

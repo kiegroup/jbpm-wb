@@ -87,7 +87,7 @@ public class ServiceTaskUploadFormPresenter implements ServiceTaskUploadFormView
                 String skippedServiceTasks = view.getSkippedMessage(serviceTasks.get(SKIPPED).stream().collect(Collectors.joining(",")));
                 String addedServiceTasks = serviceTasks.get(CREATED).stream().collect(Collectors.joining(","));
 
-                notificationEvent.fire(new NotificationEvent(addTaskSuccessMsg + addedServiceTasks + "/n" + skippedServiceTasks,
+                notificationEvent.fire(new NotificationEvent(addTaskSuccessMsg + addedServiceTasks + " " + skippedServiceTasks,
                                                              NotificationEvent.NotificationType.SUCCESS));
 
                 onUploadCompleted.execute();
