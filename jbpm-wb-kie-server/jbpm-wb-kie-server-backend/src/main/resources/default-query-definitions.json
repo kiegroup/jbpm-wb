@@ -7,8 +7,8 @@
   },
   {
     "query-name": "jbpmProcessInstancesWithVariables",
-    "query-source": "${org.kie.server.persistence.ds}",
-    "query-expression": "select vil.processInstanceId, vil.processId, vil.id, vil.variableId, vil.value from VariableInstanceLog vil where vil.id in (select MAX(v.id) from VariableInstanceLog v group by v.variableId, v.processInstanceId)",
+	"query-source": "${org.kie.server.persistence.ds}",    
+    "query-expression": "select vil.processInstanceId, vil.processId, vil.id, vil.variableId, vil.value from VariableInstanceLog vil left join VariableInstanceLog vil2 on vil.processInstanceId = vil2.processInstanceId and vil.variableId = vil2.variableId and vil.id < vil2.id where vil2.id is null",
     "query-target": "CUSTOM"
   },
   {
