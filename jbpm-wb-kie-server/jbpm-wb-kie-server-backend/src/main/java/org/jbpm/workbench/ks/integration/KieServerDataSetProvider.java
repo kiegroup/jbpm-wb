@@ -78,8 +78,8 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
                                                               QueryServicesClient.class);
 
             QueryDefinition definition = queryClient.getQuery(def.getUUID());
-            if (definition.getColumns() != null) {
-                addColumnsToDefinition(def, definition);
+            if (definition != null) {
+                addColumnsToDefinition(def, definition.getColumns());
             }
         }
         List<DataColumnDef> columns = def.getColumns();
@@ -253,7 +253,9 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
         } else {
             if (def.getColumns() != null && def.getColumns().isEmpty()) {
                 QueryDefinition query = queryClient.getQuery(def.getUUID());
-                addColumnsToDefinition(def, query);
+                if (query != null) {
+                    addColumnsToDefinition(def, query.getColumns());
+                }
             }
             return queryClient.query(
                     dataSetLookup.getDataSetUUID(),
@@ -417,7 +419,7 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
         
         DataColumnDef column = def.getColumnById(groupFunction.getColumnId());
         if (column == null) {
-            column =  def.getColumnById(groupFunction.getSourceId());
+            column = def.getColumnById(groupFunction.getSourceId());
         }
         ColumnType type = column.getColumnType();
         if(type != ColumnType.DATE || columnGroup == null || groupFunction == null){
@@ -427,9 +429,8 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
         }
     }
     
-    protected void addColumnsToDefinition(DataSetDef def, QueryDefinition queryDef) {
-        if (queryDef != null && queryDef.getColumns() != null) {
-            Map<String, String> columns = queryDef.getColumns();
+    protected void addColumnsToDefinition(DataSetDef def, Map<String, String> columns) {
+        if (columns != null) {
             columns.entrySet().stream()
                    .filter(e -> def.getColumnById(e.getKey()) == null)
                    .forEach(e -> def.addColumn(e.getKey(), ColumnType.valueOf(e.getValue())));
