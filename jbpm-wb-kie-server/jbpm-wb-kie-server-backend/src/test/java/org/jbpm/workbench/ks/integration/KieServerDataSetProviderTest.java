@@ -16,6 +16,7 @@
 package org.jbpm.workbench.ks.integration;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +80,9 @@ public class KieServerDataSetProviderTest {
 
     @Mock
     RemoteDataSetDef dataSetDef;
+
+    @Mock
+    QueryDefinition queryDef;
 
     @Before
     public void setUp() {
@@ -278,6 +282,8 @@ public class KieServerDataSetProviderTest {
     
     @Test
     public void testPerformQueryRegularMode() {
+        String columnId = "test";
+        String columnType = "LABEL";
         QueryFilterSpec filterSpec = new QueryFilterSpec();
         
         ConsoleDataSetLookup dataSetLookup = Mockito.mock(ConsoleDataSetLookup.class);
@@ -285,6 +291,9 @@ public class KieServerDataSetProviderTest {
         when(dataSetLookup.getNumberOfRows()).thenReturn(10);
         when(dataSetLookup.getRowOffset()).thenReturn(1);
         when(dataSetLookup.getDataSetUUID()).thenReturn("");
+        
+        when(queryDef.getColumns()).thenReturn(Collections.singletonMap(columnId, columnType));
+        when(queryServicesClient.getQuery(any())).thenReturn(queryDef);
         
         kieServerDataSetProvider.performQuery(dataSetDef, dataSetLookup, queryServicesClient, filterSpec);
         
@@ -298,6 +307,8 @@ public class KieServerDataSetProviderTest {
                                           anyInt(),
                                           anyInt(),
                                           any());
+        
+        verify(dataSetDef).addColumn(eq(columnId), eq(ColumnType.LABEL));
     }    
     
     @Test
