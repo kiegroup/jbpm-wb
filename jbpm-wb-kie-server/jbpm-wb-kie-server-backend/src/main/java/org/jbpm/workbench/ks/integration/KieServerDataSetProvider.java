@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+
 import javax.enterprise.context.ApplicationScoped;
 
 import org.dashbuilder.dataprovider.DataSetProvider;
@@ -76,14 +78,8 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
                                                               QueryServicesClient.class);
 
             QueryDefinition definition = queryClient.getQuery(def.getUUID());
-            if (definition.getColumns() != null) {
-
-                for (Entry<String, String> entry : definition.getColumns().entrySet()) {
-                    if (def.getColumnById(entry.getKey()) == null) {
-                        def.addColumn(entry.getKey(),
-                                      ColumnType.valueOf(entry.getValue()));
-                    }
-                }
+            if (definition != null) {
+                addColumnsToDefinition(def, definition.getColumns());
             }
         }
         List<DataColumnDef> columns = def.getColumns();
@@ -255,6 +251,12 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
                 throw new RuntimeException(e);
             }
         } else {
+            if (def.getColumns() != null && def.getColumns().isEmpty()) {
+                QueryDefinition query = queryClient.getQuery(def.getUUID());
+                if (query != null) {
+                    addColumnsToDefinition(def, query.getColumns());
+                }
+            }
             return queryClient.query(
                     dataSetLookup.getDataSetUUID(),
                     QueryServicesClient.QUERY_MAP_RAW,
@@ -414,11 +416,24 @@ public class KieServerDataSetProvider extends AbstractKieServerService implement
     protected ColumnType getGroupFunctionColumnType(final DataSetDef def,
                                                     final ColumnGroup columnGroup,
                                                     final GroupFunction groupFunction) {
-        ColumnType type = def.getColumnById(groupFunction.getColumnId()).getColumnType();
+        
+        DataColumnDef column = def.getColumnById(groupFunction.getColumnId());
+        if (column == null) {
+            column = def.getColumnById(groupFunction.getSourceId());
+        }
+        ColumnType type = column.getColumnType();
         if(type != ColumnType.DATE || columnGroup == null || groupFunction == null){
             return type;
         } else {
             return columnGroup.getSourceId().equals(groupFunction.getSourceId()) ? ColumnType.LABEL : type;
+        }
+    }
+    
+    protected void addColumnsToDefinition(DataSetDef def, Map<String, String> columns) {
+        if (columns != null) {
+            columns.entrySet().stream()
+                   .filter(e -> def.getColumnById(e.getKey()) == null)
+                   .forEach(e -> def.addColumn(e.getKey(), ColumnType.valueOf(e.getValue())));
         }
     }
 }
