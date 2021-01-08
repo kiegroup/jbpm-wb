@@ -120,6 +120,8 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
         view.setValue(new ProcessNodeSummary());
 
         loadProcessInstanceDetails();
+        loadTimerInstances();
+        view.onShow();
     }
 
     public void onProcessInstanceSelectionEvent(@Observes final ProcessInstanceSelectionEvent event) {
@@ -162,20 +164,6 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
 
             view.setParentSelectedCommand(() -> listenParentProcessInstanceSelected());
 
-            timerInstances = summary.getTimerInstances().stream().sorted(comparing(TimerInstanceSummary::getName, String.CASE_INSENSITIVE_ORDER).thenComparingLong(TimerInstanceSummary::getId)).collect(toList());
-
-            timerInstances.forEach(ti -> {
-                ti.setDescription(constants.NextExecution() + " " + DateUtils.getPrettyTime(ti.getNextFireTime()));
-                ti.addCallback(constants.Reschedule(),
-                               () -> {
-                                   rescheduleView.setOnReschedule(timer -> onTimerInstanceReschedule(timer));
-                                   rescheduleView.setValue(ti);
-                                   rescheduleView.show();
-                               });
-            });
-
-            view.setTimerInstances(timerInstances);
-
             view.setShowOrHideNodeActionsCommand(() -> showOrHideNodeActions(forLog, processInstance));
 
             timers = summary.getProcessDefinition().getTimers().stream().collect(toList());
@@ -183,11 +171,36 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
             view.showOrHideNodeActionsTriggered();
             expandDiagram(processInstance, summary);
 
-            view.onShow();
+        }, (Object o, Throwable throwable) -> {
+            notification.fire(new NotificationEvent(Constants.INSTANCE.CanNotGetInstancesDetailsMessage(throwable.getMessage()), NotificationEvent.NotificationType.WARNING));
+            return false;
         }).getProcessInstanceDiagramSummary(processInstance.getProcessInstanceKey(),
                                             preferences.getProcessInstanceDiagramCompletedNodeColor(),
                                             preferences.getProcessInstanceDiagramCompletedNodeBorderColor(),
                                             preferences.getProcessInstanceDiagramActiveNodeBorderColor());
+    }
+
+    protected void loadTimerInstances() {
+        if (processInstance.getState() == ProcessInstance.STATE_ACTIVE) {
+            processService.call((List<TimerInstanceSummary> timerInstanceSummaryList) -> {
+                timerInstances = timerInstanceSummaryList.stream().sorted(comparing(TimerInstanceSummary::getName, String.CASE_INSENSITIVE_ORDER).thenComparingLong(TimerInstanceSummary::getId)).collect(toList());
+
+                timerInstances.forEach(ti -> {
+                    ti.setDescription(constants.NextExecution() + " " + DateUtils.getPrettyTime(ti.getNextFireTime()));
+                    ti.addCallback(constants.Reschedule(),
+                                   () -> {
+                                       rescheduleView.setOnReschedule(timer -> onTimerInstanceReschedule(timer));
+                                       rescheduleView.setValue(ti);
+                                       rescheduleView.show();
+                                   });
+                });
+
+                view.setTimerInstances(timerInstances);
+            }, (Object o, Throwable throwable) -> {
+                notification.fire(new NotificationEvent(Constants.INSTANCE.CanNotGetInstancesDetailsMessage(throwable.getMessage()), NotificationEvent.NotificationType.WARNING));
+                return false;
+            }).getProcessInstanceTimerInstances(processInstance.getProcessInstanceKey());
+        }
     }
 
     protected void expandDiagram(ProcessInstanceSummary processInstance, ProcessInstanceDiagramSummary summary) {

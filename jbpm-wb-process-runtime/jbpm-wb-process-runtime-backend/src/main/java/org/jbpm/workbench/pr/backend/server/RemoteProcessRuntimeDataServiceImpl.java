@@ -158,10 +158,8 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
             List<NodeInstanceSummary> nodeInstances = getProcessInstanceActiveNodes(processInstanceKey);
             nodeInstances.addAll(getProcessInstanceCompletedNodes(processInstanceKey));
             summary.setNodeInstances(nodeInstances);
-            summary.setTimerInstances(getProcessInstanceTimerInstances(processInstanceKey));
         } else {
             summary.setNodeInstances(emptyList());
-            summary.setTimerInstances(emptyList());
         }
         return summary;
     }

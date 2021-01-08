@@ -418,11 +418,6 @@ public class RemoteProcessRuntimeDataServiceImplTest {
 
         when(queryServicesClient.findCompletedNodeInstances(processInstanceId, 0, Integer.MAX_VALUE)).thenReturn(completedNodeInstances);
 
-        List<TimerInstance> timerInstances = Arrays.asList(TimerInstance.builder().id(1L).timerId(1L).timerName("timer1").processInstanceId(processInstanceId).repeatLimit(1).period(2l).delay(1).build(),
-                                                           TimerInstance.builder().id(2L).timerId(2l).timerName("time2").processInstanceId(processInstanceId).repeatLimit(1).period(1l).delay(2).build());
-
-        when(processAdminServicesClient.getTimerInstances(containerId, processInstanceId)).thenReturn(timerInstances);
-
         when(queryServicesClient.findProcessInstanceById(parentId)).thenReturn(ProcessInstance.builder().id(parentId).containerId(containerId).processId(processId).state(state).parentInstanceId(-1L).processName(processName).build());
 
         ProcessInstanceDiagramSummary summary = service.getProcessInstanceDiagramSummary(instanceKey, "", "", "");
@@ -456,8 +451,6 @@ public class RemoteProcessRuntimeDataServiceImplTest {
                                                                           NodeInstanceSummary.builder().withId(3l).withName("name-3").withType("HumanTask").withCompleted(true).build(),
                                                                           NodeInstanceSummary.builder().withId(4l).withName(" ").withType("End").withCompleted(true).build());
 
-        assertThat(summary.getTimerInstances()).hasSize(2).containsExactly(TimerInstanceSummary.builder().withId(1l).withTimerId(1l).withName("timer1").withProcessInstanceId(processInstanceId).withRepeatLimit(1).withPeriod(2l).withDelay(1l).build(),
-                                                                           TimerInstanceSummary.builder().withId(2l).withTimerId(2l).withName("time2").withProcessInstanceId(processInstanceId).withRepeatLimit(1).withPeriod(1l).withDelay(2l).build());
     }
 
     @Test
@@ -482,7 +475,6 @@ public class RemoteProcessRuntimeDataServiceImplTest {
         assertThat(summary.getProcessDefinition().getNodes()).isEmpty();
         assertThat(summary.getProcessDefinition().getTimers()).isEmpty();
         assertThat(summary.getNodeInstances()).isEmpty();
-        assertThat(summary.getTimerInstances()).isEmpty();
 
         verify(queryServicesClient, never()).findActiveNodeInstances(any(), any(), any());
 
