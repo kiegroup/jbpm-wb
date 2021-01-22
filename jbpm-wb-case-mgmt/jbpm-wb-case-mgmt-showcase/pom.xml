@@ -49,11 +49,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.activation</groupId>
-      <artifactId>activation</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>javax.persistence-api</artifactId>
       <scope>provided</scope>
@@ -71,11 +66,6 @@
     <dependency>
       <groupId>org.jboss.spec.javax.security.jacc</groupId>
       <artifactId>jboss-jacc-api_1.5_spec</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.spec.javax.xml.bind</groupId>
-      <artifactId>jboss-jaxb-api_2.3_spec</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -133,6 +123,14 @@
         <exclusion>
           <groupId>org.jboss.resteasy</groupId>
           <artifactId>resteasy-cdi</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jboss.spec.javax.xml.bind</groupId>
+          <artifactId>jboss-jaxb-api_2.3_spec</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.activation</groupId>
+          <artifactId>activation</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -229,6 +227,16 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-api</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.spec.javax.xml.bind</groupId>
+          <artifactId>jboss-jaxb-api_2.3_spec</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.activation</groupId>
+          <artifactId>activation</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.kie.soup</groupId>
@@ -433,6 +441,12 @@
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-document</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.spec.javax.xml.bind</groupId>
+          <artifactId>jboss-jaxb-api_2.3_spec</artifactId>
+        </exclusion>
+      </exclusions>
       <scope>runtime</scope>
     </dependency>
 

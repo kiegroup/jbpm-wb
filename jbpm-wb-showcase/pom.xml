@@ -138,6 +138,16 @@
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-api</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.spec.javax.xml.bind</groupId>
+          <artifactId>jboss-jaxb-api_2.3_spec</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.activation</groupId>
+          <artifactId>activation</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
@@ -358,6 +368,12 @@
     <dependency>
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-runtime-manager</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.jboss.spec.javax.xml.bind</groupId>
+          <artifactId>jboss-jaxb-api_2.3_spec</artifactId>
+        </exclusion>
+      </exclusions>
       <scope>runtime</scope>
     </dependency>
 
@@ -1262,6 +1278,10 @@
           <groupId>org.apache.chemistry.opencmis</groupId>
           <artifactId>chemistry-opencmis-commons-api</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>javax.activation</groupId>
+          <artifactId>activation</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -1280,6 +1300,10 @@
         <exclusion>
           <groupId>javax.xml.ws</groupId>
           <artifactId>jaxws-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.activation</groupId>
+          <artifactId>activation</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
