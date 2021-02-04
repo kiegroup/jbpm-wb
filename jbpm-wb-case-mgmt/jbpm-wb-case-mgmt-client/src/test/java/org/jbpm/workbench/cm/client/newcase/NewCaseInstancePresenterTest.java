@@ -235,7 +235,7 @@ public class NewCaseInstancePresenterTest {
         verify(view,
                times(3)).setOwner(anyString());
         verify(view,
-               times(3)).showCaseOwnerError(anyString());
+               times(3)).showCaseOwnerError(any());
         verify(translationService,
                 times(3)).format(eq("PleaseProvideCaseOwner"));
     }
@@ -250,7 +250,7 @@ public class NewCaseInstancePresenterTest {
                             .isFalse();
         verify(view,
                never()).setOwner(anyString());
-        verify(view).showCaseOwnerError(anyString());
+        verify(view).showCaseOwnerError(any());
         verify(translationService).format(eq("InvalidRoleAssignment"),
                                           eq(caseOwnerRole),
                                           eq(ownerRoleCardinality));

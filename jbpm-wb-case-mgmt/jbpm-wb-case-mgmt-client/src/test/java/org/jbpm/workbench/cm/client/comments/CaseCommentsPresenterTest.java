@@ -33,16 +33,18 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest {
 
     private final String commentId = "commentId";
@@ -73,8 +75,6 @@ public class CaseCommentsPresenterTest extends AbstractCaseInstancePresenterTest
                                                cis.getCaseId(), 
                                                0,
                                                presenter.getPageSize())).thenReturn(Collections.singletonList(caseComment));
-        when(identity.getIdentifier()).thenReturn(author);
-
         setupCaseInstance(cis);
 
         verify(caseCommentsView).setCaseCommentList(Collections.singletonList(caseComment));

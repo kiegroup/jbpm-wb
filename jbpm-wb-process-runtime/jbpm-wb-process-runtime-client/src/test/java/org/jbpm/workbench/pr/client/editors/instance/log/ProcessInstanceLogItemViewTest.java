@@ -92,13 +92,13 @@ public class ProcessInstanceLogItemViewTest {
     public void setupMocks() {
         when(constants.Human_Task()).thenReturn("Human task");
         when(constants.System_Task()).thenReturn("System task");
-        when(constants.NodeWasLeft(any())).then(i -> "(" + i.getArgumentAt(0, String.class) + ") node was COMPLETED");
-        when(constants.NodeWasEntered(any())).then(i -> "(" + i.getArgumentAt(0, String.class) + ")" + " node was ENTERED");
-        when(constants.Task_(any())).then(i -> "Task '" + i.getArgumentAt(0, String.class) + "'");
+        when(constants.NodeWasLeft(any())).then(i -> "(" + i.getArgument(0, String.class) + ") node was COMPLETED");
+        when(constants.NodeWasEntered(any())).then(i -> "(" + i.getArgument(0, String.class) + ")" + " node was ENTERED");
+        when(constants.Task_(any())).then(i -> "Task '" + i.getArgument(0, String.class) + "'");
         when(constants.Human()).thenReturn("Human");
         when(constants.System()).thenReturn("System");
 
-        when(translationService.format(any())).then(i -> i.getArgumentAt(0, String.class));
+        when(translationService.format(any())).then(i -> i.getArgument(0, String.class));
 
         when(Document.get().createUniqueId()).thenReturn("123");
     }

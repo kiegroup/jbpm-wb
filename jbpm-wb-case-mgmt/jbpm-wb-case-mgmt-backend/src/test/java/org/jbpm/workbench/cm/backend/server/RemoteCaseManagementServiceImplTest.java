@@ -106,8 +106,6 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void testGetCaseDefinitions_emptyList() {
-        when(clientMock.getCaseDefinitions(anyInt(), anyInt())).thenReturn(emptyList());
-
         List<CaseDefinitionSummary> definitions = testedService.getCaseDefinitions();
         assertNotNull(definitions);
         assertTrue(definitions.isEmpty());
@@ -342,11 +340,6 @@ public class RemoteCaseManagementServiceImplTest {
 
     @Test
     public void testGetComments_emptyList() {
-        when(clientMock.getComments(containerId,
-                                    caseId,
-                                    0,
-                                    0)).thenReturn(emptyList());
-
         final List<CaseCommentSummary> comments = testedService.getComments(containerId,
                                                                             caseId,
                                                                             0,

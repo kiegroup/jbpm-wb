@@ -47,7 +47,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.file.DirectoryStream;
@@ -57,7 +57,7 @@ import org.uberfire.java.nio.file.Path;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class CaseProjectServiceImplTest {
 
     @Mock
@@ -118,7 +118,7 @@ public class CaseProjectServiceImplTest {
         when(ddPath.getFileSystem()).thenReturn(fileSystem);
 
         // configure services
-        when(ioService.get(any(URI.class))).thenReturn(ddPath);
+        when(ioService.get(any())).thenReturn(ddPath);
         when(ddEditorService.load(any())).thenReturn(new DeploymentDescriptorModel());
 
         // configure the project

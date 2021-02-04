@@ -37,22 +37,35 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.verification.VerificationMode;
 import org.uberfire.mvp.Command;
 
 import static java.util.Collections.singletonList;
-import static org.jbpm.workbench.cm.client.resources.i18n.Constants.*;
+import static org.jbpm.workbench.cm.client.resources.i18n.Constants.ACTION_START;
+import static org.jbpm.workbench.cm.client.resources.i18n.Constants.AVAILABLE_IN;
+import static org.jbpm.workbench.cm.client.resources.i18n.Constants.CASE;
+import static org.jbpm.workbench.cm.client.resources.i18n.Constants.DYMANIC;
 import static org.jbpm.workbench.cm.predicate.HumanTaskNodePredicate.NODE_TYPE_HUMAN_TASK;
 import static org.jbpm.workbench.cm.predicate.MilestoneNodePredicate.NODE_TYPE_MILESTONE;
 import static org.jbpm.workbench.cm.predicate.SubProcessNodePredicate.NODE_TYPE_SUB_PROCESS;
-import static org.jbpm.workbench.cm.util.CaseActionType.*;
+import static org.jbpm.workbench.cm.util.CaseActionType.AD_HOC_TASK;
+import static org.jbpm.workbench.cm.util.CaseActionType.DYNAMIC_SUBPROCESS_TASK;
+import static org.jbpm.workbench.cm.util.CaseActionType.DYNAMIC_USER_TASK;
 import static org.jbpm.workbench.cm.util.CaseStageStatus.ACTIVE;
 import static org.jbpm.workbench.cm.util.CaseStageStatus.AVAILABLE;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
 
     @Mock(name = "view")
@@ -96,9 +109,9 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         cis = newCaseInstanceSummary();
         cis.setStages(new ArrayList<>(Arrays.asList(createCaseStageSummary(AVAILABLE.getStatus()),
                                                     createCaseStageSummary(ACTIVE.getStatus()))));
-        when(caseManagementService.getCaseActions(anyString(),
-                                                  anyString(),
-                                                  anyString())).thenReturn(actions);
+        when(caseManagementService.getCaseActions(any(),
+                                                  any(),
+                                                  any())).thenReturn(actions);
 
         when(actions.getAvailableActions()).thenReturn(caseActionSummaryList);
         when(actions.getInProgressAction()).thenReturn(caseActionSummaryList);
@@ -312,8 +325,8 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         verifyDynamicActionAdded(DYNAMIC_USER_TASK,
                                          null);
 
-        verify(caseManagementService).addDynamicUserTask(anyString(),
-                                                         anyString(),
+        verify(caseManagementService).addDynamicUserTask(any(),
+                                                         any(),
                                                          eq(taskName),
                                                          eq(description),
                                                          eq(actors),
@@ -327,8 +340,8 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         verifyDynamicActionAdded(DYNAMIC_USER_TASK,
                                  stageId);
 
-        verify(caseManagementService).addDynamicUserTaskToStage(anyString(),
-                                                                anyString(),
+        verify(caseManagementService).addDynamicUserTaskToStage(any(),
+                                                                any(),
                                                                 eq(stageId),
                                                                 eq(taskName),
                                                                 eq(description),
@@ -342,8 +355,8 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         verifyDynamicActionAdded(DYNAMIC_SUBPROCESS_TASK,
                                  null);
 
-        verify(caseManagementService).addDynamicSubProcess(anyString(),
-                                                           anyString(),
+        verify(caseManagementService).addDynamicSubProcess(any(),
+                                                           any(),
                                                            eq(processDefinitionSummary.getId()),
                                                            eq(null));
     }
@@ -354,8 +367,8 @@ public class ActionsPresenterTest extends AbstractCaseInstancePresenterTest {
         verifyDynamicActionAdded(DYNAMIC_SUBPROCESS_TASK,
                                  stageId);
 
-        verify(caseManagementService).addDynamicSubProcessToStage(anyString(),
-                                                                  anyString(),
+        verify(caseManagementService).addDynamicSubProcessToStage(any(),
+                                                                  any(),
                                                                   eq(stageId),
                                                                   eq(processDefinitionSummary.getId()),
                                                                   eq(null));

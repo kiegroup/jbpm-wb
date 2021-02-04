@@ -40,7 +40,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.server.controller.api.model.spec.ServerTemplate;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.uberfire.client.mvp.PerspectiveActivity;
 import org.uberfire.client.mvp.PerspectiveManager;
 import org.uberfire.client.mvp.PlaceStatus;
@@ -54,7 +54,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.jbpm.workbench.common.client.PerspectiveIds.TASK_DETAILS_SCREEN;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Mock
@@ -521,7 +521,7 @@ public class TaskDashboardTest extends AbstractDashboardTest {
 
     @Test
     public void testOpenInstanceDetails() {
-        when(taskService.getTaskWithSLA(anyString(), anyString(), anyLong())).thenReturn(mock(TaskSummary.class));
+        when(taskService.getTaskWithSLA(any(), any(), anyLong())).thenReturn(mock(TaskSummary.class));
         when(placeManager.getStatus(TASK_DETAILS_SCREEN)).thenReturn(PlaceStatus.CLOSE);
         TableDisplayer tableDisplayer = presenter.getTasksTable();
         tableDisplayer.selectCell(COLUMN_TASK_ID,
