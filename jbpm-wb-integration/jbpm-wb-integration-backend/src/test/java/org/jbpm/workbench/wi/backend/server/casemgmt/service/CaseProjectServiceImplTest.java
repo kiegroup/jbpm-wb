@@ -190,7 +190,7 @@ public class CaseProjectServiceImplTest {
                      startCaseHandler.getValue());
 
         verify(ioService,
-               times(1)).write(any(),
+               times(5)).write(any(),
                                any(byte[].class));
     }
 
@@ -238,30 +238,7 @@ public class CaseProjectServiceImplTest {
                      mappedStrategies.get(CaseProjectServiceImpl.DOCUMENT_MARSHALLER));
 
         verify(ioService,
-               times(1)).write(any(),
-                               any(byte[].class));
-    }
-
-    @Test
-    public void testConfigureNewPackage() {
-
-        Path packagePath = Mockito.mock(Path.class);
-        when(packagePath.toUri()).thenReturn(URI.create("default://p0/Evaluation/src/main/resources/org"));
-        DirectoryStream directoryStream = Mockito.mock(DirectoryStream.class);
-        when(ioService.newDirectoryStream(any(),
-                                          any())).thenReturn((DirectoryStream<Path>) directoryStream);
-        when(directoryStream.iterator()).thenReturn(Arrays.asList(packagePath).iterator());
-
-        org.guvnor.common.services.project.model.Package pkg = Mockito.mock(org.guvnor.common.services.project.model.Package.class);
-        when(pkg.getModuleRootPath()).thenReturn(projectPath);
-        when(pkg.getPackageMainResourcesPath()).thenReturn(projectPath);
-
-        NewPackageEvent event = new NewPackageEvent(pkg);
-
-        caseProjectService.configurePackage(event);
-
-        verify(ioService,
-               times(1)).write(any(),
+               times(5)).write(any(),
                                any(byte[].class));
     }
 
@@ -322,7 +299,7 @@ public class CaseProjectServiceImplTest {
                      startCaseHandler.getValue());
 
         verify(ioService,
-               times(1)).write(any(),
+               times(5)).write(any(),
                                any(byte[].class));
     }
 
@@ -383,9 +360,9 @@ public class CaseProjectServiceImplTest {
         assertEquals(CaseProjectServiceImpl.START_CASE_HANDLER,
                      startCaseHandler.getValue());
 
-        // still 1 as it was called (even tho exception was thrown)
+        // still 5 as it was called (even tho exception was thrown)
         verify(ioService,
-               times(1)).write(any(),
+               times(5)).write(any(),
                                any(byte[].class));
 
         verify(mockAppender,
