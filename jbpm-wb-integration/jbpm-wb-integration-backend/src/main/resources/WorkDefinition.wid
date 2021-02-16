@@ -1,5 +1,36 @@
 [
     [
+        "name" : "BusinessRuleTask",
+        "displayName" : "BusinessRuleTask",
+        "category" : "jbpm-workitems-bpmn2",
+        "description" : "",
+        "defaultHandler" : "mvel: new org.jbpm.process.workitem.bpmn2.BusinessRuleTaskHandler()",
+        "documentation" : "jbpm-workitems-bpmn2/index.html",
+        "icon" : "BusinessRuleTask.png",
+
+        "parameters" : [
+            "KieSessionName" : new StringDataType(),
+            "KieSessionType" : new StringDataType()
+        ]
+    ],
+
+    [
+        "name" : "DecisionTask",
+        "displayName" : "Decision Task",
+        "category" : "jbpm-workitems-bpmn2",
+        "description" : "",
+        "defaultHandler" : "mvel: new org.jbpm.process.workitem.bpmn2.DecisionTaskHandler()",
+        "documentation" : "jbpm-workitems-bpmn2/index.html",
+        "icon" : "DecisionTask.png",
+
+        "parameters" : [
+            "Model" : new StringDataType(),
+            "Namespace" : new StringDataType(),
+            "Decision" : new StringDataType()
+        ]
+    ],
+
+    [
         "name" : "Email",
         "displayName" : "Email",
         "category" : "jbpm-workitems-email",
