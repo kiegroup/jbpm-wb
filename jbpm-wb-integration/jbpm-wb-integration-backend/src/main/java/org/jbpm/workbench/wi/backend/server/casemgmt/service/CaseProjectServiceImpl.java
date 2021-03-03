@@ -20,13 +20,12 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.io.IOUtils;
-import org.guvnor.common.services.project.events.NewPackageEvent;
 import org.guvnor.common.services.project.model.WorkspaceProject;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jbpm.workbench.wi.casemgmt.service.CaseProjectService;
@@ -53,7 +52,11 @@ public class CaseProjectServiceImpl implements CaseProjectService {
     private static final String CASE_PROJECT_DOT_FILE = ".caseproject";
     private static final String DEPLOYMENT_DESCRIPTOR_FILE = "kie-deployment-descriptor.xml";
     private static final String WORK_DEFINITION_FILE = "WorkDefinition.wid";
-    private static final String CASE_WORK_DEFINITION_FILE = "/CaseWorkDefinitions.wid";
+    private static final String GLOBAL_DIRECTORY = "global";
+    private static final String EMAIL_ICON = "defaultemailicon.png";
+    private static final String LOG_ICON = "defaultlogicon.gif";
+    private static final String MILESTONE_ICON = "defaultmilestoneicon.png";
+    private static final String SERVICE_ICON = "defaultservicenodeicon.png";
 
     private IOService ioService;
 
@@ -132,6 +135,12 @@ public class CaseProjectServiceImpl implements CaseProjectService {
                                             "mvel",
                                             new ArrayList<Parameter>()));
         descriptorModel.setWorkItemHandlers(wiModelList);
+
+        Path globalPath = Paths.convert(kieModule.getKModuleXMLPath()).getRoot().resolve(GLOBAL_DIRECTORY);
+        if (ioService.notExists(globalPath)) {
+            ioService.createDirectory(globalPath);
+        }
+
         logger.debug("Deployment descriptor model updated with case information {}",
                      descriptorModel);
         ddEditorService.save(convertedDDVFSPath,
@@ -140,48 +149,39 @@ public class CaseProjectServiceImpl implements CaseProjectService {
                              "Updated with case project configuration");
         logger.debug("Updated deployment model saved");
 
-        addWorkDefinitionsFileToProjectResources(kieModule, project, separator);
-    }
-
-    public void addWorkDefinitionsFileToProjectResources(KieModule kieModule, WorkspaceProject project, String separator) {
-        String resourcesPathStr = Paths.convert(kieModule.getKModuleXMLPath()).getParent().getParent().toUri().toString();
-        Path widFilePath = ioService.get(URI.create(resourcesPathStr + separator + WORK_DEFINITION_FILE));
         logger.debug("Adding WorkDefinition.wid file to resources folder {} of the project {}",
-                     widFilePath,
+                     globalPath,
                      project);
-        addWorkDefinitions(widFilePath);
+        addWorkDefinitions(kieModule, separator);
+
+        logger.debug("Default WorkItemDefinitions added to {}",
+                     globalPath.toString());
     }
 
-    public void configurePackage(@Observes NewPackageEvent pkg) {
-
-        if (isCaseProject(Paths.convert(pkg.getPackage().getModuleRootPath()))) {
-            String resourcesPathStr = Paths.convert(pkg.getPackage().getPackageMainResourcesPath()).toUri().toString();
-            String separator = Paths.convert(pkg.getPackage().getModuleRootPath()).getFileSystem().getSeparator();
-
-            Path resourcesPath = ioService.get(URI.create(resourcesPathStr + separator + WORK_DEFINITION_FILE));
-            addWorkDefinitions(resourcesPath);
-        }
+    protected void addWorkDefinitions(KieModule kieModule, String separator) {
+        String globalPath = Paths.convert(kieModule.getKModuleXMLPath())
+                .getParent() // ROOT/src/main/META-INF
+                .getParent() // ROOT/src/main/resources
+                .getParent() // ROOT/src/main
+                .getParent() // ROOT/src
+                .getParent() // ROOT
+                .toUri().toString() + GLOBAL_DIRECTORY;
+        writeFile(globalPath, separator, WORK_DEFINITION_FILE);
+        writeFile(globalPath, separator, EMAIL_ICON);
+        writeFile(globalPath, separator, LOG_ICON);
+        writeFile(globalPath, separator, MILESTONE_ICON);
+        writeFile(globalPath, separator, SERVICE_ICON);
     }
 
-    protected void addWorkDefinitions(Path location) {
-
+    private void writeFile(String location, String separator, String name) {
         try {
-            byte[] data = IOUtils.toByteArray(this.getClass().getResourceAsStream(CASE_WORK_DEFINITION_FILE));
-            ioService.write(location,
-                            data);
-            logger.debug("WorkDefinition.wid file added to {}",
-                         location);
+            byte[] data = IOUtils.toByteArray(this.getClass().getResourceAsStream("/" + name));
+            Path filePath = ioService.get(URI.create(location + separator + name));
+            ioService.write(filePath, data);
         } catch (IOException e) {
             logger.error("Error when writing WorkDefinition.wid file in {}",
-                         location,
+                         location + separator + name,
                          e);
         }
-    }
-
-    protected boolean isCaseProject(Path rootProjectPath) {
-
-        org.uberfire.java.nio.file.DirectoryStream<Path> found = ioService.newDirectoryStream(rootProjectPath,
-                                                                                              f -> f.endsWith(CASE_PROJECT_DOT_FILE));
-        return found.iterator().hasNext();
     }
 }
