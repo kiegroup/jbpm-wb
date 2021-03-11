@@ -32,8 +32,6 @@ public class ProcessInstanceDiagramSummary extends GenericSummary<Long> {
 
     private ProcessSummary processDefinition;
 
-    private List<TimerInstanceSummary> timerInstances;
-
     private List<ProcessInstanceSummary> subProcessInstances = new ArrayList<>();
 
     private ProcessInstanceSummary parentProcessInstanceSummary;
@@ -73,14 +71,6 @@ public class ProcessInstanceDiagramSummary extends GenericSummary<Long> {
         this.processDefinition = processDefinition;
     }
 
-    public void setTimerInstances(List<TimerInstanceSummary> timerInstances) {
-        this.timerInstances = timerInstances;
-    }
-
-    public List<TimerInstanceSummary> getTimerInstances() {
-        return timerInstances;
-    }
-
     public List<ProcessInstanceSummary> getSubProcessInstances() {
         return subProcessInstances;
     }
@@ -95,7 +85,6 @@ public class ProcessInstanceDiagramSummary extends GenericSummary<Long> {
                 "svgContent='" + svgContent + '\'' +
                 ", nodeInstances=" + nodeInstances +
                 ", processDefinition=" + processDefinition +
-                ", timerInstances=" + timerInstances +
                 ", id=" + id +
                 ", name='" + name + '\'' +
                 '}';
@@ -136,11 +125,6 @@ public class ProcessInstanceDiagramSummary extends GenericSummary<Long> {
 
         public Builder withProcessDefinition(ProcessSummary processDefinition) {
             summary.setProcessDefinition(processDefinition);
-            return this;
-        }
-
-        public Builder withTimerInstances(List<TimerInstanceSummary> timerInstances) {
-            summary.setTimerInstances(timerInstances);
             return this;
         }
 

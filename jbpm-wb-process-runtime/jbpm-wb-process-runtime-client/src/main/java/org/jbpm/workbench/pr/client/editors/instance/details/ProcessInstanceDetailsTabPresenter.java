@@ -35,6 +35,7 @@ import org.jbpm.workbench.pr.model.ProcessInstanceKey;
 import org.jbpm.workbench.pr.model.ProcessInstanceSummary;
 import org.jbpm.workbench.pr.model.UserTaskSummary;
 import org.jbpm.workbench.pr.service.ProcessRuntimeDataService;
+import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
 public class ProcessInstanceDetailsTabPresenter implements ProcessInstanceSummaryAware {
@@ -52,6 +53,9 @@ public class ProcessInstanceDetailsTabPresenter implements ProcessInstanceSummar
     public void setView(final ProcessInstanceDetailsTabView view) {
         this.view = view;
     }
+
+    @Inject
+    private Event<NotificationEvent> notification;
 
     @Inject
     public void setProcessRuntimeDataService(final Caller<ProcessRuntimeDataService> processRuntimeDataService) {
@@ -107,6 +111,9 @@ public class ProcessInstanceDetailsTabPresenter implements ProcessInstanceSummar
                                                                    + nis.getId() + " - " + nis.getName() + " (" + nis.getType() + ") \n");
                     }
                     view.setCurrentActivitiesListBox(safeHtmlBuilder.toSafeHtml().asString());
+                }, (Object o, Throwable throwable) -> {
+                    notification.fire(new NotificationEvent(Constants.INSTANCE.CanNotGetInstancesDetailsMessage(throwable.getMessage()), NotificationEvent.NotificationType.WARNING));
+                    return false;
                 }
         ).getProcessInstanceActiveNodes(process.getProcessInstanceKey());
     }

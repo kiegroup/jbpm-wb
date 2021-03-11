@@ -372,4 +372,6 @@ public interface Constants extends Messages {
     String AlertPopupTitle();
 
     String AlertPopupMessage();
+
+    String CanNotGetInstancesDetailsMessage(String errorMessage);
 }
