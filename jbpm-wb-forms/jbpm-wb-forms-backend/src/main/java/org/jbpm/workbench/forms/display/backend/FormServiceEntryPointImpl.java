@@ -283,6 +283,7 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
                                                                     processId);
             ProcessRenderingSettings settings = new ProcessRenderingSettings(processDesc,
                                                                              processData,
+                                                                             processDefinition.getTagsByVariable(),
                                                                              serverTemplateId,
                                                                              formContent,
                                                                              new ContentMarshallerContext(null,
@@ -306,6 +307,7 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
         return renderDefaultProcessForm(serverTemplateId,
                                         processDesc,
                                         processData,
+                                        processDefinition.getTagsByVariable(),
                                         kieServicesClient);
     }
 
@@ -326,10 +328,12 @@ public class FormServiceEntryPointImpl extends AbstractKieServerService implemen
     private FormRenderingSettings renderDefaultProcessForm(String serverTemplateId,
                                                            org.jbpm.workbench.forms.service.providing.model.ProcessDefinition processDesc,
                                                            Map<String, String> processData,
+                                                           Map<String, String[]> tagsByVariable,
                                                            KieServicesClient kieServicesClient) {
         try {
             return defaultFormProvider.render(new ProcessRenderingSettings(processDesc,
                                                                            processData,
+                                                                           tagsByVariable,
                                                                            serverTemplateId,
                                                                            "",
                                                                            new ContentMarshallerContext(null,
