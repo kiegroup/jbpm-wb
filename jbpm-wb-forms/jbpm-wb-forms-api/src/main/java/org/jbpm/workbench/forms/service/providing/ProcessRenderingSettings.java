@@ -25,6 +25,7 @@ public class ProcessRenderingSettings implements RenderingSettings {
 
     private ProcessDefinition process;
     private Map<String, String> processData;
+    private Map<String, String[]> processVariableTags;
     private String serverTemplateId;
     private String formContent;
     private ContentMarshallerContext marshallerContext;
@@ -36,6 +37,20 @@ public class ProcessRenderingSettings implements RenderingSettings {
                                     ContentMarshallerContext marshallerContext) {
         this.process = process;
         this.processData = processData;
+        this.serverTemplateId = serverTemplateId;
+        this.formContent = formContent;
+        this.marshallerContext = marshallerContext;
+    }
+
+    public ProcessRenderingSettings(ProcessDefinition process,
+                                    Map<String, String> processData,
+                                    Map<String, String[]> processVariableTags,
+                                    String serverTemplateId,
+                                    String formContent,
+                                    ContentMarshallerContext marshallerContext) {
+        this.process = process;
+        this.processData = processData;
+        this.processVariableTags = processVariableTags;
         this.serverTemplateId = serverTemplateId;
         this.formContent = formContent;
         this.marshallerContext = marshallerContext;
@@ -55,6 +70,15 @@ public class ProcessRenderingSettings implements RenderingSettings {
 
     public void setProcessData(Map<String, String> processData) {
         this.processData = processData;
+    }
+
+    @Override
+    public Map<String, String[]> getProcessVariableTags() {
+        return processVariableTags;
+    }
+
+    public void setProcessVariableTags(Map<String, String[]> processVariableTags) {
+        this.processVariableTags = processVariableTags;
     }
 
     @Override

@@ -92,4 +92,9 @@ public class TaskRenderingSettings implements RenderingSettings {
     public void setMarshallerContext(ContentMarshallerContext marshallerContext) {
         this.marshallerContext = marshallerContext;
     }
+
+    @Override
+    public Map<String, String[]> getProcessVariableTags() {
+        return null;
+    }
 }

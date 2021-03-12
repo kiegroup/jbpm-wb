@@ -19,10 +19,12 @@ package org.jbpm.workbench.forms.display.backend.provider;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jbpm.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
 import org.jbpm.workbench.forms.display.backend.provider.model.Invoice;
 import org.jbpm.workbench.forms.display.backend.provider.util.FormContentReader;
 import org.jbpm.workbench.forms.service.providing.ProcessRenderingSettings;
 import org.jbpm.workbench.forms.service.providing.model.ProcessDefinition;
+import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.forms.dynamic.service.context.generation.dynamic.BackendFormRenderingContextManager;
 import org.kie.workbench.common.forms.fields.test.TestMetaDataEntryManager;
@@ -61,6 +63,17 @@ public class ProcessFormsValuesProcessorTest extends AbstractFormsValuesProcesso
     }
 
     @Override
+    void verifyProcessVariablesTags(ProcessRenderingSettings renderingSettings,
+                                    KieWorkbenchFormRenderingSettings kieWorkbenchFormRenderingSettings) {
+        Assert.assertTrue(kieWorkbenchFormRenderingSettings.getRenderingContext()
+                                  .getAvailableForms().get("invoices-taskform")
+                                  .getFieldByName("invoice").getRequired());
+        Assert.assertTrue(kieWorkbenchFormRenderingSettings.getRenderingContext()
+                                  .getAvailableForms().get("invoices-taskform")
+                                  .getFieldByName("invoice").getReadOnly());
+    }
+
+    @Override
     ProcessRenderingSettings getFullRenderingSettings() {
         return getRenderSettings(FormContentReader.getStartProcessForms());
     }
@@ -72,12 +85,16 @@ public class ProcessFormsValuesProcessorTest extends AbstractFormsValuesProcesso
 
     private ProcessRenderingSettings getRenderSettings(String formContent) {
         Map<String, String> formData = new HashMap<>();
+        Map<String, String[]> processVariableTags = new HashMap<>();
 
         formData.put("invoice",
                      Invoice.class.getName());
+        processVariableTags.put("invoice",
+                                new String[]{"required", "readonly"});
 
         return new ProcessRenderingSettings(process,
                                             formData,
+                                            processVariableTags,
                                             SERVER_TEMPLATE_ID,
                                             formContent,
                                             marshallerContext);

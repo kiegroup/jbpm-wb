@@ -17,6 +17,7 @@
 package org.jbpm.workbench.forms.service.providing;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.kie.internal.task.api.ContentMarshallerContext;
 
@@ -49,4 +50,9 @@ public interface RenderingSettings extends Serializable {
      * Sets the ContentMarshallerContext
      */
     void setMarshallerContext(ContentMarshallerContext marshallerContext);
+
+    /**
+     * Returns the ProcessVariables Tags info
+     */
+    Map<String, String[]> getProcessVariableTags();
 }
