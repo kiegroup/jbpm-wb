@@ -53,10 +53,14 @@ public class CaseProjectServiceImpl implements CaseProjectService {
     private static final String DEPLOYMENT_DESCRIPTOR_FILE = "kie-deployment-descriptor.xml";
     private static final String WORK_DEFINITION_FILE = "WorkDefinition.wid";
     private static final String GLOBAL_DIRECTORY = "global";
+    private static final String BUSINESS_RULE_TASK_ICON = "defaultbusinessruletaskicon.png";
     private static final String EMAIL_ICON = "defaultemailicon.png";
-    private static final String LOG_ICON = "defaultlogicon.gif";
+    private static final String DECISION_TASKICON = "defaultdecisiontaskicon.png";
+    private static final String LOG_ICON = "defaultlogicon.png";
     private static final String MILESTONE_ICON = "defaultmilestoneicon.png";
     private static final String SERVICE_ICON = "defaultservicenodeicon.png";
+    private static final String REST_ICON = "defaultresticon.png";
+    private static final String WEB_SERVICE_ICON = "defaultwebserviceicon.png";
 
     private IOService ioService;
 
@@ -167,10 +171,14 @@ public class CaseProjectServiceImpl implements CaseProjectService {
                 .getParent() // ROOT
                 .toUri().toString() + GLOBAL_DIRECTORY;
         writeFile(globalPath, separator, WORK_DEFINITION_FILE);
+        writeFile(globalPath, separator, BUSINESS_RULE_TASK_ICON);
         writeFile(globalPath, separator, EMAIL_ICON);
+        writeFile(globalPath, separator, DECISION_TASKICON);
         writeFile(globalPath, separator, LOG_ICON);
         writeFile(globalPath, separator, MILESTONE_ICON);
         writeFile(globalPath, separator, SERVICE_ICON);
+        writeFile(globalPath, separator, REST_ICON);
+        writeFile(globalPath, separator, WEB_SERVICE_ICON);
     }
 
     private void writeFile(String location, String separator, String name) {
