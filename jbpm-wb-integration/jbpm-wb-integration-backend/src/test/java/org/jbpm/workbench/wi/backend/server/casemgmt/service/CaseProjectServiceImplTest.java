@@ -28,7 +28,6 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
-import org.guvnor.common.services.project.events.NewPackageEvent;
 import org.guvnor.common.services.project.model.WorkspaceProject;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.repositories.Branch;
@@ -54,8 +53,17 @@ import org.uberfire.java.nio.file.DirectoryStream;
 import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.java.nio.file.Path;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class CaseProjectServiceImplTest {
@@ -190,7 +198,7 @@ public class CaseProjectServiceImplTest {
                      startCaseHandler.getValue());
 
         verify(ioService,
-               times(5)).write(any(),
+               times(9)).write(any(),
                                any(byte[].class));
     }
 
@@ -238,7 +246,7 @@ public class CaseProjectServiceImplTest {
                      mappedStrategies.get(CaseProjectServiceImpl.DOCUMENT_MARSHALLER));
 
         verify(ioService,
-               times(5)).write(any(),
+               times(9)).write(any(),
                                any(byte[].class));
     }
 
@@ -299,7 +307,7 @@ public class CaseProjectServiceImplTest {
                      startCaseHandler.getValue());
 
         verify(ioService,
-               times(5)).write(any(),
+               times(9)).write(any(),
                                any(byte[].class));
     }
 
@@ -362,7 +370,7 @@ public class CaseProjectServiceImplTest {
 
         // still 5 as it was called (even tho exception was thrown)
         verify(ioService,
-               times(5)).write(any(),
+               times(9)).write(any(),
                                any(byte[].class));
 
         verify(mockAppender,
