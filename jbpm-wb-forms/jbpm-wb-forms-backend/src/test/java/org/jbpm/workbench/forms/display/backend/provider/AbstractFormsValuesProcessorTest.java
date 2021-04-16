@@ -168,6 +168,8 @@ public abstract class AbstractFormsValuesProcessorTest<PROCESSOR extends KieWork
                                                                                true);
 
         checkGeneratedContext();
+        verifyProcessVariablesTags(renderingSettings,
+                                   kieWorkbenchFormRenderingSettings);
     }
 
     protected void checkGeneratedContext() {
@@ -292,4 +294,7 @@ public abstract class AbstractFormsValuesProcessorTest<PROCESSOR extends KieWork
     abstract PROCESSOR getProcessorInstance(FormDefinitionSerializer serializer,
                                             BackendFormRenderingContextManager backendFormRenderingContextManager,
                                             DynamicBPMNFormGenerator dynamicBPMNFormGenerator);
+
+    abstract void verifyProcessVariablesTags(SETTINGS renderingSettings,
+                                             KieWorkbenchFormRenderingSettings kieWorkbenchFormRenderingSettings);
 }
