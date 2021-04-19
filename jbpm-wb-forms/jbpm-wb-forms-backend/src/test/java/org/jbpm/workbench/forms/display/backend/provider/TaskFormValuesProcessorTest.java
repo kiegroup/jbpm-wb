@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jbpm.workbench.forms.display.api.KieWorkbenchFormRenderingSettings;
 import org.jbpm.workbench.forms.display.backend.provider.model.Client;
 import org.jbpm.workbench.forms.display.backend.provider.model.Invoice;
 import org.jbpm.workbench.forms.display.backend.provider.model.InvoiceLine;
@@ -107,5 +108,11 @@ public class TaskFormValuesProcessorTest extends AbstractFormsValuesProcessorTes
         return new TaskFormValuesProcessor(serializer,
                                            backendFormRenderingContextManager,
                                            dynamicBPMNFormGenerator);
+    }
+
+    @Override
+    void verifyProcessVariablesTags(TaskRenderingSettings renderingSettings,
+                                    KieWorkbenchFormRenderingSettings kieWorkbenchFormRenderingSettings) {
+
     }
 }

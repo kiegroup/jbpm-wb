@@ -16,6 +16,7 @@
 
 package org.jbpm.workbench.forms.display.backend.provider;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -98,6 +99,12 @@ public class ProcessFormsValuesProcessor extends KieWorkbenchFormsValuesProcesso
     }
 
     private ModelProperty generateModelProperty(String name, String type, ProcessRenderingSettings settings) {
+        Map<String, String[]> tags = settings.getProcessVariableTags();
+        if(tags != null) {
+            boolean required = Arrays.stream(tags.get(name)).anyMatch(tag -> tag.equals("required"));
+            boolean readonly = Arrays.stream(tags.get(name)).anyMatch(tag -> tag.equals("readonly"));
+            return BPMNVariableUtils.generateVariableProperty(name, type, required, readonly, settings.getMarshallerContext().getClassloader());
+        }
         return BPMNVariableUtils.generateVariableProperty(name, type, settings.getMarshallerContext().getClassloader());
     }
 
