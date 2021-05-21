@@ -295,8 +295,8 @@ public class ServerTemplateSelectorMenuBuilderTest {
         serverTemplateSelectorMenuBuilder.loadServerTemplates();
 
         verify(view).getSelectedServerTemplate();
-        verify(viewWidget, times(2)).addServerTemplate(any());
-        verify(view, times(2)).addServerTemplate(any());
+        verify(viewWidget, times(2)).addServerTemplate(anyString());
+        verify(view, times(2)).addServerTemplate(anyString());
         verify(view).removeAllServerTemplates();
 
         verify(viewWidget).selectServerTemplate(serverTemplateId1);
