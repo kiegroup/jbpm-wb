@@ -51,7 +51,7 @@ public class KieServerQueryDefinitionLoaderTest {
 
     private final Map<String, QueryDefinition> receivedEvents = new HashMap<>();
 
-    private static final int TOTAL_QUERY_DEFINITIONS_EXPECTED = 11;
+    private static final int TOTAL_QUERY_DEFINITIONS_EXPECTED = 12;
 
     @Mock
     private Event<QueryDefinitionLoaded> event;
