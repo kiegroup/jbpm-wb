@@ -195,7 +195,28 @@ public class KieServerQueryDefinitionLoaderTest {
                 .build();
         testQueryDefinitionLoaded(expectedQuery);
     }
-
+    
+    @Test
+    public void testJbpmHumanTasksWithAdminExtended() {
+        QueryDefinition expectedQuery = QueryDefinition.builder()
+                .name("jbpmHumanTasksWithAdminExtended")
+                .expression("select t.activationTime, t.actualOwner, t.createdBy, t.createdOn, t.deploymentId, " +
+                                    "t.description, t.dueDate, t.name, t.parentId, t.priority, t.processId, " +
+                                    "t.processInstanceId, t.processSessionId, t.status, t.taskId, t.workItemId, " +
+                                    "t.lastModificationDate, pil.correlationKey, pil.processInstanceDescription ,oe.id, " +
+                                    "nil.sla_due_date, nil.slaCompliance,(select COUNT(errInfo.id) from ExecutionErrorInfo " +
+                                    "errInfo where errInfo.ACTIVITY_ID = t.taskId and errInfo.PROCESS_INST_ID = pil.processInstanceId " +
+                                    "and errInfo.ERROR_ACK = 0 and errInfo.ERROR_TYPE = 'Task') as errorCount, i18n.text  as subject, " +
+                                    "i18n.language as language, task.formname as formname, (SELECT te1.userId FROM taskEvent te1 " +
+                                    "LEFT JOIN taskEvent te2 ON te1.id < te2.id WHERE te2.id IS NULL) as lastUser from AuditTaskImpl t  " +
+                                    "left join ProcessInstanceLog pil on pil.processInstanceId = t.processInstanceId " +
+                                    "left join PeopleAssignments_BAs ba on t.taskId = ba.task_id left join OrganizationalEntity oe " +
+                                    "on ba.entity_id = oe.id left join NodeInstanceLog nil on nil.workItemId=t.workItemId " +
+                                    "left join Task task on task.id = t.taskId left join I18NText i18n ON i18n.Task_Subjects_Id = t.taskId")
+                .build();
+        testQueryDefinitionLoaded(expectedQuery);
+    }
+    
     @Test
     public void testJbpmHumanTasksWithVariables() {
         QueryDefinition expectedQuery = QueryDefinition.builder()
