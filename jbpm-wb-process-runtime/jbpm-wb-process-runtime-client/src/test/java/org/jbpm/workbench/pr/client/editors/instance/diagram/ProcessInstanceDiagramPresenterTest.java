@@ -576,6 +576,7 @@ public class ProcessInstanceDiagramPresenterTest {
         verify(view, never()).expandDiagram();
         verify(view, never()).disableExpandAnchor();
         verify(view).showOrHideNodeActionsTriggered();
+        verify(view).onShow();
     }
 
     @Test
