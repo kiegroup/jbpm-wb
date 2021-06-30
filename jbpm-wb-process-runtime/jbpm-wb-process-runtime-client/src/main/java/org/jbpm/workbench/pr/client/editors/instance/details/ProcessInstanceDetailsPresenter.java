@@ -177,14 +177,10 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
         if (!refreshDetails) {
             view.resetTabs(event.isForLog());
         }
-        refreshProcessInstance();
-
-        if (event.isFromDiagram()) {
-            view.showDiagramTab();
-        }
+        refreshProcessInstance(event);
     }
 
-    protected void refreshProcessInstance(){
+    protected void refreshProcessInstance(final ProcessInstanceSelectionEvent event){
         processRuntimeDataService.call((ProcessInstanceSummary pi) -> {
 
             changeTitleWidgetEvent.fire(new ChangeTitleWidgetEvent(this.place,
@@ -197,6 +193,10 @@ public class ProcessInstanceDetailsPresenter implements RefreshMenuBuilder.Suppo
             detailsPresenter.setProcessInstance(pi);
             documentListPresenter.setProcessInstance(pi);
             processInstanceLogPresenter.setProcessInstance(pi);
+
+            if (event.isFromDiagram()) {
+                view.showDiagramTab();
+            }
         }).getProcessInstance(processInstance);
     }
 
