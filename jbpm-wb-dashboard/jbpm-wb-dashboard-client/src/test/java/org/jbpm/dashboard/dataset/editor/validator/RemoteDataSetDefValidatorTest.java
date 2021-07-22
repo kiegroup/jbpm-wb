@@ -24,6 +24,7 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import javax.validation.executable.ExecutableValidator;
 import javax.validation.metadata.BeanDescriptor;
 
 import org.dashbuilder.dataset.validation.groups.SQLDataSetDefDbSQLValidation;
@@ -83,6 +84,11 @@ public class RemoteDataSetDefValidatorTest {
 
         @Override
         public <T> T unwrap(Class<T> type) {
+            return null;
+        }
+
+        @Override
+        public ExecutableValidator forExecutables() {
             return null;
         }
     }
