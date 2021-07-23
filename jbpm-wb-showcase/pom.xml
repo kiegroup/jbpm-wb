@@ -403,8 +403,8 @@
       <scope>runtime</scope>
       <exclusions>
         <exclusion>
-          <artifactId>jboss-transaction-api_1.2_spec</artifactId>
-          <groupId>org.jboss.spec.javax.transaction</groupId>
+          <groupId>jakarta.transaction</groupId>
+          <artifactId>jakarta.transaction-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -728,8 +728,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.jboss.spec.javax.transaction</groupId>
-      <artifactId>jboss-transaction-api_1.2_spec</artifactId>
+      <groupId>jakarta.transaction</groupId>
+      <artifactId>jakarta.transaction-api</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -1244,8 +1244,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.jboss.spec.javax.servlet.jstl</groupId>
-      <artifactId>jboss-jstl-api_1.2_spec</artifactId>
+      <groupId>jakarta.servlet.jsp.jstl</groupId>
+      <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -1405,8 +1405,8 @@
           <artifactId>mail</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>javax.activation</groupId>
-          <artifactId>activation</artifactId>
+          <groupId>jakarta.activation</groupId>
+          <artifactId>jakarta.activation-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
