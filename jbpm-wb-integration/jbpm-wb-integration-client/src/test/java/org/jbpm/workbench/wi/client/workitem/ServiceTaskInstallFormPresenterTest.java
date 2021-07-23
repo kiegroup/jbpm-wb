@@ -86,13 +86,13 @@ public class ServiceTaskInstallFormPresenterTest {
     
     @Test
     public void testInstallServiceTask() {
-        when(branch.getName()).thenReturn("master");
+        when(branch.getName()).thenReturn("main");
 
         presenter.showView(cmd, serviceTaskId, target, parameters, null);
         presenter.setWorkspaceProjectContext(workspaceProjectContext);
         presenter.installWithParameters(serviceTaskId, target, parameters);
         
-        verify(serviceTaskService, times(1)).installServiceTask(eq(serviceTaskId), eq(target), eq(parameters), eq("master"));
+        verify(serviceTaskService, times(1)).installServiceTask(eq(serviceTaskId), eq(target), eq(parameters), eq("main"));
         verify(cmd, times(1)).execute();
     }
 
