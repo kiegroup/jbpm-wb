@@ -401,12 +401,6 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-wb-human-tasks-backend</artifactId>
       <scope>runtime</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>jakarta.transaction</groupId>
-          <artifactId>jakarta.transaction-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
