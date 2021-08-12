@@ -39,7 +39,7 @@ public class DummyProcessPath implements Path {
 
     @Override
     public String toURI() {
-        return "default://master@dummy/" + getFileName();
+        return "default://main@dummy/" + getFileName();
     }
 
     @Override
