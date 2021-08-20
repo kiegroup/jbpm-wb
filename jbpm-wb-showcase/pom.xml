@@ -401,12 +401,6 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-wb-human-tasks-backend</artifactId>
       <scope>runtime</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>jboss-transaction-api_1.2_spec</artifactId>
-          <groupId>org.jboss.spec.javax.transaction</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
@@ -728,8 +722,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.jboss.spec.javax.transaction</groupId>
-      <artifactId>jboss-transaction-api_1.2_spec</artifactId>
+      <groupId>jakarta.transaction</groupId>
+      <artifactId>jakarta.transaction-api</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -1244,8 +1238,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.jboss.spec.javax.servlet.jstl</groupId>
-      <artifactId>jboss-jstl-api_1.2_spec</artifactId>
+      <groupId>jakarta.servlet.jsp.jstl</groupId>
+      <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -1339,13 +1333,6 @@
       <groupId>org.kie.workbench.screens</groupId>
       <artifactId>kie-wb-common-server-ui-backend</artifactId>
       <scope>runtime</scope>
-      <exclusions>
-        <exclusion>
-          <!-- Collides with 'xml-apis:xml-apis' -->
-          <groupId>javax.xml.stream</groupId>
-          <artifactId>stax-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
@@ -1399,16 +1386,6 @@
       <groupId>org.jbpm</groupId>
       <artifactId>jbpm-workitems-email</artifactId>
       <scope>runtime</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.mail</groupId>
-          <artifactId>mail</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.activation</groupId>
-          <artifactId>activation</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jbpm</groupId>
@@ -1690,10 +1667,6 @@
           <groupId>org.bouncycastle</groupId>
           <artifactId>bcpkix-jdk15on</artifactId>
         </exclusion>
-        <exclusion>
-          <groupId>com.sun.activation</groupId>
-          <artifactId>jakarta.activation</artifactId>
-       </exclusion>
       </exclusions>
     </dependency>
 
@@ -1727,6 +1700,12 @@
       <groupId>org.jboss.shrinkwrap.resolver</groupId>
       <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.inject</groupId>
+          <artifactId>javax.inject</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.kie.server</groupId>
