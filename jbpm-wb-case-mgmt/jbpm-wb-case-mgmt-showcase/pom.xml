@@ -218,12 +218,6 @@
       <groupId>org.kie.server</groupId>
       <artifactId>kie-server-client</artifactId>
     </dependency>
-    <!-- login module -->
-    <dependency>
-      <groupId>org.kie</groupId>
-      <artifactId>kie-security</artifactId>
-      <scope>runtime</scope>
-    </dependency>
 
     <!-- UberFire -->
     <dependency>
