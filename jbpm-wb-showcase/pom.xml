@@ -1619,6 +1619,10 @@
     <!-- UF Security management provider for Keycloak.  -->
     <dependency>
       <groupId>org.uberfire</groupId>
+      <artifactId>uberfire-structure-backend</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.uberfire</groupId>
       <artifactId>uberfire-security-management-keycloak</artifactId>
       <scope>runtime</scope>
       <exclusions>
