@@ -35,6 +35,17 @@
     <jboss.home>${project.build.directory}/wildfly-${version.org.wildfly}</jboss.home>
   </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>${version.org.ow2.asm}</version>
+        <scope>provided</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
 
     <!-- errai-cdi-jboss provides gwt-dev with the proper dependency exclusions and should be first on the classpath -->
@@ -701,6 +712,10 @@
           <artifactId>sac</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm</artifactId>
     </dependency>
 
     <dependency>
