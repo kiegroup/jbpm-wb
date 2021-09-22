@@ -1279,6 +1279,10 @@
           <groupId>javax.xml.ws</groupId>
           <artifactId>jaxws-api</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.woodstox</groupId>
+          <artifactId>woodstox-core-asl</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
