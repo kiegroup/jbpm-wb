@@ -1454,13 +1454,6 @@
       <classifier>sources</classifier>
     </dependency>
 
-    <!-- login module -->
-    <dependency>
-      <groupId>org.kie</groupId>
-      <artifactId>kie-security</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-
     <!-- Stunner and BPMN set. -->
     <dependency>
       <groupId>org.kie.workbench.stunner</groupId>
