@@ -201,7 +201,8 @@ public class TaskLogsPresenterTest extends AbstractTaskPresenterTest {
                 createDate(2017,
                            Month.DECEMBER,
                            15),
-                "Jan created this task"
+                "Jan created this task",
+                ""
         );
         TaskEventSummary updated = new TaskEventSummary(
                 2L,
@@ -212,7 +213,8 @@ public class TaskLogsPresenterTest extends AbstractTaskPresenterTest {
                 createDate(2018,
                            Month.JANUARY,
                            1),
-                "Maria updated this task"
+                "Maria updated this task",
+                ""
         );
         TaskEventSummary claimed = new TaskEventSummary(
                 3L,
@@ -223,7 +225,8 @@ public class TaskLogsPresenterTest extends AbstractTaskPresenterTest {
                 createDate(2018,
                            Month.JANUARY,
                            20),
-                "John claimed this task"
+                "John claimed this task",
+                ""
         );
         List<TaskEventSummary> summaryList = Arrays.asList(added,
                                                            updated,

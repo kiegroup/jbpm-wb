@@ -324,4 +324,9 @@ public interface Constants extends Messages {
     String TaskWithIdWasForwarded(String taskId, String entity);
 
     String TaskWithIdWasDelegated(String taskId, String entityId);
+
+    String TaskOwnerLogInfo(String potentialOwner, String assignedOwner);
+
+    String Forwarded();
+
 }

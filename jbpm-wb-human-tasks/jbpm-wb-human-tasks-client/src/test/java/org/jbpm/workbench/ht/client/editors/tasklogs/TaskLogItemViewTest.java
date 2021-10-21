@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -68,6 +69,7 @@ public class TaskLogItemViewTest {
         when(constants.Task()).thenReturn("Task");
         when(constants.ByUser()).thenReturn("by user");
         when(constants.ByProcess()).thenReturn("by process");
+        when(constants.TaskOwnerLogInfo(anyString(),anyString())).thenReturn("by user Jan to user Cory");
 
         when(translationService.format(any())).then(i -> i.getArgument(0, String.class));
     }
@@ -81,7 +83,8 @@ public class TaskLogItemViewTest {
                 "Maria",
                 3L,
                 Date.from(LocalDateTime.of(2018, 12, 5, 17, 15).atZone(ZoneId.systemDefault()).toInstant()),
-                "Maria stopped this task"
+                "Maria stopped this task",
+                ""
         );
         view.setValue(model);
 
@@ -102,7 +105,8 @@ public class TaskLogItemViewTest {
                 "Maria",
                 3L,
                 createDate(2016, 2, 5, 15, 2),
-                "Maria updated this task"
+                "Maria updated this task",
+                ""
         );
 
         view.setValue(model);
@@ -124,7 +128,8 @@ public class TaskLogItemViewTest {
                 "John",
                 3L,
                 createDate(2018, 1, 20, 5, 30),
-                "John claimed this task"
+                "John claimed this task",
+                ""
         );
 
         view.setValue(model);
@@ -146,7 +151,8 @@ public class TaskLogItemViewTest {
                 "Jan",
                 3L,
                 createDate(2017, 12, 15, 15, 0),
-                "Jan delegated this task"
+                "Jan delegated this task",
+                "Cory"
         );
 
         view.setValue(model);
@@ -155,8 +161,31 @@ public class TaskLogItemViewTest {
         verify(logTime).setAttribute("data-original-title", "15/12/2017 15:00");
         verify(logIcon).setAttribute("data-original-title", "Task delegated");
         verify(logIcon).setClassName("list-view-pf-icon-sm kie-timeline-list-view-pf-icon-sm fa fa-cogs");
-        verify(logInfo).setTextContent("by user Jan");
+        verify(logInfo).setTextContent("by user Jan to user Cory");
         verify(logTypeDesc).setTextContent("Task delegated");
+    }
+
+    @Test
+    public void testForwardedTask() {
+        TaskEventSummary model = new TaskEventSummary(
+                1L,
+                3L,
+                "FORWARDED",
+                "Jan",
+                3L,
+                createDate(2017, 12, 15, 15, 0),
+                "Jan forwarded this task",
+                "Cory"
+        );
+
+        view.setValue(model);
+
+        verify(logSummary).setModel(model);
+        verify(logTime).setAttribute("data-original-title", "15/12/2017 15:00");
+        verify(logIcon).setAttribute("data-original-title", "Task forwarded");
+        verify(logIcon).setClassName("list-view-pf-icon-sm kie-timeline-list-view-pf-icon-sm fa fa-cogs");
+        verify(logInfo).setTextContent("by user Jan");
+        verify(logTypeDesc).setTextContent("Task forwarded");
     }
 
     @Test
@@ -168,7 +197,8 @@ public class TaskLogItemViewTest {
                 "exampleProcess",
                 3L,
                 createDate(2017, 12, 15, 4, 59),
-                "exampleProcess added this task"
+                "exampleProcess added this task",
+                ""
         );
 
         view.setValue(model);
@@ -190,7 +220,8 @@ public class TaskLogItemViewTest {
                 "Andrew",
                 3L,
                 createDate(2018, 12, 11, 0, 15),
-                "Andrew completed this task"
+                "Andrew completed this task",
+                ""
         );
 
         view.setValue(model);
