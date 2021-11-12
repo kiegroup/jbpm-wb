@@ -177,7 +177,8 @@ public class ProcessInstanceDiagramPresenter implements ProcessInstanceSummaryAw
         }).getProcessInstanceDiagramSummary(processInstance.getProcessInstanceKey(),
                                             preferences.getProcessInstanceDiagramCompletedNodeColor(),
                                             preferences.getProcessInstanceDiagramCompletedNodeBorderColor(),
-                                            preferences.getProcessInstanceDiagramActiveNodeBorderColor());
+                                            preferences.getProcessInstanceDiagramActiveNodeBorderColor(),
+                                            preferences.getProcessInstanceDiagramActiveAsyncNodeBorderColor());
     }
 
     protected void loadTimerInstances() {

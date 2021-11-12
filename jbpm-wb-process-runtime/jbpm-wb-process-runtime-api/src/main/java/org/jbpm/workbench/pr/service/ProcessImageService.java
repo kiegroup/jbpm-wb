@@ -26,7 +26,8 @@ public interface ProcessImageService {
                                      Long processInstanceId,
                                      String completedNodeColor,
                                      String completedNodeBorderColor,
-                                     String activeNodeBorderColor);
+                                     String activeNodeBorderColor,
+                                     String activeAsyncNodeBorderColor);
 
     String getProcessDiagram(String serverTemplateId,
                              String containerId,

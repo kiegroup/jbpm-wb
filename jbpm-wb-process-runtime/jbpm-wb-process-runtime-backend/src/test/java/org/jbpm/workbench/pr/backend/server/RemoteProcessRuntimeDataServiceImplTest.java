@@ -398,7 +398,7 @@ public class RemoteProcessRuntimeDataServiceImplTest {
         String processName = "process";
 
         when(queryServicesClient.findProcessInstanceById(processInstanceId)).thenReturn(ProcessInstance.builder().id(processInstanceId).containerId(containerId).processId(processId).state(state).parentInstanceId(parentId).processName(processName).build());
-        when(processImageService.getProcessInstanceDiagram(serverTemplateId, containerId, processInstanceId, "", "", "")).thenReturn(svgContent);
+        when(processImageService.getProcessInstanceDiagram(serverTemplateId, containerId, processInstanceId, "", "", "", "")).thenReturn(svgContent);
 
         List<NodeDefinition> processNodes = Arrays.asList(NodeDefinition.builder().id(1L).name("name-1").type("HumanTask").uniqueId("_1").build(),
                                                           NodeDefinition.builder().id(2L).name(" ").type("Split").uniqueId("_2").build());
@@ -420,7 +420,7 @@ public class RemoteProcessRuntimeDataServiceImplTest {
 
         when(queryServicesClient.findProcessInstanceById(parentId)).thenReturn(ProcessInstance.builder().id(parentId).containerId(containerId).processId(processId).state(state).parentInstanceId(-1L).processName(processName).build());
 
-        ProcessInstanceDiagramSummary summary = service.getProcessInstanceDiagramSummary(instanceKey, "", "", "");
+        ProcessInstanceDiagramSummary summary = service.getProcessInstanceDiagramSummary(instanceKey, "", "", "", "");
 
         assertEquals(processInstanceId, summary.getId());
         assertEquals(processName, summary.getName());
@@ -462,11 +462,11 @@ public class RemoteProcessRuntimeDataServiceImplTest {
 
         when(queryServicesClient.findProcessInstanceById(processInstanceId)).thenReturn(ProcessInstance.builder().id(processInstanceId).processId(processId).containerId(containerId).state(state).parentInstanceId(-1L).processName(processName).build());
 
-        when(processImageService.getProcessInstanceDiagram(serverTemplateId, containerId, processInstanceId, "", "", "")).thenReturn(svgContent);
+        when(processImageService.getProcessInstanceDiagram(serverTemplateId, containerId, processInstanceId, "", "", "", "")).thenReturn(svgContent);
 
         when(processServicesClient.getProcessDefinition(containerId, processId)).thenReturn(new ProcessDefinition());
 
-        ProcessInstanceDiagramSummary summary = service.getProcessInstanceDiagramSummary(instanceKey, "", "", "");
+        ProcessInstanceDiagramSummary summary = service.getProcessInstanceDiagramSummary(instanceKey, "", "", "", "");
 
         assertEquals(processInstanceId, summary.getId());
         assertEquals(processName, summary.getName());
