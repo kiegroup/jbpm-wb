@@ -28,6 +28,7 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.IsWidget;
+import org.gwtbootstrap3.client.ui.TextBox;
 import org.jbpm.workbench.forms.client.display.process.AbstractStartProcessFormDisplayer;
 import org.jbpm.workbench.forms.client.i18n.Constants;
 import org.jbpm.workbench.forms.display.FormDisplayerConfig;
@@ -56,6 +57,7 @@ public class KieServerFormsStartProcessDisplayer extends AbstractStartProcessFor
     protected void initDisplayer() {
         startProcessCallback(this);
         startCaseCallback(this);
+        correlationKeyValue(this);
     }
     
     @Override
@@ -71,10 +73,10 @@ public class KieServerFormsStartProcessDisplayer extends AbstractStartProcessFor
         footerButtons.clear();
 
         container.add(formContainer);
-        
-        initDisplayer();
+        correlationKey = new TextBox();
 
-        formContainer.add(getFormWidget());
+        initDisplayer();
+        initFormWithCorrelationKey();
     }
 
     @Override
@@ -95,7 +97,6 @@ public class KieServerFormsStartProcessDisplayer extends AbstractStartProcessFor
         inlineFrame.getElement().getStyle().setLeft(0, Unit.PX);
         
         inlineFrame.setUrl(renderingSettings.getUrl());
-        
         FlowPanel div = GWT.create(FlowPanel.class);
         div.getElement().getStyle().setPosition(Position.RELATIVE);
         div.getElement().getStyle().setOverflow(Overflow.HIDDEN);
@@ -134,7 +135,11 @@ public class KieServerFormsStartProcessDisplayer extends AbstractStartProcessFor
 
        close();
    }
-    
+
+   public String getCorrelationKeyValue(){
+        return correlationKey.getValue();
+   }
+
     public static native void startProcessCallback(KieServerFormsStartProcessDisplayer dp)/*-{
         $wnd.afterProcessStarted = function (processInstanceId) {
             dp.@org.jbpm.workbench.forms.client.display.KieServerFormsStartProcessDisplayer::notifyAboutStartProcess(Ljava/lang/String;)(processInstanceId);
@@ -144,6 +149,12 @@ public class KieServerFormsStartProcessDisplayer extends AbstractStartProcessFor
     public static native void startCaseCallback(KieServerFormsStartProcessDisplayer dp)/*-{
         $wnd.afterCaseStarted = function (caseId) {
             dp.@org.jbpm.workbench.forms.client.display.KieServerFormsStartProcessDisplayer::notifyAboutStartCase(Ljava/lang/String;)(caseId);
+        }
+    }-*/;
+
+    public static native String correlationKeyValue(KieServerFormsStartProcessDisplayer dp)/*-{
+        $wnd.getCorrelationKey = function () {
+            return dp.@org.jbpm.workbench.forms.client.display.KieServerFormsStartProcessDisplayer::getCorrelationKeyValue()();
         }
     }-*/;
 
