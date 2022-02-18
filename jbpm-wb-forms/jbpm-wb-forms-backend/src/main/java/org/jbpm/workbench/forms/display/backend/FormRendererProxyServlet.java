@@ -17,6 +17,7 @@
 package org.jbpm.workbench.forms.display.backend;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -29,6 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jbpm.workbench.ks.integration.KieServerIntegration;
+import org.kie.internal.process.CorrelationKey;
+import org.kie.internal.process.CorrelationProperty;
 import org.kie.server.api.marshalling.json.StringContentCaseFile;
 import org.kie.server.api.marshalling.json.StringContentMap;
 import org.kie.server.client.CaseServicesClient;
@@ -85,6 +88,8 @@ public class FormRendererProxyServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // process and case start operations
         String serverTemplateId = req.getParameter("templateid");
+        String correlationKey = req.getParameter("correlationKey");
+
         String pathInfo = req.getPathInfo();
         
         if (pathInfo == null) {
@@ -107,8 +112,28 @@ public class FormRendererProxyServlet extends HttpServlet {
             String processId = extractValue(processIdPattern, pathInfo);
             ProcessServicesClient processServicesClient = getClient(serverTemplateId,                                                      
                                                                     ProcessServicesClient.class);
-            
-            Long responseBody = processServicesClient.startProcess(containerId, processId, new StringContentMap(body));
+            Long responseBody = 0L;
+            if (correlationKey != null && !correlationKey.isEmpty()) {
+
+                responseBody = processServicesClient.startProcess(containerId, processId, new CorrelationKey() {
+                    @Override
+                    public String getName() {
+                        return correlationKey;
+                    }
+
+                    @Override
+                    public List<CorrelationProperty<?>> getProperties() {
+                        return null;
+                    }
+
+                    @Override
+                    public String toExternalForm() {
+                        return correlationKey;
+                    }
+                }, new StringContentMap(body));
+            } else {
+                responseBody = processServicesClient.startProcess(containerId, processId, new StringContentMap(body));
+            }
             
             resp.getOutputStream().write(responseBody.toString().getBytes("UTF-8"));
         }
