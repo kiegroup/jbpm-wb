@@ -32,6 +32,7 @@ public class TaskEventSummary extends GenericSummary<Long> {
     private Date logTime;
     private Long workItemId;
     private String message;
+    private String assignedOwner;
 
     public TaskEventSummary() {
     }
@@ -42,7 +43,8 @@ public class TaskEventSummary extends GenericSummary<Long> {
                             String userId,
                             Long workItemId,
                             Date logTime,
-                            String message) {
+                            String message,
+                            String assignedOwner) {
         this.id = eventId;
         this.name = taskId + type;
         this.eventId = eventId;
@@ -52,6 +54,11 @@ public class TaskEventSummary extends GenericSummary<Long> {
         this.logTime = logTime;
         this.workItemId = workItemId;
         this.message = message;
+        this.assignedOwner = assignedOwner;
+    }
+
+    public String getAssignedOwner() {
+        return assignedOwner;
     }
 
     public Long getEventId() {

@@ -430,7 +430,8 @@ public class RemoteTaskServiceImpl extends AbstractKieServerService implements T
                 event.getUserId(),
                 event.getWorkItemId(),
                 event.getLogTime(),
-                event.getMessage()
+                event.getMessage(),
+                event.getAssignedOwner()
         );
 
         return summary;

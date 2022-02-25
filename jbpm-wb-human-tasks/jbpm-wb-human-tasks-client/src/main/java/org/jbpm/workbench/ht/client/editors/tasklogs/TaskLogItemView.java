@@ -113,6 +113,11 @@ public class TaskLogItemView extends AbstractLogItemView<TaskLogsPresenter> impl
                 logInfoContent += " (" + model.getMessage() + ")";
                 break;
             }
+
+            case DELEGATED: {
+                logInfoContent = constants.TaskOwnerLogInfo(model.getUserId(), model.getAssignedOwner());
+                break;
+            }
         }
         logInfo.setTextContent(logInfoContent);
     }
