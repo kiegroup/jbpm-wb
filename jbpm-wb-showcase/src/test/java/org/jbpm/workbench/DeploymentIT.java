@@ -47,6 +47,7 @@ import static org.junit.Assert.*;
 public class DeploymentIT {
 
     public static final String ARCHIVE_NAME = "wildfly.war";
+    public static final int TIMEOUT = 30000;
 
     @Deployment(name = "workbench", order = 1, testable = false)
     public static WebArchive create() {
@@ -76,7 +77,7 @@ public class DeploymentIT {
         }
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     @RunAsClient
     @OperateOnDeployment("workbench")
     public void testShowcaseDeployment(@ArquillianResource URL baseURL) throws Exception {
@@ -92,7 +93,7 @@ public class DeploymentIT {
         }
     }
 
-    @Test(timeout = 30000)
+    @Test(timeout = TIMEOUT)
     @RunAsClient
     @OperateOnDeployment("workbench")
     public void testCaseManagementDeployment(@ArquillianResource URL baseURL) throws Exception {
@@ -115,7 +116,7 @@ public class DeploymentIT {
         }
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     @RunAsClient
     @OperateOnDeployment("kie-server")
     public void testCustomQueriesDeployedToKieServer(@ArquillianResource URL baseURL) throws Exception {
