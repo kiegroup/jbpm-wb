@@ -19,13 +19,13 @@ package org.jbpm.workbench.ks.integration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import javax.enterprise.event.Event;
 
+import org.awaitility.Duration;
 import org.jbpm.workbench.ks.integration.event.ServerInstanceRegistered;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,6 +47,7 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.awaitility.Awaitility.await;
 import static org.jbpm.workbench.ks.integration.KieServerIntegration.SERVER_TEMPLATE_KEY;
 import static org.jbpm.workbench.ks.integration.KieServerIntegrationServerTemplateTest.assertContainerFailedEndpoint;
 import static org.jbpm.workbench.ks.integration.KieServerIntegrationServerTemplateTest.assertServerInstanceFailedEndpoint;
@@ -54,7 +55,6 @@ import static org.jbpm.workbench.ks.integration.KieServerIntegrationServerTempla
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -76,6 +76,11 @@ public class KieServerIntegrationClientsTest {
     @Before
     public void setup() {
         when(kieServices.newKieContainer(any())).thenReturn(mock(KieContainer.class));
+    }
+
+    @After
+    public void stop() {
+        kieServerIntegration.stop();
     }
 
     @Test
@@ -175,22 +180,12 @@ public class KieServerIntegrationClientsTest {
 
         when(specManagementService.listServerTemplates()).thenReturn(new ServerTemplateList(Collections.singletonList(serverTemplate)));
 
-        CountDownLatch latch = new CountDownLatch(2);
-
-        doAnswer(a -> {
-            final Object result = a.callRealMethod();
-            latch.countDown();
-            return result;
-        }).when(kieServerIntegration).createClientForTemplate(any(), any(), any());
-
         kieServerIntegration.createAvailableClients();
 
-        assertTrue("Clients not created within 10 seconds", latch.await(10, TimeUnit.SECONDS));
-
-        assertEquals(1, kieServerIntegration.getServerTemplatesClients().size());
-        assertNotNull(kieServerIntegration.getServerClient(serverTemplateId));
-        assertNotNull(kieServerIntegration.getAdminServerClient(serverTemplateId, serverInstanceId1));
-        assertNotNull(kieServerIntegration.getAdminServerClient(serverTemplateId, serverInstanceId2));
+        await().atMost(Duration.TEN_SECONDS).untilAsserted(() -> assertEquals(1, kieServerIntegration.getServerTemplatesClients().size()));
+        await().atMost(Duration.TEN_SECONDS).untilAsserted(() -> assertNotNull(kieServerIntegration.getServerClient(serverTemplateId)));
+        await().atMost(Duration.TEN_SECONDS).untilAsserted(() -> assertNotNull(kieServerIntegration.getAdminServerClient(serverTemplateId, serverInstanceId1)));
+        await().atMost(Duration.TEN_SECONDS).untilAsserted(() -> assertNotNull(kieServerIntegration.getAdminServerClient(serverTemplateId, serverInstanceId2)));
     }
 
     @Test

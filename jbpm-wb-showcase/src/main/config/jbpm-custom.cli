@@ -1,0 +1,19 @@
+# This CLI script enables Kie Ream Elytron for the standalone configurations.
+# By default, standalone.xml is updated.
+# Run it from JBOSS_HOME as:
+# bin/jboss-cli.sh --file=src/main/config/jbpm-custom.cli [-Dconfig=<standalone-full.xml|standalone.xml]
+
+embed-server --server-config=${config:standalone.xml}
+
+/subsystem=elytron/filesystem-realm=KieRealm:add(path=kie-fs-realm-users,relative-to=jboss.server.config.dir)
+/subsystem=elytron/simple-role-decoder=from-roles-attribute:add(attribute=role)
+
+/subsystem=elytron/security-domain=ApplicationDomain:list-add(name=realms, index=0, value={realm=KieRealm, role-decoder=from-roles-attribute})
+/subsystem=elytron/security-domain=ApplicationDomain:write-attribute(name=default-realm, value=KieRealm)
+/subsystem=elytron/security-domain=ApplicationDomain:write-attribute(name=permission-mapper, value=default-permission-mapper)
+
+if (outcome != success) of /subsystem=security/security-domain=other/authentication=classic/login-module=org.kie.security.jaas.KieLoginModule:read-resource
+    /subsystem=security/security-domain=other/authentication=classic/login-module=org.kie.security.jaas.KieLoginModule:add(code=org.kie.security.jaas.KieLoginModule, flag=required, module=deployment.jbpm-wb-showcase.war)
+end-if
+
+stop-embedded-server
