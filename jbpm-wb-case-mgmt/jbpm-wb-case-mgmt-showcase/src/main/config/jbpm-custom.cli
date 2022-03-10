@@ -1,14 +1,18 @@
 embed-server --server-config=standalone.xml
 
-/subsystem=elytron/filesystem-realm=KieRealm:add(path=kie-fs-realm-users,relative-to=jboss.server.config.dir)
-/subsystem=elytron/simple-role-decoder=from-roles-attribute:add(attribute=role)
+if (outcome != success) of /subsystem=elytron/filesystem-realm=KieRealm:read-resource
 
-/subsystem=elytron/security-domain=ApplicationDomain:list-add(name=realms, index=0, value={realm=KieRealm, role-decoder=from-roles-attribute})
-/subsystem=elytron/security-domain=ApplicationDomain:write-attribute(name=default-realm, value=KieRealm)
-/subsystem=elytron/security-domain=ApplicationDomain:write-attribute(name=permission-mapper, value=default-permission-mapper)
+    /subsystem=elytron/filesystem-realm=KieRealm:add(path=kie-fs-realm-users,relative-to=jboss.server.config.dir)
+    /subsystem=elytron/simple-role-decoder=from-roles-attribute:add(attribute=role)
 
-/subsystem=undertow/application-security-domain=other:add(security-domain=ApplicationDomain)
+    /subsystem=elytron/security-domain=ApplicationDomain:list-add(name=realms, index=0, value={realm=KieRealm, role-decoder=from-roles-attribute})
+    /subsystem=elytron/security-domain=ApplicationDomain:write-attribute(name=default-realm, value=KieRealm)
+    /subsystem=elytron/security-domain=ApplicationDomain:write-attribute(name=permission-mapper, value=default-permission-mapper)
 
-/subsystem=elytron/http-authentication-factory=application-http-authentication:add(http-server-mechanism-factory=global,security-domain=ApplicationDomain,mechanism-configurations=[{mechanism-name=BASIC,mechanism-realm-configurations=[{realm-name=KieRealm}]}, {mechanism-name=FORM}])
+    /subsystem=undertow/application-security-domain=other:add(security-domain=ApplicationDomain)
+
+    /subsystem=elytron/http-authentication-factory=application-http-authentication:add(http-server-mechanism-factory=global,security-domain=ApplicationDomain,mechanism-configurations=[{mechanism-name=BASIC,mechanism-realm-configurations=[{realm-name=KieRealm}]}, {mechanism-name=FORM}])
+
+end-if
 
 stop-embedded-server
