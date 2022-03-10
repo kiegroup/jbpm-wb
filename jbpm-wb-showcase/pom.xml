@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.jbpm</groupId>
     <artifactId>jbpm-wb</artifactId>
-    <version>7.67.0-SNAPSHOT</version>
+    <version>7.59.1-SNAPSHOT</version>
   </parent>
   <artifactId>jbpm-wb-showcase</artifactId>
   <packaging>war</packaging>
@@ -263,7 +263,7 @@
       <scope>runtime</scope>
     </dependency>
 
-     <!-- Layout Editor -->
+    <!-- Layout Editor -->
     <dependency>
       <groupId>org.uberfire</groupId>
       <artifactId>uberfire-layout-editor-api</artifactId>
@@ -714,8 +714,8 @@
       </exclusions>
     </dependency>
     <dependency>
-        <groupId>org.ow2.asm</groupId>
-        <artifactId>asm</artifactId>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
     </dependency>
 
     <dependency>
@@ -1707,31 +1707,15 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.wildfly.arquillian</groupId>
-      <artifactId>wildfly-arquillian-container-managed</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.arquillian.junit</groupId>
-      <artifactId>arquillian-junit-container</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.shrinkwrap.resolver</groupId>
-      <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.inject</groupId>
-          <artifactId>javax.inject</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.kie.server</groupId>
       <artifactId>kie-server</artifactId>
       <classifier>ee8</classifier>
       <type>war</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -1746,7 +1730,9 @@
         <artifactId>gwt-maven-plugin</artifactId>
         <configuration>
           <deploy>${project.build.directory}/gwt-symbols-deploy</deploy>
-          <extraJvmArgs>-Xms1g -Xmx6g -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${jboss.home} -Derrai.dynamic_validation.enabled=true -Dorg.kie.demo=false -Dorg.kie.clean.onstartup=true -Dorg.kie.git.deployments=true -Dorg.uberfire.async.executor.safemode=true -Derrai.dev.context=jbpm-wb-showcase -Dorg.jbpm.wb.forms.renderer.ext=true -Ddashbuilder.components.enable=true</extraJvmArgs>
+          <extraJvmArgs>-Xms1g -Xmx6g -Xss1M -XX:CompileThreshold=7000 -Derrai.jboss.home=${jboss.home} -Derrai.dynamic_validation.enabled=true -Dorg.kie.demo=false -Dorg.kie.clean.onstartup=true
+            -Dorg.kie.git.deployments=true -Dorg.uberfire.async.executor.safemode=true -Derrai.dev.context=jbpm-wb-showcase -Dorg.jbpm.wb.forms.renderer.ext=true -Ddashbuilder.components.enable=true
+          </extraJvmArgs>
           <module>org.jbpm.workbench.FastCompilejBPMShowcase</module>
           <logLevel>INFO</logLevel>
           <noServer>false</noServer>
@@ -2033,8 +2019,8 @@
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.jbpm.contrib</groupId>
-                  <artifactId>repository</artifactId> 
-                  <version>${project.version}</version>                 
+                  <artifactId>repository</artifactId>
+                  <version>${project.version}</version>
                   <type>zip</type>
                   <overWrite>true</overWrite>
                   <outputDirectory>src/main/webapp/service-tasks</outputDirectory>
@@ -2107,6 +2093,66 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.wildfly.plugins</groupId>
+        <artifactId>wildfly-maven-plugin</artifactId>
+        <configuration>
+          <jbossHome>${jboss.home}</jbossHome>
+        </configuration>
+        <executions>
+          <execution>
+            <id>start-wf</id>
+            <goals>
+              <goal>start</goal>
+            </goals>
+            <phase>pre-integration-test</phase>
+            <configuration>
+              <server-args>
+                <server-arg>--server-config=standalone-full.xml</server-arg>
+              </server-args>
+              <java-opts>
+                <java-opt>-Xmx1600m</java-opt>
+                <java-opt>-Dorg.jbpm.casemgmt.showcase.deploy=true</java-opt>
+                <java-opt>-Dorg.kie.server.id=it-test-kie-server</java-opt>
+                <java-opt>-Dorg.kie.server.location=http://localhost:8080/kie-server/services/rest/server</java-opt>
+                <java-opt>-Dorg.kie.server.repo=target/</java-opt>
+                <java-opt>-Dorg.kie.server.controller=http://localhost:8080/jbpm-wb-showcase/rest/controller</java-opt>
+              </java-opts>
+            </configuration>
+          </execution>
+          <execution>
+            <id>deploy-workbench</id>
+            <goals>
+              <goal>deploy-only</goal>
+            </goals>
+            <phase>pre-integration-test</phase>
+            <configuration>
+              <filename>${project.build.finalName}.war</filename>
+              <name>jbpm-wb-showcase.war</name>
+            </configuration>
+          </execution>
+          <execution>
+            <id>deploy-kie-server</id>
+            <goals>
+              <goal>deploy-artifact</goal>
+            </goals>
+            <phase>pre-integration-test</phase>
+            <configuration>
+              <groupId>org.kie.server</groupId>
+              <artifactId>kie-server</artifactId>
+              <classifier>ee8</classifier>
+              <name>kie-server.war</name>
+            </configuration>
+          </execution>
+          <execution>
+            <id>stop</id>
+            <goals>
+              <goal>shutdown</goal>
+            </goals>
+            <phase>post-integration-test</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <executions>
@@ -2117,10 +2163,7 @@
             </goals>
             <configuration>
               <systemPropertyVariables>
-                <wildfly.war>${project.build.finalName}.war</wildfly.war>
-                <arquillian.launch>wildfly-managed</arquillian.launch>
-                <jboss.home>${jboss.home}</jboss.home>
-                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                <case-mgmt-showcase.context>jbpm-wb-case-mgmt-showcase-${project.version}-wildfly23</case-mgmt-showcase.context>
               </systemPropertyVariables>
               <redirectTestOutputToFile>false</redirectTestOutputToFile>
             </configuration>
