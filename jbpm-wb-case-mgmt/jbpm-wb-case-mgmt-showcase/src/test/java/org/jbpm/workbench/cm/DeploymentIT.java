@@ -16,39 +16,18 @@
 
 package org.jbpm.workbench.cm;
 
-import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.importer.ZipImporter;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import static org.junit.Assert.*;
 
-@RunWith(Arquillian.class)
 public class DeploymentIT {
 
-    public static final String ARCHIVE_NAME = "wildfly.war";
-
-    @Deployment(testable = false)
-    public static WebArchive create() {
-        final String warFile = System.getProperty(ARCHIVE_NAME);
-        return ShrinkWrap.create(ZipImporter.class,
-                                 warFile)
-                .importFrom(new File("target/" + warFile))
-                .as(WebArchive.class);
-    }
-
-    @Test
-    @RunAsClient
-    public void testDeployment(@ArquillianResource URL baseURL) throws Exception {
+    @Test(timeout = 30000)
+    public void testDeployment() throws Exception {
+        URL baseURL = new URL("http://localhost:8080/jbpm-wb-case-mgmt-showcase/");
         HttpURLConnection c = null;
         try {
             c = (HttpURLConnection) baseURL.openConnection();

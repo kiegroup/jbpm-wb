@@ -500,18 +500,6 @@
       <artifactId>commons-io</artifactId>
     </dependency>
 
-    <!-- Test dependencies -->
-    <dependency>
-      <groupId>org.wildfly.arquillian</groupId>
-      <artifactId>wildfly-arquillian-container-managed</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.arquillian.junit</groupId>
-      <artifactId>arquillian-junit-container</artifactId>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
 
   <build>
@@ -704,6 +692,34 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.wildfly.plugins</groupId>
+        <artifactId>wildfly-maven-plugin</artifactId>
+        <configuration>
+          <jbossHome>${jboss.home}</jbossHome>
+        </configuration>
+        <executions>
+          <execution>
+            <id>start-wf</id>
+            <goals>
+              <goal>start</goal>
+              <goal>deploy-only</goal>
+            </goals>
+            <phase>pre-integration-test</phase>
+            <configuration>
+              <filename>${project.build.finalName}-wildfly23.war</filename>
+              <name>jbpm-wb-case-mgmt-showcase.war</name>
+            </configuration>
+          </execution>
+          <execution>
+            <id>stop</id>
+            <goals>
+              <goal>shutdown</goal>
+            </goals>
+            <phase>post-integration-test</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <executions>
@@ -713,12 +729,6 @@
               <goal>verify</goal>
             </goals>
             <configuration>
-              <systemPropertyVariables>
-                <wildfly.war>${project.build.finalName}-wildfly23.war</wildfly.war>
-                <arquillian.launch>wildfly-managed</arquillian.launch>
-                <jboss.home>${jboss.home}</jboss.home>
-                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-              </systemPropertyVariables>
               <redirectTestOutputToFile>false</redirectTestOutputToFile>
             </configuration>
           </execution>
