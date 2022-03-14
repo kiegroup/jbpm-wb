@@ -2000,6 +2000,9 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
+        <configuration>
+          <skip>${skipTests}</skip>
+        </configuration>
         <executions>
           <execution>
             <id>unpack</id>
@@ -2097,6 +2100,7 @@
         <artifactId>wildfly-maven-plugin</artifactId>
         <configuration>
           <jbossHome>${jboss.home}</jbossHome>
+          <skip>${skipTests}</skip>
         </configuration>
         <executions>
           <execution>
@@ -2222,6 +2226,9 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
+            <configuration>
+              <skip>${skipTests}</skip>
+            </configuration>
             <executions>
               <execution>
                 <id>Add custom setup to standalone-full</id>

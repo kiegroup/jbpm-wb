@@ -634,6 +634,7 @@
               <goal>unpack</goal>
             </goals>
             <configuration>
+              <skip>${skipTests}</skip>
               <artifactItems>
                 <artifactItem>
                   <groupId>org.jboss.errai</groupId>
@@ -696,6 +697,7 @@
         <artifactId>wildfly-maven-plugin</artifactId>
         <configuration>
           <jbossHome>${jboss.home}</jbossHome>
+          <skip>${skipTests}</skip>
         </configuration>
         <executions>
           <execution>
@@ -784,6 +786,7 @@
                   <goal>exec</goal>
                 </goals>
                 <configuration>
+                  <skip>${skipTests}</skip>
                   <executable>${project.build.directory}/wildfly-${version.org.wildfly}/bin/jboss-cli.sh</executable>
                   <arguments>
                     <argument>--file=${project.basedir}/src/main/config/jbpm-custom.cli</argument>
