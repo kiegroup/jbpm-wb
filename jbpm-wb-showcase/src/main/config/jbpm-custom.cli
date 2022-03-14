@@ -1,4 +1,9 @@
-embed-server --server-config=standalone.xml
+# This CLI script enables Kie Ream Elytron for the standalone configurations.
+# By default, standalone.xml is updated.
+# Run it from JBOSS_HOME as:
+# bin/jboss-cli.sh --file=src/main/config/jbpm-custom.cli [-Dconfig=<standalone-full.xml|standalone.xml]
+
+embed-server --server-config=${config:standalone.xml}
 
 if (outcome != success) of /subsystem=elytron/filesystem-realm=KieRealm:read-resource
 
