@@ -696,6 +696,7 @@
         <artifactId>wildfly-maven-plugin</artifactId>
         <configuration>
           <jbossHome>${jboss.home}</jbossHome>
+          <skip>${skipTests}</skip>
         </configuration>
         <executions>
           <execution>
