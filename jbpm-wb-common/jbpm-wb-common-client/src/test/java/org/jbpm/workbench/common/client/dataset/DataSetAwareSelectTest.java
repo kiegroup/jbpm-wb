@@ -23,6 +23,8 @@ import org.dashbuilder.dataset.DataSet;
 import org.dashbuilder.dataset.DataSetLookup;
 import org.dashbuilder.dataset.client.DataSetClientServices;
 import org.dashbuilder.dataset.client.DataSetReadyCallback;
+import org.jboss.errai.common.client.dom.HTMLElement;
+import org.jboss.errai.common.client.dom.NodeList;
 import org.jboss.errai.common.client.dom.OptionsCollection;
 import org.jbpm.workbench.df.client.events.DataSetReadyEvent;
 import org.jbpm.workbench.df.client.filter.FilterSettings;
@@ -35,17 +37,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.jboss.errai.common.client.dom.EventListener;
+import org.jboss.errai.common.client.dom.Event;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.uberfire.client.views.pfly.widgets.Select;
-
+import org.jboss.errai.common.client.dom.Node;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -65,6 +71,18 @@ public class DataSetAwareSelectTest {
     @Mock
     Select select;
 
+    @Mock
+    Node node;
+
+    @Mock
+    NodeList nodeList;
+
+    @Mock
+    HTMLElement element;
+
+    @Mock
+    HTMLElement parentElement;
+
     @InjectMocks
     DataSetAwareSelect dataSetAwareSelect;
 
@@ -82,6 +100,16 @@ public class DataSetAwareSelectTest {
         when(options.getLength()).thenAnswer(a -> optionsLength.get());
         when(select.getOptions()).thenReturn(options);
         doAnswer(invocationOnMock -> optionsLength.incrementAndGet()).when(select).addOption(anyString(), anyString());
+        when(select.getElement()).thenReturn(element);
+        when(element.getParentElement()).thenReturn(parentElement);
+        when(parentElement.getElementsByTagName(eq("button"))).thenReturn(nodeList);
+        when(nodeList.item(0)).thenReturn(node);
+
+        doAnswer(invocation -> {
+            EventListener handler = (EventListener) invocation.getArgument(1);
+            handler.call(mock(Event.class));
+            return null;
+        }).when(node).addEventListener(anyString(), any(), eq(false));
     }
 
     @Test
@@ -151,7 +179,7 @@ public class DataSetAwareSelectTest {
         assertEquals(serverTemplateId, cdsl.getServerTemplateId());
         assertEquals(dataUUID, cdsl.getDataSetUUID());
         verify(select).addOption(columnText, columnValue);
-        verify(select).enable();
+        verify(select, times(2)).enable();
         verify(select).removeAllOptions();
     }
 
@@ -196,7 +224,7 @@ public class DataSetAwareSelectTest {
         assertEquals(serverTemplateId, cdsl.getServerTemplateId());
         assertEquals(dataUUID, cdsl.getDataSetUUID());
         verify(select).addOption(columnText, columnValue);
-        verify(select).enable();
+        verify(select, times(2)).enable();
         verify(select).removeAllOptions();
     }
 
