@@ -79,7 +79,7 @@ public class RemoteProcessImageServiceImplTest {
 
     @Test
     public void testProcessInstanceImageHTML() {
-        when(uiServicesClient.getProcessInstanceImageCustomColor("", null, "", "", ""))
+        when(uiServicesClient.getProcessInstanceImageCustomColor("", null, "", "", "", ""))
                 .thenReturn(SVG_WITH_ACTIONS, SVG_WITHOUT_ACTIONS);
 
         validateHTMLContent(service.getProcessInstanceDiagram("",
@@ -87,11 +87,13 @@ public class RemoteProcessImageServiceImplTest {
                                                               null,
                                                               "",
                                                               "",
+                                                              "",
                                                               ""));
 
         validateHTMLContent(service.getProcessInstanceDiagram("",
                                                               "",
                                                               null,
+                                                              "",
                                                               "",
                                                               "",
                                                               ""));
@@ -103,10 +105,12 @@ public class RemoteProcessImageServiceImplTest {
                                                                  null,
                                                                  "",
                                                                  "",
+                                                                 "",
                                                                  "")).thenReturn(SVG_WITH_LINK);
         final String diagram = service.getProcessInstanceDiagram("",
                                                                  "",
                                                                  null,
+                                                                 "",
                                                                  "",
                                                                  "",
                                                                  "");
@@ -118,12 +122,13 @@ public class RemoteProcessImageServiceImplTest {
     @Test
     public void testProcessInstanceImageNotFound() {
         final Integer okCode = 400;
-        when(uiServicesClient.getProcessInstanceImageCustomColor("", null, "", "", ""))
+        when(uiServicesClient.getProcessInstanceImageCustomColor("", null, "", "", "", ""))
                 .thenThrow(new KieServicesHttpException(null, 404, null, null), new KieServicesHttpException(null, okCode, null, null));
 
         assertNull(service.getProcessInstanceDiagram("",
                                                      "",
                                                      null,
+                                                     "",
                                                      "",
                                                      "",
                                                      ""));
@@ -132,6 +137,7 @@ public class RemoteProcessImageServiceImplTest {
             service.getProcessInstanceDiagram("",
                                               "",
                                               null,
+                                              "",
                                               "",
                                               "",
                                               "");
@@ -175,12 +181,12 @@ public class RemoteProcessImageServiceImplTest {
         String completeNodeColor = "#888888";
         String completeNodeBorderColor = "#888887";
         String activeNodeBorderColor = "#888886";
-
+        String activeAsyncNodeBorderColor = "#FF0000";
         service.getProcessInstanceDiagram("", "", null,
-                                          completeNodeColor, completeNodeBorderColor, activeNodeBorderColor);
+                                          completeNodeColor, completeNodeBorderColor, activeNodeBorderColor, activeAsyncNodeBorderColor);
 
         verify(uiServicesClient).getProcessInstanceImageCustomColor("", null,
                                                                     completeNodeColor, completeNodeBorderColor,
-                                                                    activeNodeBorderColor);
+                                                                    activeNodeBorderColor, activeAsyncNodeBorderColor);
     }
 }

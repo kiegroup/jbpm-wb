@@ -38,7 +38,8 @@ public class RemoteProcessImageServiceImpl extends AbstractKieServerService impl
                                             Long processInstanceId,
                                             String completedNodeColor,
                                             String completedNodeBorderColor,
-                                            String activeNodeBorderColor) {
+                                            String activeNodeBorderColor,
+                                            String activeAsyncNodeBorderColor) {
         UIServicesClient uiServicesClient = getClient(serverTemplateId,
                                                       containerId,
                                                       UIServicesClient.class);
@@ -48,7 +49,8 @@ public class RemoteProcessImageServiceImpl extends AbstractKieServerService impl
                                                                                             processInstanceId,
                                                                                             completedNodeColor,
                                                                                             completedNodeBorderColor,
-                                                                                            activeNodeBorderColor));
+                                                                                            activeNodeBorderColor,
+                                                                                            activeAsyncNodeBorderColor));
         } catch (KieServicesHttpException ex) {
             LOGGER.warn("Failed to retrieve process instance image: {}",
                         ex.getMessage());

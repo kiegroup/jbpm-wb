@@ -98,6 +98,7 @@ public class ProcessInstanceDiagramPresenterTest {
     private String completeNodeColor = "#888888";
     private String completeNodeBorderColor = "#888887";
     private String activeNodeBorderColor = "#888886";
+    private String activeAsyncNodeBorderColor = "#888885";
     @Before
     public void setup() {
         presenter.setProcessService(new CallerMock<>(processService));
@@ -105,12 +106,13 @@ public class ProcessInstanceDiagramPresenterTest {
         when(preferences.getProcessInstanceDiagramCompletedNodeColor()).thenReturn(completeNodeColor);
         when(preferences.getProcessInstanceDiagramCompletedNodeBorderColor()).thenReturn(completeNodeBorderColor);
         when(preferences.getProcessInstanceDiagramActiveNodeBorderColor()).thenReturn(activeNodeBorderColor);
+        when(preferences.getProcessInstanceDiagramActiveAsyncNodeBorderColor()).thenReturn(activeAsyncNodeBorderColor);
 
     }
 
     @Test
     public void testEmptyProcessInstanceDiagram() {
-        when(processService.getProcessInstanceDiagramSummary(any(), anyString(), anyString(), anyString())).thenReturn(
+        when(processService.getProcessInstanceDiagramSummary(any(), anyString(), anyString(), anyString(), anyString())).thenReturn(
                 ProcessInstanceDiagramSummary.builder().withProcessDefinition(ProcessSummary.builder().nodes(emptyList()).timers(emptyList()).build()).withNodeInstances(emptyList()).build(),
                 ProcessInstanceDiagramSummary.builder().withProcessDefinition(ProcessSummary.builder().nodes(emptyList()).timers(emptyList()).build()).withNodeInstances(emptyList()).withSvgContent("").build()
 
@@ -126,7 +128,7 @@ public class ProcessInstanceDiagramPresenterTest {
     public void testProcessInstanceDiagram() {
         final String svgContent = "<svg></svg>";
 
-        when(processService.getProcessInstanceDiagramSummary(any(), anyString(), anyString(), anyString())).thenReturn(
+        when(processService.getProcessInstanceDiagramSummary(any(), anyString(), anyString(), anyString(), anyString())).thenReturn(
                 ProcessInstanceDiagramSummary.builder().withProcessDefinition(ProcessSummary.builder().nodes(emptyList()).timers(emptyList()).build()).withNodeInstances(emptyList()).withSvgContent(svgContent).build(),
                 ProcessInstanceDiagramSummary.builder().withProcessDefinition(ProcessSummary.builder().nodes(emptyList()).timers(emptyList()).build()).withNodeInstances(emptyList()).build()
         );
@@ -172,7 +174,7 @@ public class ProcessInstanceDiagramPresenterTest {
         summary.setProcessDefinition(ProcessSummary.builder().nodes(nodes).timers(emptyList()).build());
         summary.setNodeInstances(nodeInstances);
 
-        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString())).thenReturn(summary);
+        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString(), anyString())).thenReturn(summary);
         when(processService.getProcessInstanceTimerInstances(eq(processInstance.getProcessInstanceKey()))).thenReturn(timerInstances);
 
         presenter.setProcessInstance(processInstance);
@@ -302,7 +304,7 @@ public class ProcessInstanceDiagramPresenterTest {
         summary.setProcessDefinition(ProcessSummary.builder().nodes(nodes).timers(singletonList(TimerSummary.builder().id(0l).uniqueId("_1").build())).build());
         summary.setNodeInstances(nodeInstances);
 
-        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString())).thenReturn(summary);
+        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString(), anyString())).thenReturn(summary);
         when(processService.getProcessInstanceTimerInstances(eq(processInstance.getProcessInstanceKey()))).thenReturn(timerInstances);
 
         presenter.setProcessInstance(processInstance);
@@ -344,7 +346,7 @@ public class ProcessInstanceDiagramPresenterTest {
         summary.setProcessDefinition(ProcessSummary.builder().nodes(nodes).timers(singletonList(TimerSummary.builder().id(0l).uniqueId("_1").build())).build());
         summary.setNodeInstances(nodeInstances);
 
-        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString())).thenReturn(summary);
+        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString(), anyString())).thenReturn(summary);
         when(processService.getProcessInstanceTimerInstances(eq(processInstance.getProcessInstanceKey()))).thenReturn(timerInstances);
 
         presenter.setProcessInstance(processInstance);
@@ -367,7 +369,7 @@ public class ProcessInstanceDiagramPresenterTest {
                 NodeInstanceSummary.builder().withId(4L).withName(" ").withNodeUniqueName("_4").withType("End").withCompleted(true).build()
         );
         summary.setNodeInstances(nodeInstancesMultipleSubProcess);
-        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString())).thenReturn(summary);
+        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString(), anyString())).thenReturn(summary);
         presenter.setProcessInstance(processInstance);
 
         presenter.onDiagramNodeSelectedByDoubleClick("_1");
@@ -398,7 +400,7 @@ public class ProcessInstanceDiagramPresenterTest {
         summary.setProcessDefinition(ProcessSummary.builder().nodes(nodes).timers(emptyList()).build());
         summary.setNodeInstances(emptyList());
 
-        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString())).thenReturn(summary);
+        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString(), anyString())).thenReturn(summary);
         when(processService.getProcessInstanceTimerInstances(eq(processInstance.getProcessInstanceKey()))).thenReturn(emptyList());
 
         presenter.setProcessInstance(processInstance);
@@ -420,7 +422,7 @@ public class ProcessInstanceDiagramPresenterTest {
         ProcessInstanceDiagramSummary summary = createHumanTaskProcessInstanceDiagramSummary(humanTask);
         new ProcessInstanceDiagramSummary();
 
-        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), any(), any(), any())).thenReturn(summary);
+        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), any(), any(), any(), anyString())).thenReturn(summary);
 
         presenter.setProcessInstance(processInstance);
 
@@ -438,7 +440,7 @@ public class ProcessInstanceDiagramPresenterTest {
         NodeInstanceSummary humanTask = NodeInstanceSummary.builder().withId(1l).withName("name-1").withNodeUniqueName("_1").withType("HumanTask").withCompleted(false).build();
         ProcessInstanceDiagramSummary summary = createHumanTaskProcessInstanceDiagramSummary(humanTask);
 
-        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), any(), any(), any())).thenReturn(summary);
+        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), any(), any(), any(), anyString())).thenReturn(summary);
 
         presenter.setProcessInstance(processInstance);
 
@@ -463,7 +465,7 @@ public class ProcessInstanceDiagramPresenterTest {
         summary.setProcessDefinition(ProcessSummary.builder().nodes(emptyList()).timers(emptyList()).build());
         summary.setNodeInstances(emptyList());
 
-        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString())).thenReturn(summary);
+        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString(), anyString())).thenReturn(summary);
         when(processService.getProcessInstanceTimerInstances(eq(processInstance.getProcessInstanceKey()))).thenReturn(timerInstance);
 
         presenter.setProcessInstance(processInstance);
@@ -491,7 +493,7 @@ public class ProcessInstanceDiagramPresenterTest {
         summary.setProcessDefinition(ProcessSummary.builder().nodes(emptyList()).timers(timers).build());
         summary.setNodeInstances(emptyList());
 
-        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString())).thenReturn(summary);
+        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString(), anyString())).thenReturn(summary);
         when(processService.getProcessInstanceTimerInstances(eq(processInstance.getProcessInstanceKey()))).thenReturn(Arrays.asList(t1, t2));
 
         presenter.setProcessInstance(processInstance);
@@ -534,11 +536,11 @@ public class ProcessInstanceDiagramPresenterTest {
         ProcessInstanceSummary processInstance = ProcessInstanceSummary.builder().withServerTemplateId("serverTemplateId").withDeploymentId("containerId").withProcessInstanceId(1l).withState(ProcessInstance.STATE_ACTIVE).build();
         ProcessInstanceDiagramSummary summary = createHumanTaskProcessInstanceDiagramSummary(null);
 
-        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString())).thenReturn(summary);
+        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString(), anyString())).thenReturn(summary);
 
         presenter.setProcessInstance(processInstance);
 
-        verify(processService).getProcessInstanceDiagramSummary(processInstance.getProcessInstanceKey(), completeNodeColor, completeNodeBorderColor, activeNodeBorderColor);
+        verify(processService).getProcessInstanceDiagramSummary(processInstance.getProcessInstanceKey(), completeNodeColor, completeNodeBorderColor, activeNodeBorderColor, activeAsyncNodeBorderColor);
     }
 
     private ProcessInstanceDiagramSummary createHumanTaskProcessInstanceDiagramSummary(NodeInstanceSummary humanTask) {
@@ -565,7 +567,7 @@ public class ProcessInstanceDiagramPresenterTest {
 
         ProcessInstanceSummary processInstance = ProcessInstanceSummary.builder().withServerTemplateId("serverTemplateId").withDeploymentId("containerId").withProcessInstanceId(1L).withState(ProcessInstance.STATE_ACTIVE).build();
 
-        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString())).thenReturn(summary);
+        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString(), anyString())).thenReturn(summary);
 
         presenter.setProcessInstance(processInstance);
 
@@ -646,7 +648,7 @@ public class ProcessInstanceDiagramPresenterTest {
         summary.setProcessDefinition(ProcessSummary.builder().nodes(nodes).timers(singletonList(TimerSummary.builder().id(0l).uniqueId("_1").build())).build());
         summary.setNodeInstances(nodeInstances);
 
-        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString())).thenReturn(summary);
+        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString(), anyString())).thenReturn(summary);
         when(processService.getProcessInstanceTimerInstances(eq(processInstance.getProcessInstanceKey()))).thenThrow(mock(KieServicesHttpException.class));
         presenter.setProcessInstance(processInstance);
         verify(view, never()).setTimerInstances(timerInstances);
@@ -689,7 +691,7 @@ public class ProcessInstanceDiagramPresenterTest {
         summary.setNodeInstances(nodeInstances);
         summary.setSvgContent("svg String");
 
-        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString())).thenThrow(mock(KieServicesHttpException.class));
+        when(processService.getProcessInstanceDiagramSummary(eq(processInstance.getProcessInstanceKey()), anyString(), anyString(), anyString(), anyString())).thenThrow(mock(KieServicesHttpException.class));
         when(processService.getProcessInstanceTimerInstances(eq(processInstance.getProcessInstanceKey()))).thenReturn(timerInstances);
 
         presenter.setProcessInstance(processInstance);

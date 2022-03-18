@@ -35,7 +35,8 @@ public interface ProcessRuntimeDataService {
     ProcessInstanceDiagramSummary getProcessInstanceDiagramSummary(ProcessInstanceKey processInstanceKey,
                                                                    String completedNodeColor,
                                                                    String completedNodeBorderColor,
-                                                                   String activeNodeBorderColor);
+                                                                   String activeNodeBorderColor,
+                                                                   String activeAsyncNodeBorderColor);
 
     List<ProcessSummary> getProcesses(String serverTemplateId,
                                       Integer page,
