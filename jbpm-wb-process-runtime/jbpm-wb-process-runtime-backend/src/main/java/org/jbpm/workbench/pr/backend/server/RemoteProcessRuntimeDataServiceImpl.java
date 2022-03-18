@@ -124,7 +124,7 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
 
     @Override
     public ProcessInstanceDiagramSummary getProcessInstanceDiagramSummary(ProcessInstanceKey processInstanceKey, String completedNodeColor,
-                                                                          String completedNodeBorderColor, String activeNodeBorderColor) {
+                                                                          String completedNodeBorderColor, String activeNodeBorderColor, String activeAsyncNodeBorderColor) {
         if (processInstanceKey == null || processInstanceKey.isValid() == false) {
             return null;
         }
@@ -140,7 +140,8 @@ public class RemoteProcessRuntimeDataServiceImpl extends AbstractKieServerServic
                                                                             processInstanceKey.getProcessInstanceId(),
                                                                             completedNodeColor,
                                                                             completedNodeBorderColor,
-                                                                            activeNodeBorderColor));
+                                                                            activeNodeBorderColor,
+                                                                            activeAsyncNodeBorderColor));
 
         summary.setProcessDefinition(getProcess(new ProcessDefinitionKey(processInstance.getServerTemplateId(),
                                                                          processInstance.getDeploymentId(),
