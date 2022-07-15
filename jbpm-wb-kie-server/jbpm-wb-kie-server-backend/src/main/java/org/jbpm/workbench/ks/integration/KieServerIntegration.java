@@ -388,9 +388,6 @@ public class KieServerIntegration {
             if (serverTemplate.getCapabilities().contains(Capability.RULE.name())) {
                 mappedCapabilities.add(KieServerConstants.CAPABILITY_BRM);
             }
-            if (serverTemplate.getCapabilities().contains(Capability.PLANNING.name())) {
-                mappedCapabilities.add(KieServerConstants.CAPABILITY_BRP);
-            }
 
             final KieServicesClient kieServicesClient = createKieServicesClient(endpoints.toString(),
                                                                                 classLoader,
