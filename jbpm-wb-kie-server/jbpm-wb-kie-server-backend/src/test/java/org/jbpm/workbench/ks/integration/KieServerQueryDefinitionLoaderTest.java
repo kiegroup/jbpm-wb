@@ -74,14 +74,7 @@ public class KieServerQueryDefinitionLoaderTest {
     public void testJbpmProcessInstances() {
         QueryDefinition expectedQuery = QueryDefinition.builder()
                 .name("jbpmProcessInstances")
-                .expression("select log.processInstanceId, log.processId, log.start_date, " +
-                                    "log.end_date, log.status, log.parentProcessInstanceId, log.outcome, " +
-                                    "log.duration, log.user_identity, log.processVersion, log.processName, " +
-                                    "log.correlationKey, log.externalId, log.processInstanceDescription, " +
-                                    "log.sla_due_date, log.slaCompliance, COALESCE(info.lastModificationDate, log.end_date) " +
-                                    "as lastModificationDate, (select COUNT(errInfo.id) from ExecutionErrorInfo errInfo " +
-                                    "where errInfo.PROCESS_INST_ID=log.processInstanceId and errInfo.ERROR_ACK=0) as errorCount " +
-                                    "from ProcessInstanceLog log left join ProcessInstanceInfo info on info.InstanceId=log.processInstanceId")
+                .expression("SELECT log.processInstanceId, log.processId, log.start_date, log.end_date, log.status, log.parentProcessInstanceId, log.outcome, log.duration, log.user_identity, log.processVersion, log.processName, log.correlationKey, log.externalId,  log.processInstanceDescription, log.sla_due_date, log.slaCompliance, COALESCE ( info.lastModificationDate, log.end_date ) AS lastModificationDate, COUNT( errInfo.id ) errorCount FROM ProcessInstanceLog log INNER JOIN ExecutionErrorInfo errInfo ON errInfo.Process_Inst_Id=log.processInstanceId AND errInfo.ERROR_ACK=0 LEFT JOIN ProcessInstanceInfo info ON info.InstanceId=log.processInstanceId GROUP BY log.processInstanceId, log.processId, log.start_date, log.end_date, log.status, log.parentProcessInstanceId, log.outcome, log.duration, log.user_identity, log.processVersion, log.processName, log.correlationKey, log.externalId, log.processInstanceDescription, log.sla_due_date, log.slaCompliance, COALESCE ( info.lastModificationDate, log.end_date ) HAVING COUNT( errInfo.id ) > 0")
                 .build();
         testQueryDefinitionLoaded(expectedQuery);
     }
