@@ -129,6 +129,10 @@ public abstract class AbstractStartProcessFormDisplayer<S extends FormRenderingS
 
         initDisplayer();
 
+        initFormWithCorrelationKey();
+    }
+
+    protected void initFormWithCorrelationKey() {
         final PanelGroup accordion = new PanelGroup();
         accordion.setId(DOM.createUniqueId());
 
