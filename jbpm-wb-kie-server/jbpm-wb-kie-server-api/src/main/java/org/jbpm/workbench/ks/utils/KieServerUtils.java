@@ -44,7 +44,8 @@ public class KieServerUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(KieServerUtils.class);
 
     private static boolean KIE_SERVER_FORM_RENDERER = Boolean.parseBoolean(System.getProperty("org.jbpm.wb.forms.renderer.ext", "false"));
-    
+    private static Long KIE_SERVER_CLIENT_TIMEOUT = Long.parseLong(System.getProperty("org.jbpm.wb.kie.server.client.timeout", "60000"));
+
     public static KieServicesClient createKieServicesClient(final String... capabilities) {
         final String kieServerEndpoint = System.getProperty(KieServerConstants.KIE_SERVER_LOCATION);
         checkNotNull(kieServerEndpoint,
@@ -97,7 +98,7 @@ public class KieServerUtils {
                                                             final String... capabilities) {
         LOGGER.debug("Creating client that will use following endpoint {}",
                      endpoint);
-        configuration.setTimeout(60000);
+        configuration.setTimeout(KIE_SERVER_CLIENT_TIMEOUT);
         if (capabilities != null) {
             configuration.setCapabilities(Arrays.asList(capabilities));
         }
