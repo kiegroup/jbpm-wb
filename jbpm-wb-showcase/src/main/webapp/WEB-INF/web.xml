@@ -146,24 +146,6 @@ profile in pom.xml to use that. -->
     <url-pattern>*.erraiBus</url-pattern>
   </servlet-mapping>
 
-  <!-- start jBPM Designer -->
-  <!-- Designer Injection Filter -->
-  <filter>
-    <filter-name>Redirect Filter</filter-name>
-    <filter-class>org.jbpm.designer.filter.DesignerResourcesRedirectFilter</filter-class>
-    <init-param>
-      <param-name>redirectTo</param-name>
-      <param-value>/org.jbpm.workbench.jBPMShowcase</param-value>
-    </init-param>
-  </filter>
-  <filter-mapping>
-    <filter-name>Redirect Filter</filter-name>
-    <url-pattern>/org.jbpm.designer.jBPMDesigner/*</url-pattern>
-  </filter-mapping>
-  <filter>
-    <filter-name>Pluggable Filter</filter-name>
-    <filter-class>org.jbpm.designer.web.filter.impl.PluggableFilter</filter-class>
-  </filter>
   <filter-mapping>
     <filter-name>Pluggable Filter</filter-name>
     <url-pattern>/*</url-pattern>
