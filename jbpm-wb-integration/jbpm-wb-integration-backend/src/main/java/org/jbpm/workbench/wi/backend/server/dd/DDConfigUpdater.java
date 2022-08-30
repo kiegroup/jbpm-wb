@@ -24,7 +24,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.jbpm.designer.notification.DesignerWorkitemInstalledEvent;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
 import org.jbpm.workbench.wi.dd.service.DDEditorService;
@@ -75,13 +74,6 @@ public class DDConfigUpdater {
             //persistence.xml has been updated in current project.
             updateConfig(moduleService.resolveModule(resourceUpdatedEvent.getPath()));
         }
-    }
-
-    public void processWorkitemInstall(@Observes final DesignerWorkitemInstalledEvent workitemInstalledEvent) {
-        addWorkItemToConfig(moduleService.resolveModule(workitemInstalledEvent.getPath()),
-                            workitemInstalledEvent.getName(),
-                            workitemInstalledEvent.getValue(),
-                            workitemInstalledEvent.getResolver());
     }
     
     public void processServiceTaskEvent(@Observes final ServiceTaskResourceEvent serviceResourceEvent) {
