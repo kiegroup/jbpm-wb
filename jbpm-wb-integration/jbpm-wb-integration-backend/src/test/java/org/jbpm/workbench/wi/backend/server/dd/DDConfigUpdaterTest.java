@@ -18,7 +18,6 @@ package org.jbpm.workbench.wi.backend.server.dd;
 
 import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.shared.metadata.model.Overview;
-import org.jbpm.designer.notification.DesignerWorkitemInstalledEvent;
 import org.jbpm.workbench.wi.backend.server.builder.BPMPostBuildHandler;
 import org.jbpm.workbench.wi.dd.model.DeploymentDescriptorModel;
 import org.jbpm.workbench.wi.dd.model.ItemObjectModel;
@@ -106,111 +105,6 @@ public class DDConfigUpdaterTest {
                      objectModel.getValue());
         assertEquals("mvel",
                      objectModel.getResolver());
-    }
-
-    @Test
-    public void testProcessWorkitemInstall() {
-        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
-                                                                                  "mvel",
-                                                                                  "new com.myhandlers.MyHandler()",
-                                                                                  "MyWorkItem",
-                                                                                  ""));
-
-        assertNotNull(model.getWorkItemHandlers());
-        assertEquals(1,
-                     model.getWorkItemHandlers().size());
-
-        ItemObjectModel objectModel = model.getWorkItemHandlers().get(0);
-        assertNotNull(objectModel);
-        assertEquals("MyWorkItem",
-                     objectModel.getName());
-        assertEquals("mvel",
-                     objectModel.getResolver());
-        assertEquals("new com.myhandlers.MyHandler()",
-                     objectModel.getValue());
-
-        // same name -- should not add
-        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
-                                                                                  "mvel",
-                                                                                  "new com.myhandlers.MyHandler2()",
-                                                                                  "MyWorkItem",
-                                                                                  ""));
-
-        assertNotNull(model.getWorkItemHandlers());
-        assertEquals(1,
-                     model.getWorkItemHandlers().size());
-        // make sure the one we have is not this new one
-        assertEquals("new com.myhandlers.MyHandler()",
-                     model.getWorkItemHandlers().get(0).getValue());
-
-        // different name - should add
-        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
-                                                                                  "reflection",
-                                                                                  "com.myhandlers.MyHandler",
-                                                                                  "MyWorkItem2",
-                                                                                  ""));
-
-        assertNotNull(model.getWorkItemHandlers());
-        assertEquals(2,
-                     model.getWorkItemHandlers().size());
-
-        ItemObjectModel objectModel2 = model.getWorkItemHandlers().get(1);
-        assertNotNull(objectModel2);
-        assertEquals("MyWorkItem2",
-                     objectModel2.getName());
-        assertEquals("reflection",
-                     objectModel2.getResolver());
-        assertEquals("com.myhandlers.MyHandler",
-                     objectModel2.getValue());
-
-        // invalid (no name) - should not add
-        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
-                                                                                  "mvel",
-                                                                                  "new com.myhandlers.MyHandler3()",
-                                                                                  "",
-                                                                                  ""));
-        assertNotNull(model.getWorkItemHandlers());
-        assertEquals(2,
-                     model.getWorkItemHandlers().size());
-
-        // invalid (no handler) - should not add
-        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
-                                                                                  "mvel",
-                                                                                  "",
-                                                                                  "MyWorkItem3",
-                                                                                  ""));
-        assertNotNull(model.getWorkItemHandlers());
-        assertEquals(2,
-                     model.getWorkItemHandlers().size());
-
-        // invalid (no name and handler) - should not add
-        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
-                                                                                  "mvel",
-                                                                                  "",
-                                                                                  "",
-                                                                                  ""));
-        assertNotNull(model.getWorkItemHandlers());
-        assertEquals(2,
-                     model.getWorkItemHandlers().size());
-
-        // test overwritten resolver from value
-        ddConfigUpdater.processWorkitemInstall(new DesignerWorkitemInstalledEvent(Mockito.mock(Path.class),
-                                                                                  "reflection",
-                                                                                  "mvel: new com.myhandlers.MyHandler4()",
-                                                                                  "MyWorkItem4",
-                                                                                  ""));
-        assertNotNull(model.getWorkItemHandlers());
-        assertEquals(3,
-                     model.getWorkItemHandlers().size());
-
-        ItemObjectModel objectModel3 = model.getWorkItemHandlers().get(2);
-        assertNotNull(objectModel3);
-        assertEquals("MyWorkItem4",
-                     objectModel3.getName());
-        assertEquals("mvel",
-                     objectModel3.getResolver());
-        assertEquals("new com.myhandlers.MyHandler4()",
-                     objectModel3.getValue());
     }
 
     @Test
