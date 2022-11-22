@@ -200,8 +200,8 @@ public class KieServerQueryDefinitionLoaderTest {
                                     "nil.sla_due_date, nil.slaCompliance,(select COUNT(errInfo.id) from ExecutionErrorInfo " +
                                     "errInfo where errInfo.ACTIVITY_ID = t.taskId and errInfo.PROCESS_INST_ID = pil.processInstanceId " +
                                     "and errInfo.ERROR_ACK = 0 and errInfo.ERROR_TYPE = 'Task') as errorCount, i18n.text  as subject, " +
-                                    "i18n.language as language, task.formname as formname, (SELECT te1.userId FROM taskEvent te1 " +
-                                    "LEFT JOIN taskEvent te2 ON te1.id < te2.id WHERE te2.id IS NULL) as lastUser from AuditTaskImpl t  " +
+                                    "i18n.language as language, task.formname as formname, (SELECT te1.userId FROM TaskEvent te1 " +
+                                    "LEFT JOIN TaskEvent te2 ON te1.id < te2.id WHERE te2.id IS NULL) as lastUser from AuditTaskImpl t  " +
                                     "left join ProcessInstanceLog pil on pil.processInstanceId = t.processInstanceId " +
                                     "left join PeopleAssignments_BAs ba on t.taskId = ba.task_id left join OrganizationalEntity oe " +
                                     "on ba.entity_id = oe.id left join NodeInstanceLog nil on nil.workItemId=t.workItemId " +
