@@ -18,6 +18,7 @@ package org.jbpm.workbench.ht.client.editors.taskslist;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -50,6 +51,7 @@ import org.jbpm.workbench.ht.model.TaskSummary;
 import org.jbpm.workbench.ht.model.events.*;
 import org.jbpm.workbench.ht.service.TaskService;
 import org.jbpm.workbench.ht.util.TaskStatus;
+import org.kie.api.runtime.process.ProcessInstance;
 import org.uberfire.client.workbench.events.BeforeClosePlaceEvent;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
@@ -100,7 +102,7 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
         return errorHandlerBuilder.get().withUUID(tableSettings.getUUID()).withDataSetCallback(
                 dataSet -> {
                     if (dataSet != null && dataSetQueryHelper.getCurrentTableSettings().getKey().equals(tableSettings.getKey())) {
-                        final List<TaskSummary> myTasksFromDataSet = new ArrayList<TaskSummary>();
+                        final List<TaskSummary> myTasksFromDataSet = new ArrayList<>();
 
                         for (int i = 0; i < dataSet.getRowCount(); i++) {
                             myTasksFromDataSet.add(new TaskSummaryDataSetMapper().apply(dataSet,
@@ -114,6 +116,9 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
 
                         List<DataSetOp> ops = tableSettings.getDataSetLookup().getOperationList();
                         String filterValue = isFilteredByTaskName(ops); //Add here the check to add the domain data columns taskName?
+
+                        //RHPAM-4611 Tasks listed twice once completed in Business Central
+                        removeDuplicateTaskSummaryBySLAStatus(myTasksFromDataSet);
                         if (filterValue != null) {
                             getDomainSpecifDataForTasks(startRange,
                                                         myTasksFromDataSet,
@@ -128,6 +133,15 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
                     view.hideBusyIndicator();
                 })
                 .withEmptyResultsCallback(() -> setEmptyResults());
+    }
+
+    protected void removeDuplicateTaskSummaryBySLAStatus(List<TaskSummary> taskSummaries) {
+        Set<Long> id = new HashSet<>();
+        Set<Long> duplicateTaskSummaries = taskSummaries.stream().filter(ts -> !id.add(ts.getId())).map(TaskSummary::getId).collect(Collectors.toSet());
+        Integer slaPending = new Integer(ProcessInstance.SLA_PENDING);
+        if (!duplicateTaskSummaries.isEmpty()) {
+            taskSummaries.removeIf(task -> duplicateTaskSummaries.contains(task.getId()) && slaPending.equals(task.getSlaCompliance()));
+        }
     }
 
     @Override

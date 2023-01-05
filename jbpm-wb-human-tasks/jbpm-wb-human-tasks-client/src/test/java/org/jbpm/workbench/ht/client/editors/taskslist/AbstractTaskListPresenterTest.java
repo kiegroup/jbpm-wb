@@ -740,6 +740,29 @@ public abstract class AbstractTaskListPresenterTest {
         assertNull(getPresenter().getSelectedTask());
     }
 
+    @Test
+    public void testRemoveDuplicateTaskSummaryBySLAStatus(){
+        TaskSummary taskOne = createTestTaskSummary(1L, TASK_STATUS_IN_PROGRESS, "wbadmin");
+        taskOne.setSlaCompliance(1);
+        TaskSummary taskTwo = createTestTaskSummary(1L, TASK_STATUS_IN_PROGRESS, "wbadmin");
+        taskTwo.setSlaCompliance(2);
+        TaskSummary taskThree = createTestTaskSummary(2L, TASK_STATUS_IN_PROGRESS, "wbadmin");
+        taskThree.setSlaCompliance(1);
+
+        TaskSummary taskOne1 = createTestTaskSummary(3L, TASK_STATUS_IN_PROGRESS, "wbadmin");
+        taskOne1.setSlaCompliance(1);
+        TaskSummary taskTwo1 = createTestTaskSummary(3L, TASK_STATUS_IN_PROGRESS, "wbadmin");
+        taskTwo1.setSlaCompliance(2);
+        TaskSummary taskThree1 = createTestTaskSummary(4L, TASK_STATUS_IN_PROGRESS, "wbadmin");
+        taskThree1.setSlaCompliance(1);
+        LinkedList<TaskSummary> ts = new LinkedList<>(Arrays.asList(taskOne, taskTwo, taskThree,taskOne1, taskTwo1, taskThree1));
+        assertEquals(ts.size(),6);
+        getPresenter().removeDuplicateTaskSummaryBySLAStatus(ts);
+        assertEquals(ts.size(),4);
+
+    }
+
+
     protected TaskSummary createTestTaskSummary(Long taskId, TaskStatus taskStatus, String actualOwner) {
         Long newTaskId = taskId;
         String statusStr = TASK_STATUS_READY.getIdentifier();
