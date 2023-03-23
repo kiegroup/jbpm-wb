@@ -136,12 +136,18 @@ public abstract class AbstractTaskListPresenter<V extends AbstractTaskListPresen
     }
 
     protected void removeDuplicateTaskSummaryBySLAStatus(List<TaskSummary> taskSummaries) {
-        Set<Long> id = new HashSet<>();
-        Set<Long> duplicateTaskSummaries = taskSummaries.stream().filter(ts -> !id.add(ts.getId())).map(TaskSummary::getId).collect(Collectors.toSet());
-        Integer slaPending = new Integer(ProcessInstance.SLA_PENDING);
-        if (!duplicateTaskSummaries.isEmpty()) {
-            taskSummaries.removeIf(task -> duplicateTaskSummaries.contains(task.getId()) && slaPending.equals(task.getSlaCompliance()));
+        Set<Long> duplicated = new HashSet<>();
+        Set<Long> ids = new HashSet<>();
+
+        for (TaskSummary taskSummary : taskSummaries) {
+            if (ids.contains(taskSummary.getId())) {
+                duplicated.add(taskSummary.getId());
+            }
+            ids.add(taskSummary.getId());
         }
+
+        final Integer slaPending = Integer.valueOf(ProcessInstance.SLA_PENDING);
+        taskSummaries.removeIf(task -> slaPending.equals(task.getSlaCompliance()) && duplicated.contains(task.getId()));
     }
 
     @Override
