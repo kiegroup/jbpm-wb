@@ -38,5 +38,8 @@
       <module name="org.jboss.msc"/>
       <module name="org.jboss.dmr"/>
     </dependencies>
+    <exclusions>
+	  <module name="org.apache.sshd" slot="main"/>
+	 </exclusions>
   </deployment>
 </jboss-deployment-structure>
