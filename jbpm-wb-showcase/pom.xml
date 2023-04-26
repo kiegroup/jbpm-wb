@@ -2152,55 +2152,6 @@
         </plugins>
       </build>
     </profile>
-    <profile>
-      <id>unix</id>
-      <activation>
-        <os>
-          <family>unix</family>
-        </os>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <configuration>
-              <skip>${skipTests}</skip>
-            </configuration>
-            <executions>
-              <execution>
-                <id>Add custom setup to standalone-full</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <executable>${project.build.directory}/wildfly-${version.org.wildfly}/bin/jboss-cli.sh</executable>
-                  <arguments>
-                    <argument>--file=${project.basedir}/src/main/config/jbpm-custom.cli</argument>
-                    <argument>-Dconfig=standalone-full.xml</argument>
-                  </arguments>
-                </configuration>
-              </execution>
-              <execution>
-                <id>Add custom setup to standalone</id>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <executable>${project.build.directory}/wildfly-${version.org.wildfly}/bin/jboss-cli.sh</executable>
-                  <arguments>
-                    <argument>--file=${project.basedir}/src/main/config/jbpm-custom.cli</argument>
-                    <argument>-Dconfig=standalone.xml</argument>
-                  </arguments>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
   </profiles>
 
 </project>
