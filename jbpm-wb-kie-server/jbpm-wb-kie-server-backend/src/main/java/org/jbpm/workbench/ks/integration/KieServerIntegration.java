@@ -245,26 +245,36 @@ public class KieServerIntegration {
     public void onServerInstanceConnected(@Observes ServerInstanceConnected serverInstanceConnected) {
         ServerInstance serverInstance = serverInstanceConnected.getServerInstance();
 
-        serverTemplatesClients.computeIfPresent(serverInstance.getServerTemplateId(),
-                                                (serverTemplateId, clients) -> {
-                                                    clients.forEach((key, client) -> {
-                                                        // update regular clients
-                                                        updateOrBuildClient(client,
-                                                                            serverInstance);
+        ServerInstanceKey serverInstanceKey = serverInstancesById.computeIfAbsent(serverInstance.getServerInstanceId(),s -> {
+            logger.debug("Server {} connected!", serverInstance);
 
-                                                        logger.debug("KieServerClient load balancer updated for server template {}",
-                                                                     serverTemplateId.equals(SERVER_TEMPLATE_KEY) ? serverInstance.getServerTemplateId() : serverTemplateId);
-                                                    });
-                                                    return clients;
-                                                });
+            serverTemplatesClients.computeIfPresent(serverInstance.getServerTemplateId(),
+                    (serverTemplateId, clients) -> {
+                        clients.forEach((key, client) -> {
+                            // update regular clients
+                            updateOrBuildClient(client,
+                                    serverInstance);
 
-        serverInstancesById.put(serverInstance.getServerInstanceId(),
-                                serverInstance);
+                            logger.debug("KieServerClient load balancer updated for server template {}",
+                                    serverTemplateId.equals(SERVER_TEMPLATE_KEY) ? serverInstance.getServerTemplateId() : serverTemplateId);
+                        });
+                        return clients;
+                    });
 
-        KieServicesClient adminClient = adminClients.get(serverInstance.getServerTemplateId());
-        // update admin clients
-        updateOrBuildClient(adminClient,
-                            serverInstance);
+            serverInstancesById.put(serverInstance.getServerInstanceId(),
+                    serverInstance);
+
+            KieServicesClient adminClient = adminClients.get(serverInstance.getServerTemplateId());
+            // update admin clients
+            updateOrBuildClient(adminClient,
+                    serverInstance);
+            return  serverInstance;
+        });
+        if (serverInstance != serverInstanceKey) {
+            // If Server is already connected do not proceed with Artifacts Build
+            logger.debug("Server {} already registered. Skipping build of containers", serverInstance);
+        }
+
         // once all steps are completed successfully notify other parts interested so the serverClient can actually be used
         serverInstanceRegisteredEvent.fire(new ServerInstanceRegistered(serverInstanceConnected.getServerInstance()));
     }
