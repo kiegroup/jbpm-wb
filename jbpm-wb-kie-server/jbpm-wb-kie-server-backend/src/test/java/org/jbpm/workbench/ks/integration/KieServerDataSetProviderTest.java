@@ -104,7 +104,9 @@ public class KieServerDataSetProviderTest {
         dataSetGroup.setSelectedIntervalList(intervalList);
 
         List<QueryParam> filterParams = new ArrayList<>();
-        kieServerDataSetProvider.appendIntervalSelection(dataSetGroup,
+        
+        kieServerDataSetProvider.appendIntervalSelection(dataSetDef,
+                                                         dataSetGroup,
                                                          filterParams);
 
         assertEquals(1,
@@ -135,7 +137,8 @@ public class KieServerDataSetProviderTest {
         dataSetGroup.setSelectedIntervalList(intervalList);
         List<QueryParam> filterParams = new ArrayList<>();
 
-        kieServerDataSetProvider.appendIntervalSelection(dataSetGroup,
+        kieServerDataSetProvider.appendIntervalSelection(dataSetDef,
+                dataSetGroup,
                                                          filterParams);
 
         assertEquals(1,
