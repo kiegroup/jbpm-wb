@@ -19,6 +19,8 @@ package org.jbpm.workbench.ks.integration;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -69,53 +71,50 @@ public class KieServerQueryDefinitionLoader {
     }
 
     protected void loadDefaultQueryDefinitions(final QueryMode queryMode) {
-        final String resourceName;
+        final Map<String, String> applyStrict = new HashMap<>();
 
-        if (QueryMode.STRICT.equals(queryMode)){
-            resourceName = "/default-query-definitions-strict.json";
-        } else {
-            resourceName = "/default-query-definitions.json";
+        if (QueryMode.STRICT.equals(queryMode)) {
+            QueryDefinition[] queries = loadQueryDefinitions("/default-query-definitions-strict.json");
+            for (QueryDefinition q : queries) {
+                applyStrict.put(q.getName(), q.getTarget());
+            }
         }
 
-        // load any default query definitions
-        try (InputStream qdStream = this.getClass().getResourceAsStream(resourceName)) {
-            if (qdStream == null) {
-                LOGGER.info("Default query definitions file " + resourceName + " not found");
-                return;
+        final QueryDefinition[] queries = loadQueryDefinitions("/default-query-definitions.json");
+        for (QueryDefinition q : queries) {
+            if (applyStrict.containsKey(q.getName())){
+                q.setTarget(applyStrict.get(q.getName()));
             }
-            loadQueryDefinitions(qdStream,
-                                 MarshallerFactory.getMarshaller(MarshallingFormat.JSON,
-                                                                 this.getClass().getClassLoader()));
-        } catch (Exception e) {
-            LOGGER.error("Error when loading default query definitions from " + resourceName,
-                         e);
+            LOGGER.info("Loaded query definition: {}", q);
+            event.fire(new QueryDefinitionLoaded(q));
         }
     }
 
-    protected void loadQueryDefinitions(final InputStream qdStream,
-                                        final Marshaller marshaller) throws IOException {
-        final String qdString = IOUtils.toString(qdStream,
-                                                 Charset.forName("UTF-8"));
+    protected QueryDefinition[] loadQueryDefinitions(String resourceName) {
 
-        try {
-            QueryDefinition[] queries = marshaller.unmarshall(qdString,
-                                                              QueryDefinition[].class);
-
-            LOGGER.info("Found {} query definitions",
-                        queries == null ? 0 : queries.length);
-
-            if (queries == null) {
-                return;
+        try (InputStream qdStream = this.getClass().getResourceAsStream(resourceName)) {
+            if (qdStream == null) {
+                LOGGER.info("Default query definitions file " + resourceName + " not found");
+                return new QueryDefinition[0];
             }
-            for (QueryDefinition q :
-                    queries) {
-                LOGGER.info("Loaded query definition: {}",
-                            q);
-                event.fire(new QueryDefinitionLoaded(q));
+
+            final String qdString = IOUtils.toString(qdStream, Charset.forName("UTF-8"));
+
+            QueryDefinition[] queries = MarshallerFactory.getMarshaller(MarshallingFormat.JSON, this.getClass().getClassLoader()).unmarshall(qdString, QueryDefinition[].class);
+
+            LOGGER.info("Found {} query definitions", queries == null ? 0 : queries.length);
+
+            if (queries == null){
+                return new QueryDefinition[0];
             }
+
+            return queries;
         } catch (MarshallingException e) {
-            LOGGER.error("Error when unmarshalling query definitions from stream.",
-                         e);
+            LOGGER.error("Error when unmarshalling query definitions from stream.", e);
+        } catch (Exception e) {
+            LOGGER.error("Error when loading default query definitions from " + resourceName, e);
         }
+
+        return new QueryDefinition[0];
     }
 }
