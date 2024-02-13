@@ -19,6 +19,7 @@ package org.jbpm.workbench.ks.integration;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
@@ -41,26 +42,52 @@ public class KieServerQueryDefinitionLoader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KieServerQueryDefinitionLoader.class);
 
+    static final String JBPM_WB_QUERY_MODE = "jbpm.wb.querymode";
+    enum QueryMode {
+        DEFAULT,
+        STRICT;
+
+        static QueryMode convert(final String mode) {
+            try {
+                return QueryMode.valueOf(mode.toUpperCase());
+            } catch (IllegalArgumentException ignored) {
+            }
+            return QueryMode.DEFAULT;
+        }
+    }
+
     @Inject
     Event<QueryDefinitionLoaded> event;
 
     @PostConstruct
     public void init() {
-        loadDefaultQueryDefinitions();
+        init(System.getProperties());
     }
 
-    protected void loadDefaultQueryDefinitions() {
+    void init(final Properties properties) {
+        loadDefaultQueryDefinitions(QueryMode.convert(properties.getProperty(JBPM_WB_QUERY_MODE, QueryMode.DEFAULT.toString())));
+    }
+
+    protected void loadDefaultQueryDefinitions(final QueryMode queryMode) {
+        final String resourceName;
+
+        if (QueryMode.STRICT.equals(queryMode)){
+            resourceName = "/default-query-definitions-strict.json";
+        } else {
+            resourceName = "/default-query-definitions.json";
+        }
+
         // load any default query definitions
-        try (InputStream qdStream = this.getClass().getResourceAsStream("/default-query-definitions.json")) {
+        try (InputStream qdStream = this.getClass().getResourceAsStream(resourceName)) {
             if (qdStream == null) {
-                LOGGER.info("Default query definitions file default-query-definitions.json not found");
+                LOGGER.info("Default query definitions file " + resourceName + " not found");
                 return;
             }
             loadQueryDefinitions(qdStream,
                                  MarshallerFactory.getMarshaller(MarshallingFormat.JSON,
                                                                  this.getClass().getClassLoader()));
         } catch (Exception e) {
-            LOGGER.error("Error when loading default query definitions from default-query-definitions.json",
+            LOGGER.error("Error when loading default query definitions from " + resourceName,
                          e);
         }
     }
