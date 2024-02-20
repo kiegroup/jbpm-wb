@@ -27,7 +27,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import javax.enterprise.event.Event;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -63,7 +62,7 @@ public class KieServerQueryDefinitionLoaderStrictModeTest {
             receivedEvents.put(queryDefinitionLoaded.getDefinition().getName(), queryDefinitionLoaded.getDefinition());
             return null;
         }).when(event).fire(any(QueryDefinitionLoaded.class));
-        this.kieServerQueryDefinitionLoader.init(new Properties(){{
+        this.kieServerQueryDefinitionLoader.init(new HashMap<String, String>(){{
             put(KieServerQueryDefinitionLoader.JBPM_WB_QUERY_MODE, "STRICT");
         }});
     }
