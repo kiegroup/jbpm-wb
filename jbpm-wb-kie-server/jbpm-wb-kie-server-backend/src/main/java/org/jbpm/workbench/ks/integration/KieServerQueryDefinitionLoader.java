@@ -16,12 +16,10 @@
 
 package org.jbpm.workbench.ks.integration;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
@@ -29,7 +27,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
 import org.jbpm.workbench.ks.integration.event.QueryDefinitionLoaded;
-import org.kie.server.api.marshalling.Marshaller;
 import org.kie.server.api.marshalling.MarshallerFactory;
 import org.kie.server.api.marshalling.MarshallingException;
 import org.kie.server.api.marshalling.MarshallingFormat;
@@ -63,21 +60,24 @@ public class KieServerQueryDefinitionLoader {
 
     @PostConstruct
     public void init() {
-        init(System.getProperties());
+        init(System.getenv());
     }
 
-    void init(final Properties properties) {
-        loadDefaultQueryDefinitions(QueryMode.convert(properties.getProperty(JBPM_WB_QUERY_MODE, QueryMode.DEFAULT.toString())));
+    void init(final Map<String,String> properties) {
+        loadDefaultQueryDefinitions(QueryMode.convert(properties.getOrDefault(JBPM_WB_QUERY_MODE, QueryMode.DEFAULT.toString())));
     }
 
     protected void loadDefaultQueryDefinitions(final QueryMode queryMode) {
         final Map<String, String> applyStrict = new HashMap<>();
 
         if (QueryMode.STRICT.equals(queryMode)) {
+            LOGGER.info("Query Mode Strict enabled!");
             QueryDefinition[] queries = loadQueryDefinitions("/default-query-definitions-strict.json");
             for (QueryDefinition q : queries) {
                 applyStrict.put(q.getName(), q.getTarget());
             }
+        } else {
+            LOGGER.info("Query Mode Default enabled!");
         }
 
         final QueryDefinition[] queries = loadQueryDefinitions("/default-query-definitions.json");
