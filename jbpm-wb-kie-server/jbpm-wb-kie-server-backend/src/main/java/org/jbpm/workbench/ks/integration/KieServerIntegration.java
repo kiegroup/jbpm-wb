@@ -248,6 +248,11 @@ public class KieServerIntegration {
         ServerInstanceKey serverInstanceKey = serverInstancesById.computeIfAbsent(serverInstance.getServerInstanceId(),s -> {
             logger.debug("Server {} connected!", serverInstance);
 
+            if (Boolean.parseBoolean(System.getProperty("org.kie.server.startup.detectOpenshiftLoadBalancer", "false"))) {
+                serverInstancesById.put(serverInstance.getServerInstanceId(),
+                        serverInstance);
+            }
+
             serverTemplatesClients.computeIfPresent(serverInstance.getServerTemplateId(),
                     (serverTemplateId, clients) -> {
                         clients.forEach((key, client) -> {
