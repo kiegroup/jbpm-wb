@@ -50,6 +50,7 @@ public class KieServerQueryDefinitionLoader {
             try {
                 return QueryMode.valueOf(mode.toUpperCase());
             } catch (IllegalArgumentException ignored) {
+                LOGGER.warn("Invalid Argument provided. DEFAULT query mode will be used.");
             }
             return QueryMode.DEFAULT;
         }
