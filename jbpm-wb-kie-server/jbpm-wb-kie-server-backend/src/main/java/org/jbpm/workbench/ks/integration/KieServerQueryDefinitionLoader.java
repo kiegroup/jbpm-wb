@@ -16,9 +16,10 @@
 
 package org.jbpm.workbench.ks.integration;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
@@ -26,7 +27,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
 import org.jbpm.workbench.ks.integration.event.QueryDefinitionLoaded;
-import org.kie.server.api.marshalling.Marshaller;
 import org.kie.server.api.marshalling.MarshallerFactory;
 import org.kie.server.api.marshalling.MarshallingException;
 import org.kie.server.api.marshalling.MarshallingFormat;
@@ -41,54 +41,81 @@ public class KieServerQueryDefinitionLoader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KieServerQueryDefinitionLoader.class);
 
+    static final String JBPM_WB_QUERY_MODE = "jbpm.wb.querymode";
+    enum QueryMode {
+        DEFAULT,
+        STRICT;
+
+        static QueryMode convert(final String mode) {
+            try {
+                return QueryMode.valueOf(mode.toUpperCase());
+            } catch (IllegalArgumentException ignored) {
+                LOGGER.warn("Invalid Argument provided. DEFAULT query mode will be used.");
+            }
+            return QueryMode.DEFAULT;
+        }
+    }
+
     @Inject
     Event<QueryDefinitionLoaded> event;
 
     @PostConstruct
     public void init() {
-        loadDefaultQueryDefinitions();
+        init(System.getenv());
     }
 
-    protected void loadDefaultQueryDefinitions() {
-        // load any default query definitions
-        try (InputStream qdStream = this.getClass().getResourceAsStream("/default-query-definitions.json")) {
+    void init(final Map<String,String> properties) {
+        loadDefaultQueryDefinitions(QueryMode.convert(properties.getOrDefault(JBPM_WB_QUERY_MODE, QueryMode.DEFAULT.toString())));
+    }
+
+    protected void loadDefaultQueryDefinitions(final QueryMode queryMode) {
+        final Map<String, String> applyStrict = new HashMap<>();
+
+        if (QueryMode.STRICT.equals(queryMode)) {
+            LOGGER.info("Query Mode Strict enabled!");
+            QueryDefinition[] queries = loadQueryDefinitions("/default-query-definitions-strict.json");
+            for (QueryDefinition q : queries) {
+                applyStrict.put(q.getName(), q.getTarget());
+            }
+        } else {
+            LOGGER.info("Query Mode Default enabled!");
+        }
+
+        final QueryDefinition[] queries = loadQueryDefinitions("/default-query-definitions.json");
+        for (QueryDefinition q : queries) {
+            if (applyStrict.containsKey(q.getName())){
+                q.setTarget(applyStrict.get(q.getName()));
+            }
+            LOGGER.info("Loaded query definition: {}", q);
+            event.fire(new QueryDefinitionLoaded(q));
+        }
+    }
+
+    protected QueryDefinition[] loadQueryDefinitions(String resourceName) {
+
+        try (InputStream qdStream = this.getClass().getResourceAsStream(resourceName)) {
             if (qdStream == null) {
-                LOGGER.info("Default query definitions file default-query-definitions.json not found");
-                return;
+                LOGGER.info("Default query definitions file " + resourceName + " not found");
+                return new QueryDefinition[0];
             }
-            loadQueryDefinitions(qdStream,
-                                 MarshallerFactory.getMarshaller(MarshallingFormat.JSON,
-                                                                 this.getClass().getClassLoader()));
-        } catch (Exception e) {
-            LOGGER.error("Error when loading default query definitions from default-query-definitions.json",
-                         e);
-        }
-    }
 
-    protected void loadQueryDefinitions(final InputStream qdStream,
-                                        final Marshaller marshaller) throws IOException {
-        final String qdString = IOUtils.toString(qdStream,
-                                                 Charset.forName("UTF-8"));
+            final String qdString = IOUtils.toString(qdStream, Charset.forName("UTF-8"));
 
-        try {
-            QueryDefinition[] queries = marshaller.unmarshall(qdString,
-                                                              QueryDefinition[].class);
+            QueryDefinition[] queries = MarshallerFactory.getMarshaller(MarshallingFormat.JSON, this.getClass().getClassLoader()).unmarshall(qdString, QueryDefinition[].class);
 
-            LOGGER.info("Found {} query definitions",
-                        queries == null ? 0 : queries.length);
+            LOGGER.info("Found {} query definitions", queries == null ? 0 : queries.length);
 
-            if (queries == null) {
-                return;
+            if (queries == null){
+                return new QueryDefinition[0];
             }
-            for (QueryDefinition q :
-                    queries) {
-                LOGGER.info("Loaded query definition: {}",
-                            q);
-                event.fire(new QueryDefinitionLoaded(q));
-            }
+
+            return queries;
         } catch (MarshallingException e) {
-            LOGGER.error("Error when unmarshalling query definitions from stream.",
-                         e);
+            LOGGER.error("Error when unmarshalling query definitions from stream.", e);
+        } catch (Exception e) {
+            LOGGER.error("Error when loading default query definitions from " + resourceName, e);
         }
+
+        return new QueryDefinition[0];
     }
 }

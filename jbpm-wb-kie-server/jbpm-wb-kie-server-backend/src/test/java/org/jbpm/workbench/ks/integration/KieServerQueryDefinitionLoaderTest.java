@@ -75,6 +75,7 @@ public class KieServerQueryDefinitionLoaderTest {
         QueryDefinition expectedQuery = QueryDefinition.builder()
                 .name("jbpmProcessInstances")
                 .expression("SELECT LOG.PROCESSINSTANCEID, LOG.PROCESSID, LOG.START_DATE, LOG.END_DATE, LOG.STATUS, LOG.PARENTPROCESSINSTANCEID, LOG.OUTCOME, LOG.DURATION, LOG.USER_IDENTITY, LOG.PROCESSVERSION, LOG.PROCESSNAME, LOG.CORRELATIONKEY, LOG.EXTERNALID, LOG.PROCESSINSTANCEDESCRIPTION, LOG.SLA_DUE_DATE, LOG.SLACOMPLIANCE, COALESCE ( INFO.LASTMODIFICATIONDATE, LOG.END_DATE ) AS LASTMODIFICATIONDATE, COUNT( ERRINFO.ID ) ERRORCOUNT FROM ProcessInstanceLog LOG LEFT JOIN ExecutionErrorInfo ERRINFO ON ERRINFO.PROCESS_INST_ID=LOG.PROCESSINSTANCEID AND ERRINFO.ERROR_ACK=0 LEFT JOIN ProcessInstanceInfo INFO ON INFO.INSTANCEID=LOG.PROCESSINSTANCEID GROUP BY LOG.PROCESSINSTANCEID, LOG.PROCESSID, LOG.START_DATE, LOG.END_DATE, LOG.STATUS, LOG.PARENTPROCESSINSTANCEID, LOG.OUTCOME, LOG.DURATION, LOG.USER_IDENTITY, LOG.PROCESSVERSION, LOG.PROCESSNAME, LOG.CORRELATIONKEY, LOG.EXTERNALID, LOG.PROCESSINSTANCEDESCRIPTION, LOG.SLA_DUE_DATE, LOG.SLACOMPLIANCE, COALESCE ( INFO.LASTMODIFICATIONDATE, LOG.END_DATE )")
+                .target("CUSTOM")
                 .build();
         testQueryDefinitionLoaded(expectedQuery);
     }
@@ -87,6 +88,7 @@ public class KieServerQueryDefinitionLoaderTest {
                                     "vil.variableId, vil.value from VariableInstanceLog vil " +
                                     "left join VariableInstanceLog vil2 on vil.processInstanceId = vil2.processInstanceId " +
                                     "and vil.variableId = vil2.variableId and vil.id < vil2.id where vil2.id is null")
+                .target("CUSTOM")
                 .build();
         testQueryDefinitionLoaded(expectedQuery);
     }
@@ -98,6 +100,7 @@ public class KieServerQueryDefinitionLoaderTest {
                 .expression("select log.processInstanceId, log.processId, log.start_date, log.end_date, log.status, " +
                                     "log.duration, log.user_identity, log.processVersion, log.processName, " +
                                     "log.externalId from ProcessInstanceLog log")
+                .target("CUSTOM")
                 .build();
         testQueryDefinitionLoaded(expectedQuery);
     }
@@ -111,6 +114,7 @@ public class KieServerQueryDefinitionLoaderTest {
                                     "from ProcessInstanceLog p inner join BAMTaskSummary t on " +
                                     "(t.processInstanceId = p.processInstanceId) inner join (select min(pk) as pk " +
                                     "from BAMTaskSummary group by taskId) d on t.pk = d.pk")
+                .target("CUSTOM")
                 .build();
         testQueryDefinitionLoaded(expectedQuery);
     }
@@ -123,6 +127,7 @@ public class KieServerQueryDefinitionLoaderTest {
                                     "ri.retries, ri.executions, pil.processName, pil.processInstanceId, " +
                                     "pil.processInstanceDescription, ri.deploymentId from RequestInfo ri left join " +
                                     "ProcessInstanceLog pil on pil.processInstanceId=ri.processInstanceId")
+                .target("CUSTOM")
                 .build();
         testQueryDefinitionLoaded(expectedQuery);
     }
@@ -135,6 +140,7 @@ public class KieServerQueryDefinitionLoaderTest {
                                     "eri.ACTIVITY_NAME, eri.DEPLOYMENT_ID, eri.ERROR_DATE, eri.ERROR_ID, " +
                                     "eri.ERROR_MSG, eri.JOB_ID, eri.PROCESS_ID, eri.PROCESS_INST_ID, eri.ERROR_TYPE " +
                                     "from ExecutionErrorInfo eri")
+                .target("CUSTOM")
                 .build();
         testQueryDefinitionLoaded(expectedQuery);
     }
@@ -150,6 +156,7 @@ public class KieServerQueryDefinitionLoaderTest {
                                     "nil.sla_due_date, nil.slaCompliance from AuditTaskImpl t left join " +
                                     "ProcessInstanceLog pil on pil.processInstanceId=t.processInstanceId left join " +
                                     "NodeInstanceLog nil on nil.workItemId=t.workItemId")
+                .target("CUSTOM")
                 .build();
         testQueryDefinitionLoaded(expectedQuery);
     }
@@ -167,6 +174,7 @@ public class KieServerQueryDefinitionLoaderTest {
                                     "OrganizationalEntity oe on po.entity_id=oe.id left join ProcessInstanceLog pil on " +
                                     "pil.processInstanceId=t.processInstanceId left join PeopleAssignments_ExclOwners eo " +
                                     "on t.taskId=eo.task_id left join NodeInstanceLog nil on nil.workItemId=t.workItemId")
+                .target("FILTERED_PO_TASK")
                 .build();
         testQueryDefinitionLoaded(expectedQuery);
     }
@@ -185,6 +193,7 @@ public class KieServerQueryDefinitionLoaderTest {
                                     "left join ProcessInstanceLog pil on pil.processInstanceId = t.processInstanceId " +
                                     "left join PeopleAssignments_BAs ba on t.taskId = ba.task_id left join OrganizationalEntity oe " +
                                     "on ba.entity_id = oe.id left join NodeInstanceLog nil on nil.workItemId=t.workItemId")
+                .target("FILTERED_BA_TASK")
                 .build();
         testQueryDefinitionLoaded(expectedQuery);
     }
@@ -206,6 +215,7 @@ public class KieServerQueryDefinitionLoaderTest {
                                     "left join PeopleAssignments_BAs ba on t.taskId = ba.task_id left join OrganizationalEntity oe " +
                                     "on ba.entity_id = oe.id left join NodeInstanceLog nil on nil.workItemId=t.workItemId " +
                                     "left join Task task on task.id = t.taskId left join I18NText i18n ON i18n.Task_Subjects_Id = t.taskId")
+                .target("FILTERED_BA_TASK")
                 .build();
         testQueryDefinitionLoaded(expectedQuery);
     }
@@ -215,6 +225,7 @@ public class KieServerQueryDefinitionLoaderTest {
         QueryDefinition expectedQuery = QueryDefinition.builder()
                 .name("jbpmHumanTasksWithVariables")
                 .expression("select tvi.taskId, tvi.name, tvi.value from TaskVariableImpl tvi")
+                .target("CUSTOM")
                 .build();
         testQueryDefinitionLoaded(expectedQuery);
     }
@@ -227,6 +238,7 @@ public class KieServerQueryDefinitionLoaderTest {
                                     "log.processInstanceId, log.log_date, log.connection, log.type, log.workItemId, " +
                                     "log.referenceId, log.nodeContainerId, log.sla_due_date, log.slaCompliance " +
                                     "from NodeInstanceLog log ")
+                .target("CUSTOM")
                 .build();
         testQueryDefinitionLoaded(expectedQuery);
     }
@@ -264,5 +276,6 @@ public class KieServerQueryDefinitionLoaderTest {
         assertTrue("No named-queries were found", receivedEvents.size() > 0);
         assertNotNull("No query definition found for " + expectedQueryDefinition.getName(), receivedEvents.get(expectedQueryDefinition.getName()));
         assertEquals(expectedQueryDefinition.getExpression(), receivedEvents.get(expectedQueryDefinition.getName()).getExpression());
+        assertEquals(expectedQueryDefinition.getTarget(), receivedEvents.get(expectedQueryDefinition.getName()).getTarget());
     }
 }
