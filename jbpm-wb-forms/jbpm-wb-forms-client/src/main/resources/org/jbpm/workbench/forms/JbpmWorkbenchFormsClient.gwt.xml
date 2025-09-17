@@ -41,5 +41,11 @@
   <inherits name="org.gwtbootstrap3.extras.select.SelectNoResources"/>
 
   <source path="client"/>
+  
+  <!-- Include MaskedTextBox templates -->
+  <source path="client/modeler"/>
+  
+  <!-- Expose static resources (e.g., masked-input.js) as public so they are served at module base URL -->
+  <public path="client/resources"/>
 
 </module>

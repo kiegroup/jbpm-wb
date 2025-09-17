@@ -127,6 +127,11 @@
 
     <dependency>
       <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-editor-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
       <artifactId>kie-wb-common-dynamic-forms-api</artifactId>
     </dependency>
 

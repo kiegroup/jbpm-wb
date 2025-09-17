@@ -764,9 +764,7 @@
     <profile>
       <id>unix</id>
       <activation>
-        <os>
-          <family>unix</family>
-        </os>
+        <activeByDefault>false</activeByDefault> <!-- Run only when explicitly enabled -->
       </activation>
       <build>
         <plugins>
@@ -781,7 +779,7 @@
                   <goal>exec</goal>
                 </goals>
                 <configuration>
-                  <skip>${skipTests}</skip>
+                  <skip>${skipCustomSetup}</skip> <!-- Add this flag to skip -->
                   <executable>${project.build.directory}/wildfly-${version.org.wildfly}/bin/jboss-cli.sh</executable>
                   <arguments>
                     <argument>--file=${project.basedir}/src/main/config/jbpm-custom.cli</argument>

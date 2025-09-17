@@ -18,6 +18,9 @@ package org.jbpm.workbench.forms.client;
 
 import javax.annotation.PostConstruct;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.ScriptElement;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 import org.jboss.errai.ui.shared.api.annotations.Bundle;
 import org.jbpm.workbench.forms.client.resources.AppResources;
@@ -31,5 +34,15 @@ public class GenericFormsClientEntryPoint {
     public void startApp() {
         AppResources.INSTANCE.style().ensureInjected();
         PatternFlyBootstrapper.ensureBootstrapSelectIsAvailable();
+        loadMaskedInputScript();
+    }
+    
+    private void loadMaskedInputScript() {
+        // Load the masked input JavaScript
+        ScriptElement script = Document.get().createScriptElement();
+        // With <public path="org/jbpm/workbench/forms/client/resources"/> the JS is served under module base
+        script.setSrc(GWT.getModuleBaseURL() + "masked-input.js");
+        script.setType("text/javascript");
+        Document.get().getHead().appendChild(script);
     }
 }

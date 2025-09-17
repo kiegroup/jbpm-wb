@@ -24,7 +24,7 @@ public interface AppResources extends ClientBundle {
 
     AppResources INSTANCE = GWT.create(AppResources.class);
 
-    @Source("css/forms.css")
+    @Source({"css/forms.css", "masked-input.css"})
     StyleResources style();
 
     interface StyleResources extends CssResource {
